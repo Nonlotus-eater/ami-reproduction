@@ -1,0 +1,35 @@
+--- upstream/app/main.py
++++ reproduction/app/main.py
+@@ -11,11 +11,12 @@
+ import re
+ import threading
+ import time
++from typing import Literal
+ 
+ import numpy as np
+ from fastapi import FastAPI, Header, HTTPException
+ from fastapi.responses import JSONResponse
+-from pydantic import BaseModel, ConfigDict, Field
++from pydantic import BaseModel, ConfigDict, Field, field_validator
+ 
+ from . import config, dci, embed, llm, rerank, store, updates
+ 
+@@ -144,9 +145,17 @@
+ # note_extra() reports the names.
+ class Message(BaseModel):
+     model_config = ConfigDict(extra="allow")
+-    role: str
++    role: Literal["user", "assistant"]
+     content: str
+     timestamp: int | None = None
++
++    @field_validator("content")
++    @classmethod
++    def content_must_not_be_blank(cls, value: str) -> str:
++        # Reproduction contract correction: reject empty writes, preserve valid text.
++        if not value.strip():
++            raise ValueError("Textual message content must not be blank")
++        return value
+ 
+ 
+ class AddRequest(BaseModel):

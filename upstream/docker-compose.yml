@@ -1,0 +1,85 @@
+# docker-compose.yml — ActiveMemoryIndex self-hosted memory service.
+#
+#   docker compose up -d        # build + start
+#   docker compose ps           # status
+#   docker compose logs -f      # tail logs
+#   docker compose down         # stop
+#
+# This file is self-contained: `docker compose up -d` works on any host with
+# Docker. To publish it through an existing Cloudflare tunnel instead, name the
+# network that tunnel is on — same command, no override file:
+#   AMI_EDGE_NETWORK=<the connector's network> docker compose up -d
+# (There used to be a `-f docker-compose.edge.yml` overlay. See the networks:
+#  block at the bottom for why an overlay is the wrong shape for this.)
+
+services:
+  activememoryindex:
+    build:
+      context: .
+    image: ${AMI_IMAGE:-activememoryindex:latest}
+    container_name: ${AMI_CONTAINER:-activememoryindex}
+    env_file:
+      - path: ${AMI_ENV_FILE:-.env}
+        required: false
+    environment:
+      # Override at the shell for local testing: AMI_AUTH_SCHEME=none docker compose up -d
+      - AMI_AUTH_SCHEME=${AMI_AUTH_SCHEME:-bearer}
+      - AMI_AGENTIC_SEARCH=${AMI_AGENTIC_SEARCH:-0}
+      - AMI_RETURN_LIMIT=${AMI_RETURN_LIMIT:-100}
+      - AMI_RAW_FIRST=${AMI_RAW_FIRST:-1}
+      - AMI_WINDOW_RADIUS=${AMI_WINDOW_RADIUS:-1}
+    volumes:
+      # SQLite database + any persistent state.
+      - ami-data:/data
+    ports:
+      # Loopback by default: this service holds other people's memories and the
+      # auth token may still be unset. Set AMI_BIND=0.0.0.0 (or put a proxy in
+      # front) once you have configured a real AMI_AUTH_TOKEN.
+      - "${AMI_BIND:-127.0.0.1}:${AMI_PORT:-8000}:8000"
+    networks:
+      # 自己的私有网, 外加隧道的会合网 —— 见文件末尾 networks: 的说明。
+      - default
+      - edge
+    restart: unless-stopped
+    logging:
+      # A 72-hour evaluation run otherwise fills the disk with access logs.
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+             "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+
+volumes:
+  ami-data:
+    # Overridable so a second clone on the same host cannot silently attach to
+    # an existing deployment's store.
+    name: ${AMI_VOLUME:-ami-data}
+
+networks:
+  # 本服务自己的私有网。
+  default:
+  # 隧道 (或任何反向代理) 与本服务的会合网, 按名字选, 不写 external:。
+  #
+  # 设 AMI_EDGE_NETWORK 指向连接器所在的网 (本机: cloudflare_edge), 就接上去;
+  # 不设就建一张一次性的本地网, 干净签出照常启动。连接器的 ingress 规则指向
+  # http://<容器名>:8000 (默认 activememoryindex)。
+  #
+  # 这原本是一个可选的 `-f docker-compose.edge.yml` 叠加文件, 里面写着
+  # `external: true`。两个毛病:
+  #
+  #   1. external 的网一旦缺失, compose 会在任何容器启动之前整个拒绝运行 ——
+  #      这正是当初把它挪出基础文件的理由, 于是问题只是换了个地方。
+  #   2. 忘记带 -f 的那一次, 容器会被重建成不带会合网的样子: 容器 healthy,
+  #      127.0.0.1:8000 照样答, 公网路径没了, 没有一处会报错。AItelier 在
+  #      2026-08-25 就是这么断的, 排查花了一晚上。
+  #
+  # 一个裸 `docker compose up -d` 就能静默摘掉的部署属性, 不算属性。
+  # 那个叠加文件里的 `ports: !override` 与基础文件字节相同, 纯属冗余, 一并删。
+  edge:
+    name: ${AMI_EDGE_NETWORK:-ami_edge_unused}

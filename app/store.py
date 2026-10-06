@@ -1,0 +1,372 @@
+"""SQLite-backed memory store with a per-user in-process vector cache.
+
+Add is synchronous: a record is committed and inserted into the cache before the
+HTTP response is written, so it is immediately searchable (contract requirement).
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import sqlite3
+import threading
+from collections import OrderedDict
+from dataclasses import dataclass
+from pathlib import Path
+
+import numpy as np
+
+from . import config
+
+_lock = threading.RLock()
+_conn: sqlite3.Connection | None = None
+_cache: "OrderedDict[str, UserIndex]" = OrderedDict()
+_cached_items = 0
+_embedding_dimensions: int | None = None
+
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS items (
+    id         TEXT PRIMARY KEY,
+    user_id    TEXT NOT NULL,
+    session_id TEXT,
+    request_id TEXT,
+    kind       TEXT NOT NULL,
+    parent_id  TEXT,
+    content    TEXT NOT NULL,
+    created_at TEXT,
+    seq        INTEGER,
+    vec        BLOB NOT NULL,
+    event_date TEXT,
+    fact_key   TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_items_user ON items(user_id);
+CREATE TABLE IF NOT EXISTS requests (
+    request_id TEXT NOT NULL,
+    user_id    TEXT NOT NULL,
+    PRIMARY KEY (request_id, user_id)
+);
+CREATE TABLE IF NOT EXISTS embedding_metadata (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
+"""
+# Created only when an update switch is on, so a store served with every
+# switch off keeps exactly the shipped schema.
+UPDATE_SCHEMA = """
+CREATE TABLE IF NOT EXISTS updates (
+    id         TEXT PRIMARY KEY,
+    user_id    TEXT NOT NULL,
+    request_id TEXT,
+    item_id    TEXT NOT NULL,
+    subject    TEXT NOT NULL,
+    attribute  TEXT NOT NULL,
+    new_value  TEXT NOT NULL,
+    old_value  TEXT,
+    relative   INTEGER NOT NULL,
+    statement  TEXT,
+    subject_is_user INTEGER,
+    created_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_updates_user ON updates(user_id);
+CREATE TABLE IF NOT EXISTS update_checks (
+    user_id   TEXT NOT NULL,
+    update_id TEXT NOT NULL,
+    item_id   TEXT NOT NULL,
+    replaced  INTEGER NOT NULL,
+    quote     TEXT,
+    PRIMARY KEY (update_id, item_id)
+);
+CREATE INDEX IF NOT EXISTS idx_update_checks_user ON update_checks(user_id);
+"""
+UPDATE_FIELDS = ("id", "item_id", "subject", "attribute", "new_value", "old_value", "subject_is_user",
+                 "relative", "statement", "created_at")
+
+
+@dataclass
+class Item:
+    id: str
+    kind: str
+    parent_id: str | None
+    content: str
+    created_at: str | None
+    # When the described event happened (YYYY-MM-DD), if the extraction could
+    # tell; distinct from created_at, which is when it was said.
+    event_date: str | None = None
+    # Canonical "<subject>.<attribute>" from the extractor (AMI_FACT_KEYS), the
+    # attribute this fact states the current value of; None for everything else.
+    fact_key: str | None = None
+
+
+class UserIndex:
+    def __init__(self) -> None:
+        self.items: list[Item] = []
+        self.matrix: np.ndarray | None = None
+        # id -> row, so the neighbours of a selected turn can be found without
+        # scanning the user's whole history on every search.
+        self.by_id: dict[str, int] = {}
+        # chunk digest -> rows of that chunk's verbatim turns, for the same
+        # reason: a selected fact finds the turns it was extracted from without
+        # a scan. Raw positions can have gaps, so this is built, not counted.
+        self.by_chunk: dict[str, list[int]] = {}
+        # fact key -> rows of the facts carrying it, so a returned fact finds
+        # the later statements of the same attribute without a scan.
+        self.by_key: dict[str, list[int]] = {}
+
+    def append(self, items: list[Item], vectors: np.ndarray) -> None:
+        for offset, item in enumerate(items):
+            row = len(self.items) + offset
+            self.by_id[item.id] = row
+            if item.kind == "raw":
+                self.by_chunk.setdefault(item.id.rsplit("-", 1)[0], []).append(row)
+            elif item.kind == "fact" and item.fact_key:
+                self.by_key.setdefault(item.fact_key, []).append(row)
+        self.items.extend(items)
+        self.matrix = vectors if self.matrix is None else np.vstack([self.matrix, vectors])
+
+
+def _bind_embedding_identity(connection: sqlite3.Connection) -> int | None:
+    """An unlabelled legacy store is never assumed to contain remote vectors.
+
+    Legacy local stores remain readable for old experiments. They are not stamped
+    with an inferred identity; a remote deployment must start with a new database.
+    """
+    from . import embed
+
+    identity = embed.embedding_identity()
+    encoded = json.dumps(identity, sort_keys=True, separators=(",", ":"))
+    remote = identity['backend'] == 'openai'
+    recorded = connection.execute(
+        "SELECT value FROM embedding_metadata WHERE key='identity'").fetchone()
+    populated = connection.execute("SELECT 1 FROM items LIMIT 1").fetchone() is not None
+    if recorded:
+        if recorded[0] != encoded:
+            raise RuntimeError("Embedding identity differs from this database; use a new AMI_DB_PATH.")
+    elif populated:
+        if remote:
+            raise RuntimeError("Unlabelled vector database cannot be used with remote embeddings; use a new AMI_DB_PATH.")
+    else:
+        connection.execute("INSERT INTO embedding_metadata(key,value) VALUES ('identity',?)", (encoded,))
+    dimensions = identity['dimensions'] if remote else None
+    if remote and connection.execute(
+            "SELECT 1 FROM items WHERE length(vec) != ? LIMIT 1", (dimensions * 4,)).fetchone():
+        raise RuntimeError("Stored vector dimensions do not match the configured embedding model.")
+    return dimensions
+
+
+def init() -> None:
+    global _conn, _embedding_dimensions
+    with _lock:
+        if _conn is not None:
+            return
+        path = Path(config.DB_PATH)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        connection = sqlite3.connect(str(path), check_same_thread=False)
+        try:
+            connection.execute("PRAGMA journal_mode=WAL")
+            connection.execute("PRAGMA synchronous=NORMAL")
+            connection.executescript(SCHEMA)
+            # Stores built before the column existed: add it, empty.
+            columns = {row[1] for row in connection.execute("PRAGMA table_info(items)")}
+            if "event_date" not in columns:
+                connection.execute("ALTER TABLE items ADD COLUMN event_date TEXT")
+            if "fact_key" not in columns:
+                connection.execute("ALTER TABLE items ADD COLUMN fact_key TEXT")
+            if config.UPDATE_DETECT or config.UPDATE_WITHHOLD:
+                connection.executescript(UPDATE_SCHEMA)
+                # Stores made before round 5b: add the column, empty.
+                update_columns = {row[1] for row in connection.execute("PRAGMA table_info(updates)")}
+                if "subject_is_user" not in update_columns:
+                    connection.execute("ALTER TABLE updates ADD COLUMN subject_is_user INTEGER")
+            dimensions = _bind_embedding_identity(connection)
+            connection.commit()
+        except Exception:
+            connection.close()
+            raise
+        _conn = connection
+        _embedding_dimensions = dimensions
+
+
+def item_id(request_id: str, kind: str, index: int, user_id: str = "") -> str:
+    # user_id is part of the digest: the contract does not promise globally
+    # unique request_ids, and an unsalted id would let one user's Add replace
+    # another user's row through INSERT OR REPLACE.
+    digest = hashlib.sha1(f"{user_id}\x00{request_id}".encode("utf-8")).hexdigest()[:16]
+    return f"{digest}-{kind[0]}{index}"
+
+
+_gates: dict[tuple[str, str], threading.Lock] = {}
+_gates_guard = threading.Lock()
+
+
+def request_gate(request_id: str, user_id: str) -> threading.Lock:
+    """Serialize concurrent attempts at the same write.
+
+    The platform retries Add on 408/409/425/429/5xx, so two attempts at one
+    request_id can overlap. Without this gate both pass the duplicate check,
+    both run the LLM, and the store ends up holding a mixture of two different
+    extractions of the same chunk — with the in-process cache and SQLite
+    disagreeing about how many rows exist.
+    """
+    key = (request_id, user_id)
+    with _gates_guard:
+        gate = _gates.get(key)
+        if gate is None:
+            gate = _gates[key] = threading.Lock()
+        return gate
+
+
+def request_seen(request_id: str, user_id: str) -> bool:
+    with _lock:
+        row = _conn.execute(
+            "SELECT 1 FROM requests WHERE request_id = ? AND user_id = ?",
+            (request_id, user_id),
+        ).fetchone()
+        return row is not None
+
+
+def add(user_id: str, session_id: str, request_id: str, items: list[Item], vectors: np.ndarray,
+        updates: list[dict] | None = None) -> int:
+    """Persist items (and the chunk's explicit-update records, in the same
+    commit) and make them searchable. Returns the number of items stored."""
+    with _lock:
+        if _embedding_dimensions is not None and (
+                vectors.shape != (len(items), _embedding_dimensions)
+                or vectors.dtype != np.float32 or not np.isfinite(vectors).all()
+                or np.any(np.all(vectors == 0, axis=1))):
+            raise ValueError("Invalid vectors for the database embedding identity")
+        index = _load(user_id)
+        seq = len(index.items)
+        rows = [
+            (
+                item.id,
+                user_id,
+                session_id,
+                request_id,
+                item.kind,
+                item.parent_id,
+                item.content,
+                item.created_at,
+                seq + offset,
+                vectors[offset].tobytes(),
+                item.event_date,
+                item.fact_key,
+            )
+            for offset, item in enumerate(items)
+        ]
+        _conn.executemany(
+            "INSERT OR REPLACE INTO items "
+            "(id, user_id, session_id, request_id, kind, parent_id, content, created_at, seq, vec, event_date, fact_key) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            rows,
+        )
+        if updates:
+            _insert_updates(user_id, request_id, updates)
+        _conn.execute(
+            "INSERT OR REPLACE INTO requests (request_id, user_id) VALUES (?, ?)", (request_id, user_id)
+        )
+        _conn.commit()
+        global _cached_items
+        index.append(items, vectors)
+        _cached_items += len(items)
+        _evict_to_fit()
+        return len(items)
+
+
+def get(user_id: str) -> UserIndex:
+    with _lock:
+        return _load(user_id)
+
+
+def _evict_to_fit() -> None:
+    """Hold the cache under AMI_CACHE_MAX_ITEMS rows, oldest use first.
+
+    Callers already hold a live reference to whatever they were handed, so
+    dropping an entry never invalidates an in-flight request; the next lookup
+    reads it back from SQLite, which is the source of truth either way.
+    """
+    global _cached_items
+    while _cached_items > config.CACHE_MAX_ITEMS and len(_cache) > 1:
+        _, evicted = _cache.popitem(last=False)
+        _cached_items -= len(evicted.items)
+
+
+def _load(user_id: str) -> UserIndex:
+    index = _cache.get(user_id)
+    if index is not None:
+        _cache.move_to_end(user_id)
+        return index
+    index = UserIndex()
+    rows = _conn.execute(
+        "SELECT id, kind, parent_id, content, created_at, vec, event_date, fact_key FROM items WHERE user_id = ? ORDER BY seq",
+        (user_id,),
+    ).fetchall()
+    if rows:
+        items = [Item(id=r[0], kind=r[1], parent_id=r[2], content=r[3], created_at=r[4], event_date=r[6],
+                      fact_key=r[7])
+                 for r in rows]
+        matrix = np.vstack([np.frombuffer(r[5], dtype=np.float32) for r in rows])
+        if _embedding_dimensions is not None and (
+                matrix.shape != (len(items), _embedding_dimensions)
+                or not np.isfinite(matrix).all()
+                or np.any(np.all(matrix == 0, axis=1))):
+            raise ValueError("Stored vectors do not match the database embedding identity")
+        index.append(items, matrix)
+    global _cached_items
+    _cache[user_id] = index
+    _cached_items += len(index.items)
+    _evict_to_fit()
+    return index
+
+
+def stats() -> dict:
+    with _lock:
+        users = _conn.execute("SELECT COUNT(DISTINCT user_id) FROM items").fetchone()[0]
+        items = _conn.execute("SELECT COUNT(*) FROM items").fetchone()[0]
+    return {"users": users, "items": items}
+
+
+# --- explicit-update records (AMI_UPDATE_*) -----------------------------------
+def _insert_updates(user_id: str, request_id: str | None, updates: list[dict]) -> None:
+    _conn.executemany(
+        "INSERT OR REPLACE INTO updates (id, user_id, request_id, item_id, subject, attribute, "
+        "new_value, old_value, relative, statement, created_at, subject_is_user) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [(u["id"], user_id, request_id, u["item_id"], u["subject"], u["attribute"], u["new_value"],
+          u.get("old_value"), int(bool(u.get("relative"))), u.get("statement"), u.get("created_at"),
+          int(bool(u.get("subject_is_user"))))
+         for u in updates],
+    )
+
+
+def add_updates(user_id: str, request_id: str | None, updates: list[dict]) -> None:
+    """Records for items already stored (the offline detection pass)."""
+    with _lock:
+        _insert_updates(user_id, request_id, updates)
+        _conn.commit()
+
+
+def get_updates(user_id: str) -> list[dict]:
+    with _lock:
+        rows = _conn.execute(
+            f"SELECT {', '.join(UPDATE_FIELDS)} FROM updates WHERE user_id = ? ORDER BY rowid",
+            (user_id,)).fetchall()
+    return [dict(zip(UPDATE_FIELDS, row)) for row in rows]
+
+
+def get_checks(user_id: str) -> dict[tuple[str, str], tuple[bool, str | None]]:
+    with _lock:
+        rows = _conn.execute(
+            "SELECT update_id, item_id, replaced, quote FROM update_checks WHERE user_id = ?",
+            (user_id,)).fetchall()
+    return {(r[0], r[1]): (bool(r[2]), r[3]) for r in rows}
+
+
+def add_checks(user_id: str, checks: list[tuple[str, str, bool, str | None]]) -> None:
+    if not checks:
+        return
+    with _lock:
+        _conn.executemany(
+            "INSERT OR REPLACE INTO update_checks (user_id, update_id, item_id, replaced, quote) "
+            "VALUES (?, ?, ?, ?, ?)",
+            [(user_id, update_id, item_id, int(replaced), quote)
+             for update_id, item_id, replaced, quote in checks])
+        _conn.commit()

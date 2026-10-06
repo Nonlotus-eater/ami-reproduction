@@ -1,0 +1,7 @@
+# Remote academic runtime: upstream pins; local BGE/reranker dependencies omitted.
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+numpy==1.26.4
+openai==1.59.6
+httpx==0.28.1

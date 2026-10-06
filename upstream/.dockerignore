@@ -1,0 +1,14 @@
+.git/
+__pycache__/
+*.pyc
+.env
+.env.academic
+data/
+*.sqlite3
+*.sqlite3-*
+.DS_Store
+.venv/
+bench/out/
+bench/third_party/
+.claude/
+CLAUDE.md
