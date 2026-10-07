@@ -106,8 +106,14 @@ def main():
         profile = read_profile(args.env_file.resolve())
         clear_model_environment()
         os.environ.update(profile)
-        required = ['OPENAI_API_KEY', 'AMI_EMBED_API_KEY', 'AMI_AUTH_TOKEN', 'AMI_EMBED_BASE_URL']
-        if any(not os.environ.get(key, '').strip() for key in required):
+        for name in ['AMI_EMBED_BASE_URL', 'OPENAI_BASE_URL']:
+            endpoint = profile.get(name, '')
+            if any(char in endpoint for char in '{}<>'):
+                parser.error('Endpoint contains an unresolved placeholder; set the actual workspace URL before startup.')
+        required = ['OPENAI_API_KEY', 'AMI_AUTH_TOKEN', 'AMI_EMBED_BASE_URL']
+        embedding_key_present = bool(profile.get('AMI_EMBED_API_KEY', '').strip() or
+                                     profile.get('DASHSCOPE_API_KEY', '').strip())
+        if not embedding_key_present or any(not os.environ.get(key, '').strip() for key in required):
             parser.error('Missing academic credentials/configuration; see .env.example (values are never printed).')
         if profile.get('AMI_EMBED_MODEL') != 'text-embedding-v4' or profile.get('AMI_LLM_MODEL') != 'gpt-4o-mini':
             parser.error('Reproduction academic mode requires text-embedding-v4 and gpt-4o-mini.')
@@ -115,15 +121,27 @@ def main():
     db = db.resolve()
     db.parent.mkdir(parents=True, exist_ok=True)
     os.environ['AMI_DB_PATH'] = str(db)
+    native_client = None
     if args.mode == 'fake':
         install_fakes()
+    else:
+        protocol = os.environ.get('AMI_REPRO_EMBED_PROTOCOL', 'openai')
+        if protocol == 'dashscope-native':
+            from .native_embedding import install
+            native_client = install()
+        elif protocol != 'openai':
+            parser.error('Unknown AMI_REPRO_EMBED_PROTOCOL')
     import uvicorn
     from app.main import app
     if args.mode == 'fake':
         app.title = 'AMI reproduction — OFFLINE FAKE, not evaluation eligible'
     print(f'MODE={args.mode}; bind=127.0.0.1; port={args.port}; db={db}', flush=True)
     # One worker: upstream in-memory indices are not multi-worker coherent.
-    uvicorn.run(app, host='127.0.0.1', port=args.port, workers=1)
+    try:
+        uvicorn.run(app, host='127.0.0.1', port=args.port, workers=1)
+    finally:
+        if native_client is not None:
+            native_client.close()
 
 
 if __name__ == '__main__':

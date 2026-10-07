@@ -37,3 +37,7 @@ Runtime relies on FastAPI, Uvicorn, Pydantic, NumPy, SQLite, the OpenAI Python S
 `reproduction/` contains newly authored launch/test scaffolding and explicitly fake SDK fixtures. It is engineering adaptation, not a new memory method. Fixture retrieval or contract success must not be described as real model performance. The project background ranks AMI highly, but no leaderboard rank is claimed for this reproduction.
 
 Before a public release, bind this repository to its own reviewed commit, retain this disclosure and LICENSE, and disclose subsequent algorithm changes separately. Recovering the exact upstream commit, if possible, is still a provenance follow-up; the source file manifest already fixes the local snapshot used.
+
+### Post-v1 transport adaptation
+
+The optional `reproduction/native_embedding.py` bridge is our engineering adaptation for the user's supplied DashScope-native endpoint. It changes wire format only and keeps upstream embedding preprocessing, representation and retrieval unchanged. Its protocol mapping is based on the supplied curl example and Alibaba Cloud's [native embedding API documentation](https://help.aliyun.com/zh/model-studio/text-embedding-synchronous-api). The user-supplied gateway host is not independently verified as an official provider. No original memory-algorithm claim or new model-quality claim follows from this adaptation. The reproduction-v1 tag still records the earlier baseline without this bridge.

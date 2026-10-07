@@ -1,8 +1,10 @@
 # ActiveMemoryIndex reproduction baseline
 
-`reproduction-v1` 是 Xuhao Lin 的 [ActiveMemoryIndex](https://github.com/linxuhao/ActiveMemoryIndex) 的复现，不声明原创算法贡献。目标为 AML Cycle 2 **Textual Memory / Open-source Methods**。复制来源、prior work、文件指纹与改动见 [ATTRIBUTION.md](ATTRIBUTION.md)、[CHANGELOG.md](CHANGELOG.md)、[LICENSE](LICENSE)。
+`reproduction-v1.1`（原始基线标签 reproduction-v1）是 Xuhao Lin 的 [ActiveMemoryIndex](https://github.com/linxuhao/ActiveMemoryIndex) 的复现，不声明原创算法贡献。目标为 AML Cycle 2 **Textual Memory / Open-source Methods**。复制来源、prior work、文件指纹与改动见 [ATTRIBUTION.md](ATTRIBUTION.md)、[CHANGELOG.md](CHANGELOG.md)、[LICENSE](LICENSE)。
 
-**当前状态：离线复现工程基线已验证；真实 academic 模型链路、官方评测和公网服务尚未验证。** fake 模式仅验证接口与工程行为，不能用于正式评测或声称复现上游分数。现阶段未调用付费模型、未运行 benchmark/AML Smoke/Full、未发布 GitHub、未提交 Evaluation Access Request。
+**当前状态：离线工程基线与一次最小真实 synthetic Add/Search 链路均已验证。** 本轮 Add/Search 均 HTTP 200，raw+fact 持久化与即时检索通过；本轮 LLM 3 次、Embedding 3 次，历史累计 LLM 5 次、Embedding 4 次。详情和成本见 REPRODUCTION_STATUS.md。未运行 benchmark/AML Smoke/Full、未发布 GitHub、未提交 Evaluation Access Request。fake 模式与本次小样本均不能证明复现上游分数；下文保留的失败/待验证记录为阶段历史，以末尾成功记录为准。
+
+队友接手与创建 GitHub 仓库，请先看 [TEAM_HANDOFF.md](TEAM_HANDOFF.md)。
 
 ## 目录与来源
 
@@ -109,3 +111,35 @@ Add 必填 `request_id/messages/user_id/session_id`，回显三个 ID；支持 `
 内部草案见 [EVALUATION_ACCESS_DRAFT.md](EVALUATION_ACCESS_DRAFT.md)。当前具备可审阅代码、来源披露、配置模板与本地接口证据；尚缺真实模型最小验证、公开仓库/固定 commit、对外 HTTPS endpoint、运行容量信息和平台要求的最终字段。不声明已获官方认证或完成正式申请。
 
 以下均须另行确认：付费 API、小规模真实链路验证、较大 benchmark、公开 GitHub push、公网部署、AML Smoke、AML Full、正式提交申请。Full 配额有限，不用于日常调试。
+
+## 本机中转站配置补充（post-v1）
+
+用户提供的实际地址已写入私密 `.env`：LLM 为 `https://linkapi.ai/v1`；embedding 为 `https://maas.qianwenaiapi.com/api/v1/services/embeddings/text-embedding/text-embedding`。后者是完整 DashScope-native endpoint，不是 OpenAI-compatible base URL，不可直接给 OpenAI SDK 拼接 `/embeddings`。
+
+本地配置用 `AMI_REPRO_EMBED_PROTOCOL=dashscope-native` 显式启用 reproduction HTTP bridge；`AMI_EMBED_BASE_URL` 在该模式下保存完整 endpoint。保持 `AMI_EMBED_BACKEND=openai` 以复用 upstream 的远程向量处理；bridge 替换网络客户端及声明 transport identity，**不修改 embedding 算法或模型**。原模板默认 OpenAI-compatible 分支继续保留。真实 endpoint 的协议兼容性需由授权联调确认，未在本步探测。
+
+`import dashscope` 是导入阿里云的 Python SDK，不是加载本地模型；SDK 也需要凭据和正确 endpoint。仅导入 SDK 不会自动采用另一个 curl 示例里的中转地址。本项目直接用已有 HTTPX 发送原生 JSON，不需安装该 SDK。[SDK 官方源码](https://github.com/dashscope/dashscope-sdk-python)、[API 协议文档](https://help.aliyun.com/zh/model-studio/text-embedding-synchronous-api)。
+
+新增 adapter 的六个纯内存测试可单独运行：`.venv/bin/python -m unittest reproduction.test_native_embedding -v`。它们不消耗真实 API 配额。用户已授权的最小真实联调仍需用专用计数/限额/首错终止入口；请勿直接用普通 serve 入口替代该入口。
+
+### 最新覆盖：百炼北京官方兼容接口
+
+用户随后确认直接使用阿里云百炼北京 API Key。当前私密配置已切回 `AMI_REPRO_EMBED_PROTOCOL=openai`，上面的原生 bridge 不启用。
+
+`AMI_EMBED_BASE_URL=https://{WorkspaceId}.cn-beijing.maas.aliyuncs.com/compatible-mode/v1` 必须替换为本账户的实际工作空间 URL；启动器会拒绝含未替换占位符的 URL。保持 `AMI_EMBED_MODEL=text-embedding-v4` 和 1024 维，不采用示例里的 `qwen3.7-text-embedding`。密钥可放在 `AMI_EMBED_API_KEY` 或 `DASHSCOPE_API_KEY`，二者都配置时前者优先。其余 academic 算法配置与无重试限制不变。该兼容接口及模型维度依据[阿里云官方文档](https://help.aliyun.com/zh/model-studio/text-embedding-synchronous-api)，实际连通性仍未调用验证。
+
+### 本次真实最小联调已停止
+
+已授权的 one-shot 执行实际使用 Embedding 1 次、LLM 1 次。Embedding 预热成功；LLM 返回 HTTP 200，但 response model 不匹配或缺失，触发严格停止。Add 返回本地 503，未持久化，Search 未执行。详情见 REPRODUCTION_STATUS.md。`reproduction/real_minimal.py` 的 attempt.lock 防止自动重跑；当前不要清除 lock 或重发请求。下一次真实尝试需要用户明确授权。
+
+### 已定位并修复：模型别名与固定版本的误判
+
+后续经用户授权的单次诊断发现：请求 `gpt-4o-mini`，返回 `gpt-4o-mini-2024-07-18`，HTTP 200。[OpenAI 官方模型文档](https://developers.openai.com/api/docs/models/gpt-4o-mini)确认后者为 GPT-4o mini 的快照。现已修复 reproduction guard，只接受该明确别名/快照映射，仍拒绝其他模型、未知后缀和缺失 model。8 项离线保护测试通过。
+
+本次只增加一个 LLM 诊断请求，没有重跑 Add/Search；累计真实 LLM 2 次、embedding 1 次。完整真实链路尚未完成；已失败的第一次报告和 one-shot lock 保留，不能将本次诊断成功等同于 Add/Search 成功。
+
+### 最新：最小真实 Add/Search 已成功
+
+在用户再次明确授权后，唯一一次完成尝试已通过：1 Add + 1 Search 均 HTTP 200，SQLite raw=1、fact=1，立即检索返回 2 条 synthetic memories。本轮真实 LLM 3 次、embedding 3 次，含历史诊断总计 5/4 次；无重试。模型快照映射已通过真实响应验证。按用户价格估算本轮 ¥0.0002309（未折扣）。详细证据与限制见 REPRODUCTION_STATUS.md 末节。
+
+`real-minimal.py --authorized-completion` 对应的 one-shot lock 已创建，不能再次直接运行。最小验证已经完成，当前不再发真实 API 请求；后续扩展、benchmark、官方评测与外部发布仍需各自授权。
