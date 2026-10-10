@@ -6,6 +6,8 @@
 
 队友接手与创建 GitHub 仓库，请先看 [TEAM_HANDOFF.md](TEAM_HANDOFF.md)。
 
+以理解 Agent Memory 框架结构为目标，请看 [模块职责、调用链与集成研究](FRAMEWORK_ARCHITECTURE.zh-CN.md)。单 session Qwen 测试的执行记录见 [LoCoMo 冒烟测试说明](reproduction/LOCOMO_SMOKE.md)。
+
 ## 目录与来源
 
 - `app/`：上游实现；仅 `main.py` 增加 Textual 输入校验，其余代码逐字一致。
