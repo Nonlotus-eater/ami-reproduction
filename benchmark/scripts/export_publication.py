@@ -1,4 +1,4 @@
-"""Build an allowlisted source tree for the fork, without Git history or data."""
+"""Build allowlisted benchmark sources and seed-17 samples for the fork."""
 import argparse
 import ast
 import hashlib
@@ -26,13 +26,14 @@ def export(output):
         'docs/model_handoff_99.md', 'docs/evaluation_contract.md',
         'docs/capability_label_mapping.md', 'docs/publication_scope.md',
         'docs/configuration_validation_20261017.md',
+        'docs/benchmark_guide.md', 'docs/sample.md', 'samples/README.md',
         'docs/references/README.md', 'docs/references/AMI_Benchmark_99_reference.docx',
         'patches/ami-system-role.patch', 'patches/invmem-native-interface.patch',
         'patches/refind-native-interface.patch', 'scripts/configure_release.py',
         'scripts/prepare_five_seeds.py', 'scripts/sample_five_seeds.py',
         'scripts/release_smoke.py',
         'scripts/download_public_datasets.py', 'scripts/export_publication.py')}
-    for folder in ('src', 'sources', 'examples', 'integrations', 'configs/reproduction', 'tests', 'patches/tests'):
+    for folder in ('src', 'sources', 'examples', 'samples', 'integrations', 'configs/reproduction', 'tests', 'patches/tests'):
         for path in (ROOT / folder).rglob('*'):
             if path.is_file() and path.suffix in {'.py', '.json', '.jsonl'} and '__pycache__' not in path.parts:
                 if path.name not in EXCLUDED_SOURCE and path.name != 'test_retry_clbench_judges.py':
@@ -102,10 +103,12 @@ def export(output):
         if any(value in content for content in contents for value in secrets):
             raise ValueError(f'Credential match in candidate file: {path.relative_to(output)}')
         if path.stat().st_size > 10 * 1024 * 1024:
-            raise ValueError('Unexpected large file in source-only publication')
+            raise ValueError('Unexpected large file in publication bundle')
     report = {'target_subdirectory': 'benchmark/', 'git_history_included': False,
               'methods': ['activememoryindex', 'mem0', 'invmem', 'refind'],
-              'data_and_results_included': False, 'credential_value_scan': 'passed',
+              'sample_data': {'seed': 17, 'history_instances': 22, 'qa_pairs': 202},
+              'raw_dataset_snapshots_included': False, 'results_included': False,
+              'credential_value_scan': 'passed',
               'transformations': ['remove optional LightMem factory registrations and test',
                                   'portable AMI/Mem0 template paths', 'four-method baseline lock'],
               'files': {str(p.relative_to(output)): digest(p) for p in exported},

@@ -5,6 +5,9 @@
 
 当前固定题集为五轮 v3：seed 17–21 分别 **202 / 199 / 196 / 201 / 205 题**，合计 1,003 题次、791 道不同题目、每方法 112 个历史任务。每轮独立构建记忆，BEAM 使用完整 100K 历史。旧 99 题是历史版本。
 
+了解目录分工和一轮评测怎样完成，可阅读 [Benchmark 功能与运行流程](docs/benchmark_guide.md)。
+[seed 17 数据说明](docs/sample.md) 介绍抽样过程与六个数据集的案例，完整的 22 份历史和 202 组 QA pairs 位于 [samples/](samples/README.md)。
+
 部署从 [当前模型交接指导](docs/model_handoff_99.md) 开始。该文件保留旧文件名，内容已更新为四方法、五轮指导。
 上传范围、目标 fork 布局和导出命令见 [发布范围](docs/publication_scope.md)。
 
@@ -49,6 +52,7 @@ sources/                固定评分源码、来源审计、taxonomy、baseline 
 patches/                AMI / InvMem / ReFind 原生兼容补丁
 scripts/                配置、下载、离线 prepare、发布导出
 tests/、examples/       公共层回归与人工离线数据
+samples/                seed 17 的完整历史、QA pairs 和阅读索引
 ```
 
 原生仓库和依赖环境单独安装；ReFind 保留原生 BM25/agent 检索，不使用 embedding API。

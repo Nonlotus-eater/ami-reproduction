@@ -150,3 +150,6 @@ Add 必填 `request_id/messages/user_id/session_id`，回显三个 ID；支持 `
 新增独立的 [benchmark/](benchmark/README.md)，支持 AMI、Mem0、InvMem、ReFind 在六个公开文本数据版本上的共同评测，当前固定题集为 seed 17–21 五轮。部署、固定版本、凭据模板和完整说明见该目录。
 
 已完成全新 clone、五套全新依赖环境和四方法真实 API 最小链路验证；每方法 3/3 题完成评分。详情见 [配置验证记录](benchmark/docs/configuration_validation_20261017.md)。该检查不代表正式 Benchmark 成绩。
+
+
+[功能与运行流程](benchmark/docs/benchmark_guide.md)介绍目录分工和 Pipeline；[seed 17 数据说明](benchmark/docs/sample.md)展示抽样过程与六个数据集的案例，完整历史和 QA pairs 位于 [samples/](benchmark/samples/README.md)。
