@@ -1,0 +1,13 @@
+diff --git a/app/models.py b/app/models.py
+index fb19ca5..4edae2e 100644
+--- a/app/models.py
++++ b/app/models.py
+@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
+ class MemoryMessage(BaseModel):
+     model_config = ConfigDict(extra="forbid")
+ 
+-    role: Literal["user", "assistant"]
++    role: Literal["user", "assistant", "system"]
+     content: str = Field(min_length=1)
+     timestamp: int | None = None
+ 

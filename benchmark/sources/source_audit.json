@@ -1,0 +1,87 @@
+{
+  "access_date": "2026-10-10",
+  "source_repository": "https://github.com/AML-memory/agent-memory-leaderboard",
+  "source_commit": "1b8142bfe0f20f1c5218d6b554aa0012de34e504",
+  "source_tree_sha": "78479c2754c1b8470d9328dfa9ad53b91a365d6d",
+  "official_overall_formula_verified": false,
+  "official_question_mapping_available": false,
+  "snapshot_url": "https://agentmemories.ai/static/cycle1-academic-textual.json?v=pages-migration-20260919",
+  "snapshot_sha256": "68adcc9158a6f1c5062a2484f88773844e0480e122eca9f2a38f34a408869403",
+  "sources": {
+    "data/beam/pipeline.py": {
+      "sha256": "3889e26ae696abc67711daab0ebf24e3082ed50d5f85df9d9f95540a0a9b8763",
+      "url": "https://github.com/AML-memory/agent-memory-leaderboard/blob/1b8142bfe0f20f1c5218d6b554aa0012de34e504/data/beam/pipeline.py"
+    },
+    "data/clbench/pipeline.py": {
+      "sha256": "65b9719dc22e055aad808f68d757c145b9f9115cb2275b1ee373610c6a8116c7",
+      "url": "https://github.com/AML-memory/agent-memory-leaderboard/blob/1b8142bfe0f20f1c5218d6b554aa0012de34e504/data/clbench/pipeline.py"
+    },
+    "data/locomo-refined/pipeline.py": {
+      "sha256": "31a49fc09e381bc117b59063c7a4cea543a672b23e1264aedb03290239671c1a",
+      "url": "https://github.com/AML-memory/agent-memory-leaderboard/blob/1b8142bfe0f20f1c5218d6b554aa0012de34e504/data/locomo-refined/pipeline.py"
+    },
+    "data/longmemeval-s/pipeline.py": {
+      "sha256": "c7f17c363bd0803cfeedd2b793a0cb0a74ab119a70eeced2c7a835b2b2aecb46",
+      "url": "https://github.com/AML-memory/agent-memory-leaderboard/blob/1b8142bfe0f20f1c5218d6b554aa0012de34e504/data/longmemeval-s/pipeline.py"
+    },
+    "data/personamem/pipeline_v1.py": {
+      "sha256": "a697a9c80214731037bc9cde6e57833423ff65a90393ead6e19b0b7d3ba90ccd",
+      "url": "https://github.com/AML-memory/agent-memory-leaderboard/blob/1b8142bfe0f20f1c5218d6b554aa0012de34e504/data/personamem/pipeline_v1.py"
+    },
+    "data/personamem/pipeline_v2.py": {
+      "sha256": "c044b1ad10a87a94cfe0b007ec006a4146f7c191ca66b12cb4089ed70363a296",
+      "url": "https://github.com/AML-memory/agent-memory-leaderboard/blob/1b8142bfe0f20f1c5218d6b554aa0012de34e504/data/personamem/pipeline_v2.py"
+    },
+    "data/scriptmem/pipeline.py": {
+      "sha256": "0f9931999b701f18d34b3bc1a5bb347330fafdaaa1e9133e1411973d9dc0acb1",
+      "url": "https://github.com/AML-memory/agent-memory-leaderboard/blob/1b8142bfe0f20f1c5218d6b554aa0012de34e504/data/scriptmem/pipeline.py"
+    }
+  },
+  "published_baseline_scores": [
+    {
+      "method": "ActiveMemoryIndex",
+      "overall": 44.8410926975032,
+      "capability_macro": 39.334946773671795,
+      "capabilities": {
+        "A": 56.8720373994347,
+        "B": 45.038437157177704,
+        "C": 18.3514353863191,
+        "D": 37.950225062294,
+        "E": 54.5662100456621,
+        "G": 29.663056558363397,
+        "H": 32.9032258064516
+      },
+      "public_snapshot_totals_are_placeholder_ones": true
+    },
+    {
+      "method": "Mem0",
+      "overall": 42.067774660047505,
+      "capability_macro": 40.73892026324037,
+      "capabilities": {
+        "A": 58.721461187214594,
+        "B": 49.013657056145696,
+        "C": 26.833631484794303,
+        "D": 35.2785145888594,
+        "E": 44.2270058708415,
+        "G": 18.1949458483755,
+        "H": 52.9032258064516
+      },
+      "public_snapshot_totals_are_placeholder_ones": true
+    },
+    {
+      "method": "LightMem",
+      "overall": 28.7661391597826,
+      "capability_macro": 32.38434621433424,
+      "capabilities": {
+        "A": 29.784273755164197,
+        "B": 27.3674803530646,
+        "C": 14.6489621489621,
+        "D": 28.887338714924898,
+        "E": 54.093281148075704,
+        "G": 19.6510228640192,
+        "H": 52.258064516129
+      },
+      "public_snapshot_totals_are_placeholder_ones": true
+    }
+  ]
+}

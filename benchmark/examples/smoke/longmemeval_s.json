@@ -1,0 +1,52 @@
+[
+  {
+    "question_id": "synthetic-bob-update",
+    "question_type": "knowledge-update",
+    "question": "Which city do I live in now?",
+    "question_date": "2023/05/11 (Thu) 13:00",
+    "answer": "Paris",
+    "answer_session_ids": [
+      "second"
+    ],
+    "haystack_dates": [
+      "2023/05/08 (Mon) 13:00",
+      "2023/05/10 (Wed) 13:00"
+    ],
+    "haystack_session_ids": [
+      "first",
+      "second"
+    ],
+    "haystack_sessions": [
+      [
+        {
+          "role": "user",
+          "content": "My name is Bob and I live in Rome. My bicycle is red.",
+          "has_answer": false
+        },
+        {
+          "role": "assistant",
+          "content": "Do you ride it often?"
+        },
+        {
+          "role": "user",
+          "content": "I cycle every Sunday."
+        }
+      ],
+      [
+        {
+          "role": "user",
+          "content": "I moved from Rome to Paris yesterday. Paris is now my home.",
+          "has_answer": true
+        },
+        {
+          "role": "assistant",
+          "content": "Did you take your bicycle?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, I still have my red bicycle."
+        }
+      ]
+    ]
+  }
+]

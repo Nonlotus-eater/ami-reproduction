@@ -1,0 +1,15 @@
+{
+  "suite_id": "synthetic-two-format-integration-v1",
+  "scope": "pilot",
+  "purpose": "synthetic_integration_only_not_baseline_ranking",
+  "aggregation": "macro_benchmark",
+  "benchmarks": {
+    "locomo_refined": {
+      "data_dir": "examples/smoke/locomo_refined",
+      "media_policy": "text_only"
+    },
+    "longmemeval_s": {
+      "data_file": "examples/smoke/longmemeval_s.json"
+    }
+  }
+}

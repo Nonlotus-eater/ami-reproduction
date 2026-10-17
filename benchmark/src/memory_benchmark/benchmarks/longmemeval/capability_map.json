@@ -1,0 +1,1 @@
+{"mapping_source":"local-coarse-longmemeval-question-type-v1-not-official-AML","question_types":{"single-session-user":"A1","single-session-assistant":"A1","single-session-preference":"E1","multi-session":"B1","knowledge-update":"D1","temporal-reasoning":"C1"},"abstention_suffix":"_abs","abstention_leaf":"H1"}

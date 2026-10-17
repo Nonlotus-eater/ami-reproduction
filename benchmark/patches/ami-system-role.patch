@@ -1,0 +1,11 @@
+--- a/app/main.py
++++ b/app/main.py
+@@ -145,7 +145,7 @@
+ # note_extra() reports the names.
+ class Message(BaseModel):
+     model_config = ConfigDict(extra="allow")
+-    role: Literal["user", "assistant"]
++    role: Literal["user", "assistant", "system"]
+     content: str
+     timestamp: int | None = None
+ 

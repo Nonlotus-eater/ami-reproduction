@@ -1,0 +1,13 @@
+diff --git a/src/vanilla_rag/memory_store.py b/src/vanilla_rag/memory_store.py
+index f2bbd5a..de3d9d9 100644
+--- a/src/vanilla_rag/memory_store.py
++++ b/src/vanilla_rag/memory_store.py
+@@ -601,7 +601,7 @@ class SQLiteMemoryStore:
+         timestamp = (
+             self._timestamp(row["source_timestamp"])
+             if row["source_timestamp"] is not None
+-            else row["created_at"]
++            else "Recording date unknown"
+         )
+         return f"[{row['role']} | {timestamp}] {row['content']}"
+ 

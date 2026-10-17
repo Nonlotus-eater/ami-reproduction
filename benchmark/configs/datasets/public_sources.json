@@ -1,0 +1,30 @@
+{
+  "source": "author-published Hugging Face datasets; not AML private bundle",
+  "access_date": "2026-10-13",
+  "repositories": {
+    "CL-bench": {
+      "repo_id": "tencent/CL-bench",
+      "revision": "b28a5832a09b0d96c0cf4c22e90d7c60ede25b80",
+      "file_count": 4,
+      "bytes": 90136901
+    },
+    "BEAM": {
+      "repo_id": "Mohammadta/BEAM",
+      "revision": "3205395e897e7318c7b094ef4e6047b9b82dbb03",
+      "file_count": 5,
+      "bytes": 105552303
+    },
+    "PersonaMem-v1": {
+      "repo_id": "bowen-upenn/PersonaMem-v1",
+      "revision": "a8076d5608c93ba2a28983cd78aa99b01a163ae7",
+      "file_count": 8,
+      "bytes": 251918913
+    },
+    "PersonaMem-v2": {
+      "repo_id": "bowen-upenn/PersonaMem-v2",
+      "revision": "ed956dea41521fc4499acbc63f966e0fd3c053ba",
+      "file_count": 9001,
+      "bytes": 4576126064
+    }
+  }
+}

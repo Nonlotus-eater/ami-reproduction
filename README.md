@@ -143,3 +143,10 @@ Add 必填 `request_id/messages/user_id/session_id`，回显三个 ID；支持 `
 在用户再次明确授权后，唯一一次完成尝试已通过：1 Add + 1 Search 均 HTTP 200，SQLite raw=1、fact=1，立即检索返回 2 条 synthetic memories。本轮真实 LLM 3 次、embedding 3 次，含历史诊断总计 5/4 次；无重试。模型快照映射已通过真实响应验证。按用户价格估算本轮 ¥0.0002309（未折扣）。详细证据与限制见 REPRODUCTION_STATUS.md 末节。
 
 `real-minimal.py --authorized-completion` 对应的 one-shot lock 已创建，不能再次直接运行。最小验证已经完成，当前不再发真实 API 请求；后续扩展、benchmark、官方评测与外部发布仍需各自授权。
+
+
+## 四方法 Benchmark
+
+新增独立的 [benchmark/](benchmark/README.md)，支持 AMI、Mem0、InvMem、ReFind 在六个公开文本数据版本上的共同评测，当前固定题集为 seed 17–21 五轮。部署、固定版本、凭据模板和完整说明见该目录。
+
+已完成全新 clone、五套全新依赖环境和四方法真实 API 最小链路验证；每方法 3/3 题完成评分。详情见 [配置验证记录](benchmark/docs/configuration_validation_20261017.md)。该检查不代表正式 Benchmark 成绩。

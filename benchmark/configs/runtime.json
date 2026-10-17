@@ -1,0 +1,27 @@
+{
+  "model": "gpt-4o-mini",
+  "env_file": ".env",
+  "seed": 17,
+  "top_k": null,
+  "reader_token_budget": null,
+  "reader_tokenizer": "o200k_base",
+  "answer_input_token_limit": null,
+  "answer_temperature": 0,
+  "judge_temperature": 0,
+  "answer_max_tokens": null,
+  "judge_max_tokens": 16384,
+  "memory_default_max_tokens": 2048,
+  "request_timeout_seconds": 45,
+  "worker_timeout_seconds": 1800,
+  "rates_cny_per_million": {
+    "input": 0.15,
+    "output": 0.6,
+    "embedding": 0.5
+  },
+  "price_source": "user-provided historical rates; estimates, not provider billing",
+  "context_policy": "ranked evidence; no benchmark count or context truncation",
+  "lifecycle": "offline-history-QA: chronological sessions, native finalize, queries",
+  "naive_timestamp_timezone": "UTC",
+  "answer_output_policy": "model_maximum",
+  "judge_output_policy": "model_maximum"
+}

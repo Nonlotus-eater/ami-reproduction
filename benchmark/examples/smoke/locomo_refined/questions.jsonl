@@ -1,0 +1,2 @@
+{"sample_id": "synthetic-alice", "qa_id": "synthetic-alice#color", "question": "What color is Alice's bicycle?", "answer": "Blue", "category": 4, "is_multi_modality": false, "evidence": ["D1:1"]}
+{"sample_id": "synthetic-alice", "qa_id": "synthetic-alice#move", "question": "On what date did Alice move to Seattle?", "answer": "9 May 2023", "category": 2, "is_multi_modality": false, "evidence": ["D2:1"]}

@@ -1,0 +1,111 @@
+{
+  "taxonomy_version": "aml-cycle1-display-24-leaves",
+  "source_url": "https://agentmemories.ai/static/app.js?v=blog-production-20261001-email-preflight-20261003",
+  "question_mapping": "NOT INCLUDED: public display taxonomy only",
+  "families": [
+    {
+      "id": "A",
+      "label": "Explicit Fact Recall",
+      "zh_label": "显式事实召回",
+      "leaves": [
+        "A1",
+        "A2",
+        "A3"
+      ]
+    },
+    {
+      "id": "B",
+      "label": "Compositional Inference",
+      "zh_label": "关系与多跳推理",
+      "leaves": [
+        "B1",
+        "B2",
+        "B3",
+        "B4"
+      ]
+    },
+    {
+      "id": "C",
+      "label": "Temporal & Event Reasoning",
+      "zh_label": "时间与事件序列",
+      "leaves": [
+        "C1",
+        "C2",
+        "C3"
+      ]
+    },
+    {
+      "id": "D",
+      "label": "Memory Governance",
+      "zh_label": "记忆治理",
+      "leaves": [
+        "D1",
+        "D2",
+        "D3",
+        "F1"
+      ]
+    },
+    {
+      "id": "E",
+      "label": "Personalization & Care",
+      "zh_label": "个性化与关怀",
+      "leaves": [
+        "E1",
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "id": "G",
+      "label": "Context Learning & Execution",
+      "zh_label": "上下文学习与执行",
+      "leaves": [
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "G5"
+      ]
+    },
+    {
+      "id": "H",
+      "label": "Safety & Privacy",
+      "zh_label": "认识论安全与隐私",
+      "leaves": [
+        "H1",
+        "H2"
+      ]
+    }
+  ],
+  "leaf_zh_labels": {
+    "A1": "单点事实/属性与来源回忆",
+    "A2": "实体、角色、说话人、行动与归因",
+    "A3": "结构化字段/集合/枚举抽取",
+    "B1": "跨片段/跨 session 多证据聚合",
+    "B2": "因果链、路径与中间步骤恢复",
+    "B3": "证据集合/路径支持与有效性验证",
+    "B4": "受控开放域/常识补全",
+    "C1": "日期、相对时间、间隔",
+    "C2": "事件顺序/阶段排序",
+    "C3": "事件/立场轨迹变化",
+    "D1": "新值覆盖与当前状态",
+    "D2": "矛盾检测与冲突消解",
+    "D3": "删除、遗忘与抑制",
+    "F1": "摘要与压缩/长历史全局综合",
+    "E1": "偏好回忆与个性化遵循",
+    "E2": "刻板/反刻板偏好鲁棒性",
+    "E3": "个人背景、健康与心理关怀",
+    "G1": "领域知识推理",
+    "G2": "规则系统应用",
+    "G3": "程序/工作流执行",
+    "G4": "经验数据发现与模拟",
+    "G5": "指令/格式约束遵循",
+    "H1": "拒答、未知与证据不足",
+    "H2": "敏感信息最小披露/隐私"
+  },
+  "additional_current_frontend_labels_excluded_from_cycle1": [
+    "D4",
+    "streaming.online",
+    "streaming.intra_transfer"
+  ]
+}
