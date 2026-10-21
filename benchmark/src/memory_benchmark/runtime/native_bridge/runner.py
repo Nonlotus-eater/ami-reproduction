@@ -8,7 +8,7 @@ import subprocess
 import sys
 import time
 
-from common import read, write
+from memory_benchmark.runtime.native_bridge.common import read, write
 from memory_benchmark.pipeline.prepare import native_identity
 from memory_benchmark.runtime.artifacts import file_hash, rows
 from memory_benchmark.runtime.queue import initialize, check_manifest, ordered_jobs, publish, execute_task
@@ -69,10 +69,8 @@ def main():
     if not methods or set(methods) - {'invmem', 'refind'}:
         raise ValueError('This bridge supports only InvMem and ReFind')
     runtime = read(prepared / 'manifest.json')['runtime']
-    # These pinned native HTTP schemas require an integer. Do not silently
-    # convert a requested unbounded search into a capped experiment.
-    if type(runtime['top_k']) is not int or not 1 <= runtime['top_k'] <= 100:
-        raise ValueError('Pinned bridge requires integer top_k in 1..100; use configs/reproduction/runtime.json')
+    if runtime['top_k'] is not None and (type(runtime['top_k']) is not int or runtime['top_k'] <= 0):
+        raise ValueError('top_k must be null or a positive integer')
     if not args.resume:
         manifest = initialize(prepared, methods, output)
         bridge = Path(__file__).resolve().parent
@@ -85,7 +83,7 @@ def main():
             adapter_hashes[method] = file_hash(target)
         manifest['execution']['method_side_bridge_sha256'] = files
         manifest['execution']['method_adapter_sha256'] = adapter_hashes
-        manifest['execution']['benchmark_factory_modified'] = False
+        manifest['execution']['method_adapter_loading'] = 'frozen_file; registered in memory_benchmark.methods'
         manifest['execution']['method_embedding_pacing'] = policy
         write(output / 'manifest.json', manifest)
         write(output / 'methods.frozen.json', methods)

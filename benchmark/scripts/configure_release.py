@@ -18,15 +18,37 @@ def main():
     methods = {k: methods[k] for k in ('mem0', 'activememoryindex')}
     for name, folder in [('mem0', 'mem0'), ('activememoryindex', 'ami-reproduction')]:
         source = args.ami_root.resolve() if name == 'activememoryindex' and args.ami_root else base / folder
-        methods[name].update(source_root=str(source), python=str(source / '.venv/bin/python'))
+        executable = source / '.venv/bin/python'
+        if name == 'activememoryindex':
+            import sys
+            sys.path.insert(0, str(ROOT / 'src'))
+            from memory_benchmark.methods.compatibility import validate_ami_roles
+            try:
+                validate_ami_roles({'source_root': str(source)}, {'user', 'assistant', 'system'})
+            except ValueError:
+                compatible = source.with_name(source.name + '-system-role')
+                if not compatible.is_dir():
+                    raise ValueError('AMI requires system-role support; apply patches/ami-system-role.patch or select a compatible --ami-root') from None
+                validate_ami_roles({'source_root': str(compatible)}, {'user', 'assistant', 'system'})
+                source = compatible
+            if not executable.exists() and source.name.endswith('-system-role'):
+                original_env = source.with_name(source.name.removesuffix('-system-role')) / '.venv/bin/python'
+                if original_env.exists():
+                    executable = original_env
+        methods[name].update(source_root=str(source), python=str(executable))
         if name == 'mem0':
             methods[name]['fastembed_cache'] = str((ROOT / 'models/fastembed').resolve())
     for name, folder in [('invmem', 'InvMem'), ('refind', 'ReFind')]:
         source = base / folder
         methods[name] = {'source_root': str(source), 'python': str(source / '.benchmark-env/bin/python'),
-                         'adapter_file': str(ROOT / f'integrations/adapters/{name}.py'),
+                         'adapter_file': str(ROOT / f'src/memory_benchmark/methods/{name}.py'),
                          'embedding_backend': 'shared_api' if name == 'invmem' else 'not_used_by_native_bm25_agent'}
     runtime = json.loads((ROOT / 'configs/reproduction/runtime.json').read_text())
+    defaults = json.loads((ROOT / 'configs/runtime.json').read_text())
+    for key in ('answer_context_policy', 'answer_output_policy', 'answer_min_output_tokens',
+                'answer_part_truncation_policy', 'clbench_judge_protocol', 'judge_protocol_max_attempts',
+                'persist_answer_responses', 'provider_error_diagnostics', 'add_chunk_policy'):
+        runtime[key] = defaults[key]
     runtime['env_file'] = str(args.env_file.resolve())
     suite = json.loads((ROOT / 'configs/reproduction/suite.example.json').read_text())
     for config in suite['benchmarks'].values():

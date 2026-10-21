@@ -38,6 +38,24 @@ def validate_runtime(runtime):
         value = runtime.get(name)
         if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
             raise ValueError(f"Invalid positive runtime field: {name}")
+    if runtime.get("answer_context_policy") not in {None, "model_window_v1", "model_window_v2"}:
+        raise ValueError("Unknown answer context policy")
+    if runtime.get("answer_part_truncation_policy") not in {None, "split_retry_v1", "split_retry_v2"}:
+        raise ValueError("Unknown evidence truncation policy")
+    from .ingestion import POLICY as ADD_POLICY
+    if runtime.get("add_chunk_policy") not in {None, ADD_POLICY}:
+        raise ValueError("Unknown Add chunk policy")
+    from ..benchmarks.clbench_judge import JUDGE_PROTOCOL, STRICT_JUDGE_PROTOCOL
+    if runtime.get("clbench_judge_protocol") not in {None, JUDGE_PROTOCOL, STRICT_JUDGE_PROTOCOL}:
+        raise ValueError("Unknown CLBench Judge protocol")
+    if "answer_min_output_tokens" in runtime:
+        value = runtime["answer_min_output_tokens"]
+        if type(value) is not int or not 1 <= value <= MODEL_OUTPUT_TOKEN_LIMITS[runtime["model"]]:
+            raise ValueError("Invalid minimum Answer output space")
+    if "judge_protocol_max_attempts" in runtime:
+        value = runtime["judge_protocol_max_attempts"]
+        if type(value) is not int or not 1 <= value <= 10:
+            raise ValueError("Invalid Judge protocol attempt count")
 
 
 def usage(root):
@@ -55,6 +73,9 @@ def run(prepared, methods, output, *, offline=False):
     manifest = verify_prepared(prepared)
     runtime = manifest["runtime"]
     validate_runtime(runtime)
+    if not offline:
+        from ..methods.compatibility import validate_method_inputs
+        validate_method_inputs(prepared, methods)
     if not methods:
         raise ValueError("Select at least one method")
     tokenizer = FixtureTokenizer() if offline else GPTTokenizer(runtime["model"])

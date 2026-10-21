@@ -1,70 +1,47 @@
-# Benchmark 模型交接：当前四方法与五轮部署
+# Benchmark 模型交接：v1 抽样与四方法部署
 
-更新日期：2026-10-17（Asia/Shanghai）。保留 `model_handoff_99.md` 文件名以兼容已有链接；**99 题已不是当前部署目标**。
-本文供接手 GPT 按当前代码完成配置与部署。旧全文保存在原工作区被忽略的 `runs/publication-prep-20261017-v1/model_handoff_99.before.md`，不随发布上传。
+更新日期：2026-10-21（Asia/Shanghai）。保留旧文件名以兼容链接；默认恢复此前 GitHub 发布的固定五轮，也支持同一 v1 规则的公开来源重新抽样。
+部署前先确认源码包含下面的新入口和配额文件；旧发布包可能仍使用历史入口，不能仅凭同名交接文档判断版本一致。
 
-## 1. 当前范围与事实来源
+## 1. 当前入口与数据依赖
 
-发布支持 AMI、Mem0、InvMem、ReFind。LightMem / MemMA / LLMLingua 权重、环境和实验不进入本次发布。
-本地原仓库保留历史代码；发布工具生成精简副本，不删除实验或重写现有队列清单。
+默认入口为 `scripts/prepare_five_seeds.py`，按 `configs/reproduction/` 的固定 ID 与来源指纹重建，与 GitHub `ami-reproduction/main`（核对提交 `27b57e4`）的已发布题集一致。
+需要重新抽样时使用 `scripts/sample_small_benchmark.py` 与 `configs/small_benchmark_v1.json`，直接读取完整公开来源及本机 `configs/local/suite.json`。通用索引与抽样函数位于 `src/memory_benchmark/pipeline/source_sampling.py`。
+两条流程均不读取旧 99 题 prepared、旧运行结果或参考 Word；依赖这些历史材料的旧抽样脚本已清理。
 
-当前数据为 `family40-history30-five-seeds-v3`：完整文本母库 10,649 题，BEAM 限 100K 后候选 9,249 题，取消原生题型预选。
-先按 seed 抽原生完整历史，再补充历史以满足可用小类至少 2 题、每轮至少 91 题；历史最多 30 个、大类最多 40 题。轮内不重复，轮间允许重合，来源选择不使用 gold 或方法得分。
+默认配额恢复报告 v1（仓库历史名称 v3）：seed 17–21，每轮完整历史最多 30、可用小类至少 2 题、大类最多 40 题、至少 91 题；BEAM 使用完整 100K 分片。
+LoCoMo / LME / CLBench / PersonaMem v1 / v2 / BEAM 初始历史数为 2 / 7 / 4 / 2 / 2 / 2，再按 seed 补足小类覆盖和总题量。没有 40 段下限，不采用覆盖增益优先，不强制每个选中历史保留题目。
+候选小类以代码中的已验证映射为准；A2/B2/B3 无映射，不补题或补零。轮内不重复，轮间允许重合，抽样不使用 gold 或方法得分。
 
-| seed | QA | 选中历史 | 最终有题历史 |
-|---|---:|---:|---:|
-| 17 | 202 | 23 | 22 |
-| 18 | 199 | 23 | 23 |
-| 19 | 196 | 23 | 22 |
-| 20 | 201 | 24 | 24 |
-| 21 | 205 | 24 | 21 |
+已发布固定五轮为 202/199/196/201/205 题、22/23/22/24/21 份实际历史，合计 1,003 题次、791 道不同题目、112 个历史任务/方法。
+40–50 / 8 的配置及结果保留作历史追溯；新实验以本次抽样清单及 prepared manifest 为依据。
 
-合计 1,003 题次、791 道不同题目、每方法 112 个历史任务。四方法共用相同输入；每方法、每轮、每历史独立 scope，不跨轮复用记忆。
-来源 hash、题目 ID 和预期数量已转成可移植的 `configs/reproduction/` 文件。旧 99 题分卷不能被当作当前五轮交付清单。
+支持 AMI、Mem0、InvMem、ReFind；四方法共用同一批冻结输入，各方法、seed、history 独立建库。
+先读 README、配置说明、评测契约；执行逻辑在 `pipeline/`、`runtime/` 和方法 adapter 中。
+四方法适配器统一在 `src/memory_benchmark/methods/`；InvMem/ReFind 现有调度另读 `src/memory_benchmark/runtime/native_bridge/`。原生版本与补丁以 `sources/publication-baselines.lock.json` 为准。
 
-接手模型先读 `README.md`、`docs/evaluation_contract.md`、`configs/README.md`，再读 `configs/reproduction/`。
-执行重点为 `pipeline/{prepare,reader,evaluate,aggregate}.py`、`runtime/{queue,worker,model_client}.py` 及所选 adapter。
-InvMem/ReFind 另读 `integrations/native_bridge/{runner,worker,common}.py`。
-固定版本与补丁以 `sources/publication-baselines.lock.json` 为准；导出包中的 `sources/baselines.lock.json` 也只列这四种方法。
+## 2. 执行和评分边界
 
-## 2. 代码与评分边界
+公共链路：公开来源抽样 → prepare → 原生 add/finalize/search → 共同 Answer → 原生评分 → aggregate。
+记忆 worker 只读历史和查询；gold、rubric、正确选项和能力标签留在评测侧。一个历史的所有回答保存后，队列才打开评分目标。
+AMI/Mem0 使用公共队列；InvMem/ReFind 先用方法侧桥接生成检索断点，再调用相同的 Answer/Judge 阶段。
+四方法均已注册到公共方法工厂。现有五轮运行脚本仍将配置拆成逐方法 JSON，分别启动公共队列或原生桥接；方法的独立依赖环境保持原配置。
 
-公共链路：prepare → 原生 add/finalize/search → 共同 Reader/Answer → 原生评测 → aggregate/reliability。
-记忆 worker 只读 History 和 Query；gold、rubric、正确选项和能力标签留在评测侧。一个历史的所有回答保存后，队列才打开评分目标。
+LoCoMo/LME 使用 judged accuracy；CLBench strict accuracy；PersonaMem v1 MCQ accuracy、v2 preference adherence；BEAM rubric mean。
+CLBench Judge 协议读取本次冻结 runtime；最新 continuation 使用 indexed-status-v2，旧记录中的 v1 仅描述历史条件。
+公共队列的 `local_overall_macro_benchmark` 是六数据集等权均值；五轮实验汇总另有七个能力大类等权的主指标，须注明所用字段。
+未完成冻结题集时不能用成功子集替代完整 Overall；网络、模型或解析失败保持 unscored。
 
-AMI/Mem0 走公共队列。InvMem/ReFind 保留已验证的方法侧桥接：先生成同格式检索断点，再调用公共 `queue.execute_task`、`publish` 和 scorer。
-两者尚未注册进公共方法工厂；**不要把四方法 JSON 直接传给公共队列**。配置生成器同时生成逐方法 JSON，应使用下文对应入口。桥接冻结自身与 adapter 并检查 hash，不从历史 `runs/` 导入执行代码。
+## 3. 抽样参数与运行条件
 
-LoCoMo/LME 使用 judged accuracy；CLBench strict accuracy；PersonaMem v1 MCQ accuracy，v2 生成式 preference adherence；BEAM rubric mean。
-CLBench 当前使用 `clbench-indexed-status-v1`，保留原生判分要求，用编号对象返回逐 rubric 状态后还原为列表；检查数量、重复键、合法状态和总分一致性。无完整有效响应则保留 unscored，不能补零或手工修分。
-BEAM event-ordering 的短 yes/no 附加诊断保留原规则，不替代 rubric 主分。
+抽样配额和 LLM runtime 分别配置。实际 prepared/运行 manifest 的冻结 runtime 才是依据，修改配置文件不会改变旧运行。
+`configure_release.py` 仍生成四方法已验证的有界 runtime（top_k=100、Reader=4096、完整输入=119000）。
+`configs/runtime.json` 则为公共无额外检索/输入截断模板；需要使用它时，把所需字段写入本机 runtime 后重新 prepare，不能把两种条件混为一轮。
+当前 InvMem/ReFind adapter 已支持 null top_k：根据本任务作用域中的记忆数量调用同一原生检索实现。
 
-每轮 Overall 为六数据集主分的等权平均，字段 `local_overall_macro_benchmark`；五轮报告均值、样本方差（分母 4）和样本标准差。
-能力映射是本地原生题型代理，非 AML 官方逐题标签；没有题目的能力为 N/A。
-
-## 3. 当前默认值与历史实验条件
-
-实际 prepared/运行 `manifest.json` 的冻结 runtime 才是依据。修改配置文件不会改变已冻结运行。
-
-| 字段 | 当前 `configs/runtime.json` | 四方法部署 `configs/reproduction/runtime.json` |
-|---|---|---|
-| `top_k` | null：公共层不额外限数量 | 100 |
-| `reader_token_budget` | null：公共层不丢返回证据 | 4096，整块放不下则跳过 |
-| `answer_input_token_limit` | null | 119000 |
-| `answer_max_tokens` | null，网关解析为代码中模型上限 16384 | 相同 |
-| `judge_max_tokens` | 16384 | 16384 |
-| `memory_default_max_tokens` | 2048 | 2048 |
-| 请求 / worker 超时 | 45 / 1800 秒 | 180 / 86400 秒 |
-
-共用 `gpt-4o-mini`、`o200k_base`、Answer/Judge temperature=0；代码检查 provider 返回模型 allowlist。
-共享 embedding 为 `text-embedding-v4`、1024 维、每批最多 10，使用 UTF-8 2048 字节分块及归一化加权合并。
-ReFind 原生 BM25/agent 不调用 embedding；其 planner 保留 900 token、最多 4 次动作、内部 top5、邻接窗口 2、session RRF。
-
-**InvMem/ReFind 的固定原生 HTTP schema 要求整数 top_k**；桥接明确拒绝 null，不悄悄改成 100。
-四方法配置生成器显式采用已验证的有界配置。若要求四方法都运行无额外截断的新协议，需要另行适配原生接口、记录变化并重新验证；现有实验尚未覆盖该条件。
-
-历史 Mem0 五轮 Answer 为 8192；AMI/InvMem/ReFind 后续 Answer 为模型上限，Judge 也存在补评及预算变化。
-新统一配置不能用于声称逐请求重放历史成绩。ReFind 曾因返回证据块均超过 4096 而得到空 Reader context；提高输出预算不解决输入预算问题。比较时应列明实际运行条件。
+模型为 GPT-4o mini，tokenizer 为 o200k_base，Answer/Judge temperature=0。
+AMI/Mem0/InvMem 共用配置的 embedding API；ReFind 保留原生 BM25/agent，不调用 embedding。
+运行时间、provider 限流、上下文分块及 Judge 协议以本次实际 manifest 为准；旧成绩不能证明修改后的配置已经完成真实评测。
 
 ## 4. 源码、凭据和公共环境
 
@@ -73,7 +50,7 @@ ReFind 原生 BM25/agent 不调用 embedding；其 planner 保留 900 token、�
 
 ```bash
 python3.11 -m venv .venv
-.venv/bin/python -m pip install -e '.[api,data]'
+.venv/bin/python -m pip install -e '.[api,data]' 'numpy==2.2.6'
 .venv/bin/python -m pip check
 cp .env.example .env
 chmod 600 .env
@@ -132,15 +109,19 @@ PY
 
 上述准备可能下载依赖/缓存，不调用付费模型。保留各原生仓库作者归属与许可。InvMem 固定提交未发现根 LICENSE，不为它额外宣称许可证；本次分发小型适配代码和补丁，原生实现单独获取。
 
-## 6. 本地配置和五轮数据
+## 6. 本机来源配置与冻结
 
 ```bash
 .venv/bin/python scripts/configure_release.py --output configs/local
 .venv/bin/python scripts/download_public_datasets.py --root datasets/raw
 ```
 
-下载脚本覆盖 CLBench、BEAM、PersonaMem v1/v2 的固定作者版本。LoCoMo-Refined 的 `conversations.jsonl` / `questions.jsonl`、LME 的 `longmemeval_s_cleaned.json` 另行准备，见 `datasets/README.md`。真实路径写进 `configs/local/suite.json`，不提交机器绝对路径。
-来源 SHA-256 必须匹配 `configs/reproduction/frozen_samples.json` 的 210 项，仅有题目 ID 或旧运行输出不满足条件。
+下载脚本覆盖 CLBench、BEAM、PersonaMem v1/v2 的固定作者版本。
+LoCoMo-Refined 的 conversations/questions JSONL 和 LongMemEval-S 的 cleaned JSON 另行准备，见 `datasets/README.md`。
+把完整来源的真实路径写入 `configs/local/suite.json`；它描述母库，不应带预选 question_ids。
+旧数据曾存放在 migration-99 路径下，不代表新入口需要这个目录；完整公开来源可放在任意配置的本机目录。
+
+默认按固定清单重建，与此前 GitHub 发布版本精确一致；这条流程校验 210 项来源指纹：
 
 ```bash
 .venv/bin/python scripts/prepare_five_seeds.py \
@@ -148,17 +129,27 @@ PY
   --output runs/prepared-five-seeds-new
 ```
 
-此步骤离线校验来源，恢复完整历史和评分目标，冻结同一批题目并核验逐轮数量；输出五个 `seed-*` prepared 及 `summary.json`，不调用 API。
-当前发布默认重建固定五轮，不需要旧 99 题分卷或参考 Word。
-`sample_five_seeds.py` 是原随机抽样算法的留档入口；重新抽样仍需其参考 prepared 和表三文档。发布包因此保留 `docs/references/AMI_Benchmark_99_reference.docx` 这一小型程序输入；它不是当前论文正文，也不是固定五轮运行的依赖。
+需要从完整公开来源重新抽样时，使用同一 v1 规则：
+
+```bash
+.venv/bin/python scripts/sample_small_benchmark.py \
+  --suite configs/local/suite.json --config configs/small_benchmark_v1.json \
+  --output runs/sampling-public-v1-new
+.venv/bin/python scripts/prepare_sampled_seeds.py \
+  --sampling runs/sampling-public-v1-new --suite configs/local/suite.json \
+  --runtime configs/local/runtime.json --output runs/prepared-public-v1-new
+```
+
+抽样与冻结均离线且不调用 LLM。新抽样保存来源指纹、逐 seed 历史定位和题目清单；prepare 检查指纹并恢复完整历史、查询和独立评分目标。
+必须使用相同的 suite，输出目录必须是新目录。服务器无需补传旧 99 题、旧运行结果或参考 Word。
 
 ## 7. 离线检查与真实执行
 
 ```bash
 .venv/bin/python -m unittest discover -s tests -v
 .venv/bin/python -m memory_benchmark demo --output runs/demo-new
-baselines/InvMem/.benchmark-env/bin/python integrations/native_bridge/test_adapters.py baselines/InvMem invmem
-baselines/ReFind/.benchmark-env/bin/python integrations/native_bridge/test_adapters.py baselines/ReFind refind
+baselines/InvMem/.benchmark-env/bin/python tests/native/test_adapters.py baselines/InvMem invmem
+baselines/ReFind/.benchmark-env/bin/python tests/native/test_adapters.py baselines/ReFind refind
 ```
 
 adapter 检查禁止联网，以替身验证原生 API、system 消息、时间、检索和用户隔离，不证明真实模型分数。
@@ -183,22 +174,39 @@ adapter 检查禁止联网，以替身验证原生 API、system 消息、时间�
   --output runs/ami-new/seed-17
 
 # InvMem；ReFind 改为 methods.refind.json 和独立输出目录。
-.venv/bin/python integrations/native_bridge/runner.py \
+.venv/bin/python -m memory_benchmark.runtime.native_bridge.runner \
   --prepared runs/prepared-five-seeds-new/seed-17 \
   --methods-config configs/local/methods.invmem.json \
   --policy configs/local/embedding_policy.json \
   --output runs/invmem-new/seed-17
 ```
 
-默认不启动五轮并发。`embedding_policy.json` 的 `{}` 表示不施加桥接节流；并发时可显式配置 `state_directory`、`minimum_interval_seconds=0.25`、`cooldown_seconds=30`，同 provider 的桥接队列共用状态目录。桥接不隐藏失败或自动重放请求。
+上述入口每次运行单个队列。四方法五轮可以统一交给固定调度脚本；以下命令会调用真实模型 API：
+
+```bash
+.venv/bin/python scripts/run_five_seed_experiments.py \
+  --prepared runs/prepared-five-seeds-new \
+  --config configs/local \
+  --output runs/four-methods-new \
+  --parallel 8 --parallel-per-method 2
+```
+
+脚本要求配置目录包含四方法 `methods.json`、逐方法配置及 `embedding_policy.json`，prepared 目录包含 seed 17–21。四方法共用冻结输入，各方法/seed 独立建库。`--parallel` 是总活动队列上限，`--parallel-per-method` 是单方法活动队列上限；20 个队列全部并发时设为 20 和 5，若只需总计 5 个活动队列，可设为 5 和 2。
+
+控制器通过独立子进程调用公共队列或原生桥接，队列内部依次处理历史和各题阶段。默认最多执行 3 次队列 pass，只继续失败或未完成阶段，保留已有答案和有效评分。`--passes` 不是模型 API 自动重试次数。`progress.json` 保存活动队列和逐轮状态，`summary.json`、`overall_comparison.csv` 同时保存七能力等权与六数据集等权统计，主报告使用七能力等权。
+
+正常续跑使用相同 prepared/config/output、并发数和 passes，加 `--resume`。若原控制器已经退出而子队列仍在运行，再加 `--adopt-running` 可核对 PID 和启动标识后接管。调整并发时加 `--resume --resize-concurrency` 并传入新并发数；有活动子队列时同时加 `--adopt-running`。原控制器必须先退出，避免两个控制器争用同一输出；输入或方法代码变化须另建实验目录。初始计划保存在 `launch_plan.json`，并发变更追加到 `scheduling_changes.jsonl`。
+
+`embedding_policy.json` 的 `{}` 表示不施加桥接节流；并发时可显式配置 `state_directory`、`minimum_interval_seconds=0.25`、`cooldown_seconds=30`，同 provider 的桥接队列共用状态目录。桥接不隐藏失败或自动重放请求。
 两个入口均支持相同 prepared/config/output 加 `--resume`，失败任务另加 `--retry-failed`。先确认同目录无活动队列；输入、源码、provider identity 或 runtime 变化须另建运行，不能修改旧 hash 绕过检查。
 
-## 8. 完成验收与本地结果定位
+## 8. 验收和历史结果
 
-逐轮每方法必须 `expected=scored`（202/199/196/201/205）、`complete=true`，六数据集无缺项。每方法共 1,003 题次、112 个历史任务；四方法为 4,012 题次、448 个任务。
-部分评分只报覆盖率，完整 Overall 为 null；API/解析失败不能计为方法零分。
+以本次 `prepared/summary.json` 和每个 seed manifest 的问题数为预期值，逐轮逐方法要求 expected=scored、complete=true、各数据集无缺项。
+默认 v1 固定五轮每方法共 1,003 题次、112 个历史任务；重新抽样时须以实际冻结清单为准。
 
-截至本次核对，原工作区四个 `runs/current-{ami,mem0,invmem,refind}-five-seeds.json` 均指向 `runs/clbench-judge-reaudit-20261017-v1/` 下对应方法，五轮完整且 `acceptance.json` 为 passed。旧文档中的“AMI 后三轮进行中”和旧 Mem0 分数入口已过时。
-该位置只供本地查验，不是运行依赖，不随本次源码发布。若发布成绩，应另导出经过核验的紧凑汇总和运行条件，不把旧分数与当前无截断配置混写。
+历史 40–50 / 8 实验结果位于 `runs/four-methods-history40-50-leaf8-20261019-v3-continuation/summary.json`。
+这里的 v3-continuation 是运行恢复版本名，其题集仍为历史 v4，不代表恢复后的默认 v1 已重新评测。
+运行结果、数据库和日志保存在本地，发布时另行整理经过核验的摘要与条件。
 
-接手模型以用户当前授权范围执行；配置文档本身不授权自动启动付费评测、恢复历史 LightMem 任务或 push。用户明确要求的“先私有仓库推送 → 重新 clone 真实配置测试 → 通过后同步 fork → 删除临时测试目录”流程见 `publication_scope.md`。
+本文描述配置方式；实际评测、恢复或发布均按用户当次明确授权执行，文档本身不授权自动启动这些操作。

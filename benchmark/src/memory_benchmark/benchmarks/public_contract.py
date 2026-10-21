@@ -3,7 +3,10 @@ import json
 import math
 import re
 from .native_contract import contract
-from .clbench_judge import indexed_status_addendum, parse_judgment, STATUS_FIELD, JUDGE_PROTOCOL
+from .clbench_judge import (indexed_status_addendum, parse_judgment, STATUS_FIELD, JUDGE_PROTOCOL,
+                           STRICT_JUDGE_PROTOCOL, strict_status_addendum, judgment_response_format,
+                           JudgeProtocolError)
+from ..runtime.model_client import OutputTruncatedError
 
 
 def render(query, context, model):
@@ -21,9 +24,10 @@ def render(query, context, model):
 
 def evaluate(query, target, prediction, client, runtime):
     native = contract(query.benchmark)
-    def judge(prompt, max_tokens=None):
+    def judge(prompt, max_tokens=None, response_format=None):
+        extra = {"response_format": response_format} if response_format else {}
         return client.complete(prompt, stage="judge", max_tokens=max_tokens or runtime["judge_max_tokens"],
-                               temperature=runtime["judge_temperature"])
+                               temperature=runtime["judge_temperature"], **extra)
     result = {"id": query.qa_id}
     if query.benchmark == "personamem_v1":
         correct, extracted = native.official_extract_answer(prediction, target.gold)
@@ -45,8 +49,22 @@ def evaluate(query, target, prediction, client, runtime):
             raise ValueError("No native rubrics")
         prompt = native.rubric_judge_prompt(rubrics_text=native._build_rubrics_text(rubrics),
                                           model_output=native._normalize_model_output(prediction))
-        reply = judge(prompt + indexed_status_addendum(len(rubrics)))
-        payload = parse_judgment(reply.text, len(rubrics), indexed=True)
+        strict = runtime.get("clbench_judge_protocol") == STRICT_JUDGE_PROTOCOL
+        addendum = strict_status_addendum(len(rubrics)) if strict else indexed_status_addendum(len(rubrics))
+        attempts = runtime.get("judge_protocol_max_attempts", 3 if strict else 1)
+        if type(attempts) is not int or not 1 <= attempts <= 10:
+            raise ValueError("judge_protocol_max_attempts must be an integer from 1 to 10")
+        failures = []
+        for attempt in range(1, attempts + 1):
+            try:
+                reply = judge(prompt + addendum,
+                              response_format=judgment_response_format(len(rubrics)) if strict else None)
+                payload = parse_judgment(reply.text, len(rubrics), indexed=True, strict_statuses=strict)
+                break
+            except (JudgeProtocolError, OutputTruncatedError) as error:
+                failures.append({"attempt": attempt, "error_type": type(error).__name__})
+                if attempt == attempts:
+                    raise
         statuses = payload[STATUS_FIELD]
         return {**result, "rubric_clbench_score": float(native._coerce_score(payload)),
                 "rubric_clbench_rationale": str(payload.get("Grading Rationale", "")),
@@ -55,7 +73,8 @@ def evaluate(query, target, prediction, client, runtime):
                 # Retain the native list representation for downstream readers,
                 # alongside the model's unchanged numbered response and protocol.
                 "judge_response": json.dumps(payload, ensure_ascii=False),
-                "judge_response_raw": reply.text, "judge_protocol": JUDGE_PROTOCOL,
+                "judge_response_raw": reply.text, "judge_protocol": STRICT_JUDGE_PROTOCOL if strict else JUDGE_PROTOCOL,
+                "judge_protocol_attempts": attempt, "judge_protocol_failures": failures,
                 "judge_model": reply.model}
     rubrics = native.rubric_items(target.scoring_data)
     reply = judge(native.render_batch_judge_prompt(query.text, prediction, rubrics))

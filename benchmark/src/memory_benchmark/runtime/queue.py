@@ -39,6 +39,10 @@ def records(path):
 
 def initialize(prepared, methods, output):
     manifest = verify_prepared(prepared)
+    from ..pipeline.runner import validate_runtime
+    validate_runtime(manifest["runtime"])
+    from ..methods.compatibility import validate_method_inputs
+    validate_method_inputs(prepared, methods)
     runtime = manifest["runtime"]
     identity = public_identity(validate_profile(read_profile(runtime["env_file"]), runtime["model"]), runtime)
     output.mkdir(parents=True, exist_ok=False)

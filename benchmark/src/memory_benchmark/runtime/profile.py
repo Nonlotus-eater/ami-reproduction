@@ -7,6 +7,7 @@ ALLOWED_MODELS = {"gpt-4o-mini": {"gpt-4o-mini", "gpt-4o-mini-2024-07-18"}}
 # Model-native ceiling, used when Answer has no additional benchmark output cap.
 # https://developers.openai.com/api/docs/models/gpt-4o-mini
 MODEL_OUTPUT_TOKEN_LIMITS = {"gpt-4o-mini": 16384}
+MODEL_CONTEXT_TOKEN_LIMITS = {"gpt-4o-mini": 128000}
 
 
 def read_profile(path):

@@ -46,7 +46,7 @@ def main():
         write_json(config, {method: methods[method]})
         folder = output / method
         if method in ('invmem', 'refind'):
-            command = [sys.executable, str(ROOT / 'integrations/native_bridge/runner.py'),
+            command = [sys.executable, '-m', 'memory_benchmark.runtime.native_bridge.runner',
                        '--policy', str(policy)]
         else:
             command = [sys.executable, '-m', 'memory_benchmark.runtime.queue']

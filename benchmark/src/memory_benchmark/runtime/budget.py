@@ -104,9 +104,11 @@ def make_transport(budget, kind, endpoint, model, *,
                     response.read()
                     row['http_status'] = response.status_code
                     if response.status_code != 200:
+                        message = None
                         try:
                             error = response.json().get('error', {})
                             code = error.get('code') if isinstance(error, dict) else None
+                            message = error.get('message') if isinstance(error, dict) else None
                         except (ValueError, AttributeError):
                             code = None
                         # Retain known error codes, never arbitrary provider bodies.
@@ -118,6 +120,16 @@ def make_transport(budget, kind, endpoint, model, *,
                             row['provider_error_code'] = code
                         budget.failed = f"{kind} HTTP {response.status_code}" + (
                             f" ({code})" if row.get('provider_error_code') else '')
+                        if hasattr(budget, 'provider_error_redactions'):
+                            if isinstance(message, str):
+                                for secret in budget.provider_error_redactions:
+                                    message = message.replace(secret, '[REDACTED]')
+                                row['provider_error_message'] = message[:1600]
+                            row['error_type'] = 'HTTPStatusError'
+                            row['seconds'] = time.perf_counter() - request_started
+                            budget.notify()
+                            # Let the SDK preserve actual HTTP status semantics.
+                            return response
                         raise RuntimeError('Provider returned non-200 status')
                     body = response.json()
                     if body.get('error'):

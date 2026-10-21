@@ -1,22 +1,32 @@
+"""Regression checks for runtime."""
+from concurrent.futures import ThreadPoolExecutor
 import json
+import math
 from pathlib import Path
 import tempfile
+import threading
+import time
 import unittest
 from unittest.mock import patch
 
-try:
-    import httpx
-    import openai
-except ImportError:
-    httpx = openai = None
+import httpx
 
 from memory_benchmark.benchmarks.native_contract import ROOT
 from memory_benchmark.runtime.artifacts import read_json
 from memory_benchmark.runtime.budget import make_transport
+from memory_benchmark.runtime.embedding import chunks, encode, normalized, settings
 from memory_benchmark.runtime.model_client import Gateway
+from memory_benchmark.runtime.pacing import paced_transport
+from memory_benchmark.runtime.profile import public_identity
 
 
-@unittest.skipUnless(httpx and openai, "Gateway tests require API extra environment")
+try:
+    import openai
+except ImportError:
+    openai = None
+
+
+@unittest.skipUnless(openai, 'Gateway tests require API extra environment')
 class GatewayTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -62,6 +72,61 @@ class GatewayTests(unittest.TestCase):
         with patch("memory_benchmark.runtime.model_client.read_profile", return_value=self.profile), \
              patch("memory_benchmark.runtime.model_client.make_transport", side_effect=self.mocked_transport):
             return Gateway(runtime or self.runtime, Path(self.temp.name) / "usage.json")
+
+    def test_recovery_preserves_actual_http_status_without_sdk_connection_wrapping(self):
+        self.status = 429
+        gateway = self.gateway({**self.runtime, "provider_error_diagnostics": True})
+        try:
+            with self.assertRaises(openai.RateLimitError):
+                gateway.complete("reader", stage="answer", max_tokens=12, temperature=0)
+            self.assertEqual(len(self.requests), 1)
+            self.assertEqual(gateway.budget.rows[0]["http_status"], 429)
+            self.assertEqual(gateway.budget.rows[0]["error_type"], "HTTPStatusError")
+        finally:
+            gateway.close()
+
+    def test_diagnostics_redact_credentials_bound_messages_and_do_not_retry(self):
+        for status in (400, 429, 500):
+            with self.subTest(status=status):
+                gateway = self.gateway({**self.runtime, 'provider_error_diagnostics': True})
+                calls = []
+                def error(request):
+                    calls.append(request)
+                    return httpx.Response(status, request=request, json={'error': {
+                        'code': 'invalid_parameter',
+                        'message': 'SECRET_LLM SECRET_EMBED ' + 'diagnostic ' * 300}})
+                transport = gateway.transports['llm']
+                transport.client.close()
+                transport.client = httpx.Client(transport=httpx.MockTransport(error))
+                try:
+                    with self.assertRaises(Exception):
+                        gateway.complete('fixture', stage='answer', max_tokens=12, temperature=0)
+                    self.assertEqual(len(calls), 1)
+                    row = gateway.budget.rows[-1]
+                    self.assertEqual(row['http_status'], status)
+                    self.assertEqual(row['provider_error_code'], 'invalid_parameter')
+                    self.assertEqual(row['error_type'], 'HTTPStatusError')
+                    self.assertIn('[REDACTED]', row['provider_error_message'])
+                    self.assertLessEqual(len(row['provider_error_message']), 1600)
+                    self.assertNotIn('SECRET_', gateway.output.read_text())
+                    with self.assertRaises(Exception):
+                        gateway.complete('again', stage='answer', max_tokens=12, temperature=0)
+                    self.assertEqual(len(calls), 1)
+                finally:
+                    gateway.close()
+
+    def test_recovery_saves_distinct_intermediate_and_final_answer_responses(self):
+        gateway = self.gateway({**self.runtime, "persist_answer_responses": True})
+        try:
+            gateway.complete("part", stage="answer_map", max_tokens=12, temperature=0)
+            gateway.complete("native final prompt", stage="answer", max_tokens=12, temperature=0)
+            folder = Path(self.temp.name)
+            self.assertEqual(read_json(folder / "usage.answer-001.request.json")["stage"], "answer_map")
+            self.assertEqual(read_json(folder / "usage.answer-002.request.json")["stage"], "answer")
+            self.assertTrue((folder / "usage.answer-001.response.json").exists())
+            self.assertTrue((folder / "usage.answer-002.response.json").exists())
+        finally:
+            gateway.close()
 
     def test_shared_transport_survives_native_client_close_and_pins_gpt(self):
         gateway = self.gateway()
@@ -201,6 +266,105 @@ class GatewayTests(unittest.TestCase):
                     self.assertIsNotNone(gateway.budget.failed)
                 finally:
                     gateway.close()
+
+
+class EmbeddingTests(unittest.TestCase):
+    def test_multilingual_chunks_preserve_every_byte_and_whitespace(self):
+        text = ("中文🙂\n  abc\t" * 600)
+        parts = chunks(text)
+        self.assertGreater(len(parts), 1)
+        self.assertEqual("".join(parts), text)
+        self.assertTrue(all(len(part.encode("utf-8")) <= 2048 for part in parts))
+
+    def test_batching_crosses_text_boundaries_and_preserves_order(self):
+        texts = ["a" * 4096, "b", "c"]
+        calls = []
+        def request(payload):
+            calls.append(list(payload))
+            return [[1, 0] if part[0] == "a" else [0, 1] for part in payload]
+        vectors = encode(texts, request, 2, 3)
+        self.assertEqual([len(c) for c in calls], [3, 1])
+        self.assertEqual(vectors, [[1, 0], [0, 1], [0, 1]])
+
+    def test_long_text_pooling_uses_byte_weights_and_normalizes_chunks(self):
+        def request(payload):
+            return [[100, 0] if part[0] == "a" else [0, 2] for part in payload]
+        vector, = encode(["a" * 2048 + "b" * 1024], request, 2, 10)
+        self.assertAlmostEqual(vector[0], 2 / math.sqrt(5))
+        self.assertAlmostEqual(vector[1], 1 / math.sqrt(5))
+
+    def test_invalid_texts_are_rejected_before_any_request(self):
+        calls = []
+        with self.assertRaises(ValueError):
+            encode(["valid", ""], lambda p: calls.append(p), 2, 10)
+        self.assertEqual(calls, [])
+        self.assertEqual(encode([], lambda p: calls.append(p), 2, 10), [])
+
+    def test_bad_vectors_cannot_enter_index(self):
+        for vector in ([0, 0], [1], [float("nan"), 1], [float("inf"), 1], [True, 1]):
+            with self.subTest(vector=vector), self.assertRaises(ValueError):
+                normalized(vector, 2)
+        self.assertEqual(normalized([1e300, 0], 2), [1, 0])
+
+    def test_profile_dimensions_batch_and_preprocessing_are_frozen_identity(self):
+        profile = {"OPENAI_BASE_URL": "https://llm.example/v1", "AMI_EMBED_BASE_URL": "https://embed.example/v1"}
+        first = public_identity(profile, {"model": "gpt-4o-mini"})
+        second = public_identity({**profile, "AMI_EMBED_DIMENSIONS": "512"}, {"model": "gpt-4o-mini"})
+        self.assertNotEqual(first, second)
+        self.assertEqual(first["embedding_dimensions"], 1024)
+        self.assertIn("embedding_preprocess", first)
+        for changes in ({"AMI_EMBED_DIMENSIONS": "384"}, {"AMI_EMBED_BATCH": "11"},
+                        {"AMI_EMBED_MODEL": "other"}, {"AMI_EMBED_BACKEND": "bge"}):
+            with self.subTest(changes=changes), self.assertRaises(ValueError):
+                settings({**profile, **changes})
+
+
+class ProviderPacingTests(unittest.TestCase):
+    def test_overload_cooldown_is_shared_and_increases_until_a_success(self):
+        with tempfile.TemporaryDirectory() as folder:
+            from pathlib import Path
+            current = [100.0]
+            starts, statuses = [], iter([503, 503, 200])
+            def respond(request):
+                starts.append(current[0])
+                return httpx.Response(next(statuses), request=request)
+            policy = {"state_directory": folder, "minimum_interval_seconds": 2,
+                      "overload_cooldown_seconds": 180, "maximum_cooldown_seconds": 900}
+            def sleep(seconds):
+                current[0] += seconds
+            transport = paced_transport(httpx.MockTransport(respond), policy,
+                clock=lambda: current[0], sleeper=sleep)
+            for _ in range(3):
+                transport.handle_request(httpx.Request("POST", "https://provider.example/chat/completions"))
+            self.assertEqual(starts, [100, 280, 640])
+            state = read_json(Path(folder) / "state.json")
+            self.assertEqual(state["overload_events"], 2)
+            self.assertEqual(state["consecutive_overload"], 0)
+            self.assertEqual(state["in_flight"], 0)
+            transport.close()
+
+    def test_independent_gateway_transports_never_overlap_provider_calls(self):
+        with tempfile.TemporaryDirectory() as folder:
+            active, peak = [0], [0]
+            lock = threading.Lock()
+            def respond(request):
+                with lock:
+                    active[0] += 1
+                    peak[0] = max(peak[0], active[0])
+                time.sleep(.01)
+                with lock:
+                    active[0] -= 1
+                return httpx.Response(200, request=request)
+            policy = {"state_directory": folder, "minimum_interval_seconds": .01,
+                      "overload_cooldown_seconds": 180, "maximum_cooldown_seconds": 900}
+            transports = [paced_transport(httpx.MockTransport(respond), policy) for _ in range(3)]
+            def send(transport):
+                return transport.handle_request(httpx.Request("POST", "https://provider.example/chat/completions")).status_code
+            with ThreadPoolExecutor(max_workers=3) as pool:
+                self.assertEqual(list(pool.map(send, transports)), [200, 200, 200])
+            self.assertEqual(peak[0], 1)
+            for transport in transports:
+                transport.close()
 
 
 if __name__ == "__main__":

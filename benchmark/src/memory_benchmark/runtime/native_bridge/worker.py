@@ -5,8 +5,9 @@ import sys
 import time
 import traceback
 
-from common import adapter_class, pace_method_embeddings, read, write
+from memory_benchmark.runtime.native_bridge.common import adapter_class, pace_method_embeddings, read, write
 from memory_benchmark.pipeline.context import normalize
+from memory_benchmark.pipeline.ingestion import plan as ingestion_plan
 from memory_benchmark.runtime.artifacts import append_row, file_hash, rows
 from memory_benchmark.runtime.model_client import Gateway
 from memory_benchmark.schemas import History, Query
@@ -29,15 +30,19 @@ def main(path):
             assert file_hash(job[field]) == job['input_hashes'][field]
         history = History.from_wire(read(job['history']))
         queries = [Query(**row) for row in rows(job['queries'])]
+        chunks, chunk_audit = ingestion_plan(history, job['runtime'].get('add_chunk_policy'))
+        write(output / 'add_plan.json', chunk_audit)
+        report['add_chunk_policy'] = chunk_audit['policy']
         gateway = Gateway(job['runtime'], output / 'usage.json', expected_identity=job['provider_identity'])
         pace_method_embeddings(gateway, job.get('method_embedding_pacing'))
         adapter = adapter_class(job['method_config']['adapter_file'], job['method'])(
             job['method_config'], history, output, job['scope'], gateway)
-        for session in history.sessions:
+        for session in chunks:
             gateway.budget.phase = 'memory_add'
             adapter.add(session)
             gateway.budget.check()
             append_row(output / 'events.jsonl', {'stage': 'add', 'session_id': session.session_id,
+                'chunk_id': getattr(session, 'chunk_id', None),
                 'messages': len(session.messages), 'timestamp': session.timestamp})
         gateway.budget.phase = 'memory_finalize'
         adapter.finalize()
@@ -48,7 +53,7 @@ def main(path):
             evidence = normalize(adapter.search(query, job['runtime']['top_k']), job['runtime']['top_k'])
             gateway.budget.check()
             append_row(output / 'retrievals.jsonl', {'id': query.qa_id, 'evidence': [e.to_wire() for e in evidence]})
-        report.update(status='complete', questions=len(queries), sessions=len(history.sessions))
+        report.update(status='complete', questions=len(queries), sessions=len(history.sessions), add_chunks=len(chunks))
     except Exception as error:
         report.update(status='failed', error_type=type(error).__name__,
             stack=[{'file': f.filename, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__)])

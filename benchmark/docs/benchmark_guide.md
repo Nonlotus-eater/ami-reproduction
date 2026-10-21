@@ -22,12 +22,10 @@ benchmark/
 │   ├── benchmarks/              数据读取、题型映射、作答模板和评分接口
 │   │   ├── locomo_refined/      LoCoMo 的读取、提示词和评分
 │   │   └── longmemeval/         LongMemEval 的读取、提示词和评分
-│   ├── methods/                 AMI、Mem0 与统一方法接口
+│   ├── methods/                 AMI、Mem0、InvMem、ReFind 与统一方法接口
 │   ├── pipeline/                输入整理、上下文组装、作答、评分和汇总
 │   └── runtime/                 队列、记忆子进程、模型调用和运行记录
-├── integrations/                InvMem、ReFind 的接入代码
-│   ├── adapters/                将统一历史和问题送入原生方法
-│   └── native_bridge/           执行记忆任务，再接入公共作答与评分阶段
+│       └── native_bridge/       InvMem/ReFind 记忆任务与公共作答、评分的衔接
 ├── sources/                     评分源码、能力分类和方法版本记录
 │   └── aml/                     六个数据版本使用的评分源码
 ├── patches/                     固定原生版本所需的兼容补丁
@@ -35,11 +33,11 @@ benchmark/
 ├── scripts/                     配置、下载、题集准备和接入检查工具
 ├── samples/                     真实评测数据的阅读样例
 │   └── seed-17/                 22 份完整历史及其 202 组 QA pairs
-├── examples/                    供快速接入检查使用的人工数据
+├── examples/                    参考接入与人工样例
 │   └── smoke/                   两份历史、三道问题
 ├── tests/                       公共程序的回归检查
 ├── docs/                        功能介绍、部署步骤、评分规则和数据说明
-│   └── references/              抽样脚本使用的历史参考表
+│   └── references/              留档的历史报告参考表
 ├── datasets/                    原始数据及下载记录
 │   └── raw/                     各作者数据版本
 ├── baselines/                   安装时获取的四个原生方法仓库和环境
@@ -55,15 +53,19 @@ CLBench、BEAM、PersonaMem v1/v2 的读取逻辑集中在 `benchmarks/public_da
 |---|---|
 | `scripts/configure_release.py` | 生成本机的数据路径、方法路径和运行配置 |
 | `scripts/prepare_five_seeds.py` | 按五轮既有题目清单整理完整历史、问题和评分目标 |
+| `scripts/sample_small_benchmark.py`、`scripts/prepare_sampled_seeds.py` | 按 v1 规则重新抽样并冻结完整输入 |
+| `scripts/run_five_seed_experiments.py` | 调度四方法五轮及汇总，支持继续未完成任务 |
 | `scripts/release_smoke.py` | 用三道人工题检查四种方法的真实接口链路 |
 | `runtime/queue.py` | 调度 AMI、Mem0 的历史任务，保存各阶段进度 |
-| `integrations/native_bridge/runner.py` | 调度 InvMem、ReFind，并接入公共作答和评分 |
+| `runtime/native_bridge/runner.py` | 调度 InvMem、ReFind，并接入公共作答和评分 |
 | `runtime/worker.py` | 在原生方法的独立环境中完成记忆写入和检索 |
 | `pipeline/reader.py` | 将检索证据和问题组装为提示词，生成回答 |
 | `pipeline/evaluate.py` | 选择对应数据集的评分流程 |
 | `pipeline/aggregate.py` | 汇总题目、数据集和能力分组得分 |
 
 表中 `runtime/`、`pipeline/` 的文件均位于 `src/memory_benchmark/` 下。
+
+四方法的适配器均在 `src/memory_benchmark/methods/` 并注册到公共 `create()` 工厂。独立 Python 环境由配置中的解释器路径决定，与适配器的目录位置无关。InvMem/ReFind 现有桥接仍会冻结这两个适配文件并在各自原生环境中加载；文件移动没有改变原生参数、输入内容或检索策略。
 
 ## 一轮评测怎样完成
 

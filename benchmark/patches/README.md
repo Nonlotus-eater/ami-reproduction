@@ -7,4 +7,4 @@ Pinned commits, SHA-256 and adapter sources: [baseline lock](../sources/baseline
 * ReFind: accept system messages.
 
 Apply each patch only to its pinned upstream checkout. Keep upstream attribution and licenses.
-InvMem/ReFind adapters and bridge are in `integrations/`; native implementations are fetched separately.
+InvMem/ReFind adapters are in `src/memory_benchmark/methods/`; the frozen-worker bridge is in `src/memory_benchmark/runtime/native_bridge/`. Native implementations are fetched separately.

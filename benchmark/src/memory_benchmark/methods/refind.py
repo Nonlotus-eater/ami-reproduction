@@ -1,9 +1,9 @@
-"""Method-side AMI adapter; preserve the native ReFind four-action retrieval agent."""
+"""ReFind benchmark adapter; preserve the native four-action retrieval agent."""
 import os
 from pathlib import Path
 import sys
 
-
+from memory_benchmark.methods.base import MemoryAdapter
 
 class SharedPlanner:
     def __init__(self, gateway, maximum):
@@ -21,8 +21,9 @@ class SharedPlanner:
                         sum(c.get('output_tokens', 0) for c in calls))
 
 
-class Adapter:
+class Adapter(MemoryAdapter):
     def __init__(self, config, history, output, scope, gateway):
+        super().__init__(config, history, output, scope, gateway)
         sys.path.insert(0, str(Path(config['source_root'])))
         from fastapi.testclient import TestClient
         from app.config import Settings
@@ -52,7 +53,8 @@ class Adapter:
             date = message.timestamp or session.timestamp
             messages.append({'role': message.role, 'content': f'{message.speaker}: {message.text}',
                 'timestamp': int(datetime.fromisoformat(date).timestamp() * 1000) if date else None})
-        response = self.client.post('/add', json={'request_id': f'{self.scope}:{session.session_id}',
+        logical_id = getattr(session, 'chunk_id', None) or session.session_id
+        response = self.client.post('/add', json={'request_id': f'{self.scope}:{logical_id}',
             'user_id': self.scope, 'session_id': session.session_id, 'messages': messages})
         if response.status_code != 200 or not response.json().get('success'):
             raise RuntimeError(f'ReFind native Add failed: HTTP {response.status_code}')
@@ -64,13 +66,21 @@ class Adapter:
         from memory_benchmark.schemas import Evidence
         from memory_benchmark.runtime.artifacts import contract_hash, write_json
         before = len(self.planner.traces)
-        response = self.client.post('/search', json={'user_id': self.scope, 'query': query.text, 'top_k': top_k})
+        if top_k is None or top_k > 100:
+            # Keep the original agent/planner and its native search policy;
+            # remove only the HTTP schema's final result-count restriction.
+            limit = len(self.store.list_chunks(self.scope)) if top_k is None else top_k
+            results, _ = self.retriever.search(query.text, None, self.scope, limit)
+            evidence = [Evidence(r.id, r.content) for r in results]
+        else:
+            response = self.client.post('/search', json={'user_id': self.scope, 'query': query.text, 'top_k': top_k})
+            if response.status_code != 200:
+                raise RuntimeError(f'ReFind native agent Search failed: HTTP {response.status_code}')
+            evidence = [Evidence(r['id'], r['content']) for r in response.json()['data']]
         self.gateway.budget.check()
-        if response.status_code != 200:
-            raise RuntimeError(f'ReFind native agent Search failed: HTTP {response.status_code}')
         write_json(self.output / f'planner-{contract_hash(query.qa_id)[:20]}.json',
             {'qa_id': query.qa_id, 'agent_mode': True, 'trace': self.planner.traces[before:]})
-        return [Evidence(r['id'], r['content']) for r in response.json()['data']]
+        return evidence
 
     def close(self):
         self.client.__exit__(None, None, None)

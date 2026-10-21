@@ -15,6 +15,14 @@ class Reply:
     model: str
 
 
+class OutputTruncatedError(ValueError):
+    """A recorded model response ended because its output allowance was used."""
+    def __init__(self, *, stage, response_path=None):
+        super().__init__("Model output was truncated")
+        self.stage = stage
+        self.response_path = str(response_path) if response_path else None
+
+
 class FixtureClient:
     def complete(self, prompt, *, stage, **kwargs):
         return Reply('{"label":"WRONG"}' if stage == "judge" else "offline fixture answer",
@@ -40,6 +48,10 @@ class Gateway:
                        AMI_TEST_OUTPUT_CNY_PER_MILLION=str(rates["output"]),
                        AMI_TEST_EMBED_CNY_PER_MILLION=str(rates["embedding"]))
         self.budget = CallBudget(profile)
+        if runtime.get("provider_error_diagnostics"):
+            self.budget.provider_error_redactions = [value for key, value in self.profile.items()
+                if value and (key.endswith("_API_KEY") or key.endswith("_AUTH_TOKEN")
+                              or key in {"API_KEY", "AUTH_TOKEN", "TOKEN"})]
         self.budget.on_change = self.save
         llm_url = self.profile["OPENAI_BASE_URL"].rstrip("/") + "/chat/completions"
         embedding_url = self.profile["AMI_EMBED_BASE_URL"].rstrip("/") + "/embeddings"
@@ -52,6 +64,9 @@ class Gateway:
                           embedding_dimensions=self.embedding_dimensions, embedding_batch=self.embedding_batch,
                           timeout=runtime["request_timeout_seconds"])}
         self.transports = transports
+        if runtime.get("provider_request_pacing"):
+            from .pacing import paced_transport
+            transports["llm"] = paced_transport(transports["llm"], runtime["provider_request_pacing"])
         class Transport(httpx.BaseTransport):
             def handle_request(self, request):
                 kind = "llm" if str(request.url) == llm_url else "embedding"
@@ -79,6 +94,7 @@ class Gateway:
         self.client = None
         self.embedding_client = None
         self.judge_response_count = 0
+        self.answer_response_count = 0
         self.save()
 
     def install_native(self):
@@ -91,7 +107,7 @@ class Gateway:
             TOKENIZERS_PARALLELISM="false", OMP_NUM_THREADS="2", PYTHONDONTWRITEBYTECODE="1")
         os.environ.pop("OPENROUTER_API_KEY", None)
 
-    def complete(self, prompt, *, stage, max_tokens, temperature):
+    def complete(self, prompt, *, stage, max_tokens, temperature, response_format=None):
         if max_tokens is None:
             if stage != "answer":
                 raise ValueError("Only Answer supports an unset output cap")
@@ -99,12 +115,22 @@ class Gateway:
             # provider defaults or the native-memory transport's 2048 fallback.
             max_tokens = MODEL_OUTPUT_TOKEN_LIMITS[self.runtime["model"]]
         self.budget.phase = stage
+        artifact = None
+        if stage.startswith("answer") and self.runtime.get("persist_answer_responses"):
+            self.answer_response_count += 1
+            artifact = self.output.with_name(f"{self.output.stem}.answer-{self.answer_response_count:03d}")
+            write_json(artifact.with_name(artifact.name + ".request.json"), {"prompt": prompt, "stage": stage,
+                "model": self.runtime["model"], "seed": self.runtime["seed"], "max_tokens": max_tokens,
+                "temperature": temperature})
         if self.client is None:
             self.client = self.client_class(api_key=self.profile["OPENAI_API_KEY"],
                                             base_url=self.profile["OPENAI_BASE_URL"])
         response = self.client.chat.completions.create(model=self.runtime["model"],
             messages=[{"role": "user", "content": prompt}] if isinstance(prompt, str) else prompt,
-            max_tokens=max_tokens, temperature=temperature)
+            max_tokens=max_tokens, temperature=temperature,
+            **({"response_format": response_format} if response_format else {}))
+        if artifact:
+            write_json(artifact.with_name(artifact.name + ".response.json"), response.model_dump(mode="json"))
         if stage == "judge":
             # Persist content, usage and finish reason before parsing or raising
             # for truncation. Each call has its own artifact (e.g. BEAM checks).
@@ -114,7 +140,10 @@ class Gateway:
                 response.model_dump(mode="json"))
         choice = response.choices[0]
         if choice.finish_reason == "length":
-            raise ValueError("Model output was truncated")
+            path = artifact.with_name(artifact.name + ".response.json") if artifact else None
+            raise OutputTruncatedError(stage=stage, response_path=path)
+        if response_format and choice.finish_reason != "stop":
+            raise ValueError("Structured Judge response did not finish normally")
         return Reply(choice.message.content.strip(), response.model)
 
     def save(self):

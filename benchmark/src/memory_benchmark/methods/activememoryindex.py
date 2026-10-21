@@ -14,6 +14,8 @@ class Adapter(MemoryAdapter):
     def __init__(self, *args):
         super().__init__(*args)
         from pathlib import Path
+        from .compatibility import validate_ami_roles
+        validate_ami_roles(self.config, {m.role for s in self.history.sessions for m in s.messages})
         root = Path(self.config["source_root"])
         if self.config.get("embedding_backend") != "shared_api":
             raise ValueError("AMI requires embedding_backend=shared_api")
@@ -39,7 +41,8 @@ class Adapter(MemoryAdapter):
     def add(self, session):
         when = int(datetime.fromisoformat(session.timestamp).timestamp() * 1000) if session.timestamp else None
         prefix = "[Recording date unknown; preserve source order; do not infer dates from ingestion time] " if when is None else ""
-        response = self.service.post("/add", json={"request_id": f"{self.scope}:{session.session_id}",
+        logical_id = getattr(session, "chunk_id", None) or session.session_id
+        response = self.service.post("/add", json={"request_id": f"{self.scope}:{logical_id}",
             "user_id": self.scope, "session_id": session.session_id,
             "messages": [{"role": m.role, "content": prefix + f"{m.speaker}: {m.text}", "timestamp": when} for m in session.messages]})
         self.gateway.budget.check()

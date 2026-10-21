@@ -1,9 +1,9 @@
-"""Method-side AMI input adapter; native hybrid retrieval and shared API vectors."""
+"""InvMem benchmark adapter; native hybrid retrieval and shared API vectors."""
 import os
 from pathlib import Path
 import sys
 
-
+from memory_benchmark.methods.base import MemoryAdapter
 
 class SharedEmbedder:
     def __init__(self, gateway):
@@ -19,8 +19,9 @@ class SharedEmbedder:
         return self.encode_documents(texts)
 
 
-class Adapter:
+class Adapter(MemoryAdapter):
     def __init__(self, config, history, output, scope, gateway):
+        super().__init__(config, history, output, scope, gateway)
         sys.path.insert(0, str(Path(config['source_root']) / 'src'))
         from fastapi.testclient import TestClient
         from vanilla_rag.api import app, get_store
@@ -46,7 +47,8 @@ class Adapter:
             date = message.timestamp or session.timestamp
             messages.append({'role': message.role, 'content': f'{message.speaker}: {message.text}',
                 'timestamp': int(datetime.fromisoformat(date).timestamp() * 1000) if date else None})
-        response = self.client.post('/add', json={'request_id': f'{self.scope}:{session.session_id}',
+        logical_id = getattr(session, 'chunk_id', None) or session.session_id
+        response = self.client.post('/add', json={'request_id': f'{self.scope}:{logical_id}',
             'user_id': self.scope, 'session_id': session.session_id, 'messages': messages})
         self.gateway.budget.check()
         if response.status_code != 200 or not response.json().get('success'):
@@ -57,6 +59,20 @@ class Adapter:
 
     def search(self, query, top_k):
         from memory_benchmark.schemas import Evidence
+        # The HTTP request schema has a 100-result ceiling; the native store
+        # accepts any positive count. Resolve null against this exact scope,
+        # then use the same native search without imposing a benchmark cap.
+        if top_k is None or top_k > 100:
+            if top_k is None:
+                from contextlib import closing
+                with closing(self.store._connect()) as connection:
+                    top_k = connection.execute('SELECT COUNT(*) FROM memories WHERE user_id = ?',
+                                               (self.scope,)).fetchone()[0]
+                if not top_k:
+                    return []
+            hits = self.store.search(self.scope, query.text, top_k, None)
+            self.gateway.budget.check()
+            return [Evidence(hit.id, hit.content) for hit in hits]
         response = self.client.post('/search', json={'user_id': self.scope, 'query': query.text, 'top_k': top_k})
         self.gateway.budget.check()
         if response.status_code != 200:

@@ -1,4 +1,4 @@
-"""Method-side helpers; the benchmark package is imported without modification."""
+"""Frozen adapter loading and embedding pacing for native memory workers."""
 from datetime import datetime
 import fcntl
 import importlib.util

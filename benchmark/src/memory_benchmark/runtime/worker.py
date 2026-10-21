@@ -11,6 +11,7 @@ import traceback
 
 from ..methods import create
 from ..pipeline.context import normalize
+from ..pipeline.ingestion import plan as ingestion_plan
 from ..schemas import History, Query
 from .artifacts import append_row, file_hash, read_json, rows, write_json
 from .model_client import Gateway
@@ -63,7 +64,10 @@ def execute(job):
                 raise ValueError("Worker input hash mismatch")
         history = History.from_wire(read_json(job["history"]))
         queries = [Query(**q) for q in rows(job["queries"])]
-        if not job["offline"]:
+        chunks, chunk_audit = ingestion_plan(history, job["runtime"].get("add_chunk_policy"))
+        write_json(output / "add_plan.json", chunk_audit)
+        report["add_chunk_policy"] = chunk_audit["policy"]
+        if not job["offline"] and job["method"] != "aml_http":
             gateway = Gateway(job["runtime"], output / "usage.json",
                               expected_identity=job["provider_identity"])
             gateway.install_native()
@@ -72,10 +76,11 @@ def execute(job):
             write_json(output / "report.json", report)
         adapter = measured("init", create, job["method"], job["method_config"], history, output,
                          job["scope"], gateway, offline=job["offline"])
-        for session in history.sessions:
+        for session in chunks:
             before = report["phase_seconds"].get("add", 0)
             measured("add", adapter.add, session)
             append_row(output / "events.jsonl", {"stage": "add", "session_id": session.session_id,
+                "chunk_id": getattr(session, "chunk_id", None),
                 "timestamp": session.timestamp, "messages": len(session.messages),
                 "seconds": report["phase_seconds"]["add"] - before})
         measured("finalize", adapter.finalize)
@@ -90,7 +95,7 @@ def execute(job):
             append_row(output / "retrievals.jsonl", {"id": query.qa_id,
                 "evidence": [e.to_wire() for e in evidence],
                 "seconds": report["phase_seconds"]["search"] - before})
-        report.update(status="complete", questions=len(queries), sessions=len(history.sessions))
+        report.update(status="complete", questions=len(queries), sessions=len(history.sessions), add_chunks=len(chunks))
     except Exception as error:
         # Native exceptions can carry credentials or response bodies. Keep safe type only.
         report.update(status="failed", error_type=type(error).__name__,

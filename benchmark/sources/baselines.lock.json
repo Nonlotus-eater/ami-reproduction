@@ -15,16 +15,16 @@
     "url": "https://github.com/wenxiaof345-ctrl/vanilla-rag-memory.git",
     "commit": "31ab7bf9cfa3ee3c4f986e82f6e7a00b134ba8ca",
     "patch": "patches/invmem-native-interface.patch",
-    "adapter": "integrations/adapters/invmem.py",
+    "adapter": "src/memory_benchmark/methods/invmem.py",
     "patch_sha256": "2c0bac00de112b92e3c5648b49d2f4557aa48ba175e122ca12ff2905aa5d6206",
-    "adapter_sha256": "1bdc20890cf1de4945b0a9b02c101722f8812e2168045887bc9c823e7f66afb6"
+    "adapter_sha256": "f6c18fd0a8a8cb9830608d934689845ad45fc90e0bdad616d9ff911f7987de19"
   },
   "ReFind": {
     "url": "https://github.com/imlrz/ReFind.git",
     "commit": "a80175ca0eeb52a938d7cab7a602bc780de8a577",
     "patch": "patches/refind-native-interface.patch",
-    "adapter": "integrations/adapters/refind.py",
+    "adapter": "src/memory_benchmark/methods/refind.py",
     "patch_sha256": "9dc03f8cddc0d595052df2b16bb5ed416bf50e3fd40396956cf065cbace86508",
-    "adapter_sha256": "aa2ab7651b2da0f3819a4dd394fb38c8db5b88cd5f0c5a79dbd3d912c5321a95"
+    "adapter_sha256": "a1b0c451d6f3ee3715a71654fd30d7c7eb79f322ccde15afcad4b6f3d7b113b9"
   }
 }

@@ -10,7 +10,7 @@
   "activememoryindex": {
     "python": "baselines/ami-reproduction/.venv/bin/python",
     "source_root": "baselines/ami-reproduction",
-    "variant": "local reproduction release profile; shared v4 API embedding",
+    "variant": "local reproduction release profile; system-role compatibility patch; shared v4 API embedding",
     "feature_flags": {
       "AMI_LLM_RETRIES": "0",
       "AMI_LLM_MODEL": "gpt-4o-mini",

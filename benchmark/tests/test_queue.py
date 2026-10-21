@@ -1,3 +1,4 @@
+"""Regression checks for queue."""
 import json
 from pathlib import Path
 import tempfile
@@ -5,10 +6,13 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from memory_benchmark.runtime.queue import execute_task, publish
 from memory_benchmark.runtime.artifacts import file_hash, read_json, write_json, write_rows
 from memory_benchmark.runtime.model_client import Reply
-from memory_benchmark.schemas import History, Message, Session, Query, Target
+from memory_benchmark.runtime.queue import execute_task, publish
+from memory_benchmark.schemas import History, Message, Query, Session, Target
+from scripts.run_five_seed_experiments import (
+    METHODS, SEEDS, export, recover_queues, round_summary, validate_resume_plan,
+)
 
 
 class QueueTests(unittest.TestCase):
@@ -69,6 +73,83 @@ class QueueTests(unittest.TestCase):
                 damaged = execute_task(prepared, output, manifest, "mem0", case)
                 self.assertEqual(damaged["status"], "failed")
                 self.assertEqual(calls, ["worker", "answer"])
+
+
+class FiveSeedExperimentTests(unittest.TestCase):
+    def fixtures(self, output, partial=False):
+        states = {}
+        for method in METHODS:
+            for seed in SEEDS:
+                folder = output / method / f'seed-{seed}'
+                folder.mkdir(parents=True)
+                complete = not (partial and method == 'mem0' and seed == 21)
+                value = 10 * (seed - 16)
+                summary = {'complete': complete, 'scored': 10 if complete else 9, 'expected': 10,
+                           'local_overall_macro_benchmark': value + 5 if complete else None,
+                           'capabilities': {f: {'score': value if complete else None} for f in 'ABCDEGH'}}
+                (folder / f'{method}.summary.json').write_text(json.dumps(summary))
+                states[f'{method}:seed-{seed}'] = {'status': 'complete' if complete else 'incomplete'}
+        return states
+
+    def test_complete_export_keeps_two_schemes_and_sample_standard_deviation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            states = self.fixtures(output)
+            progress = export(output, states, {s: 10 for s in SEEDS})
+            self.assertEqual(progress['status'], 'complete')
+            self.assertEqual(progress['scored'], 200)
+            summary = json.loads((output / 'summary.json').read_text())['overall']['mem0']
+            self.assertEqual(summary['overall_macro_capability']['mean'], 30)
+            self.assertEqual(summary['overall_macro_benchmark']['mean'], 35)
+            self.assertAlmostEqual(summary['overall_macro_capability']['sample_variance'], 250)
+
+    def test_one_partial_seed_does_not_publish_subset_overall(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            states = self.fixtures(output, partial=True)
+            progress = export(output, states, {s: 10 for s in SEEDS})
+            self.assertEqual(progress['status'], 'incomplete')
+            summary = json.loads((output / 'summary.json').read_text())['overall']
+            self.assertIsNone(summary['mem0']['overall_macro_capability'])
+            self.assertIsNone(summary['mem0']['overall_macro_benchmark'])
+            self.assertIsNotNone(summary['refind']['overall_macro_capability'])
+
+    def test_missing_summary_is_unscored(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertIsNone(round_summary(Path(tmp), 'mem0')['local_overall_macro_capability'])
+
+    def test_resizing_cannot_change_inputs_or_retry_policy(self):
+        original = {'parallel': 8, 'parallel_per_method': 2, 'max_queue_passes': 3,
+                    'file_sha256': {'input': 'original'}}
+        resized = {**original, 'parallel': 20, 'parallel_per_method': 5}
+        validate_resume_plan(original, resized, resize=True)
+        with self.assertRaisesRegex(ValueError, 'Frozen launch plan'):
+            validate_resume_plan(original, resized)
+        for changed in [{**resized, 'max_queue_passes': 4}, {**resized, 'file_sha256': {'input': 'changed'}}]:
+            with self.assertRaisesRegex(ValueError, 'Frozen launch plan'):
+                validate_resume_plan(original, changed, resize=True)
+
+    def test_adoption_preserves_live_pid_and_retry_count(self):
+        state = {'mem0:seed-17': {'method': 'mem0', 'seed': 17, 'pid': 123,
+                 'process_token': 'original-process', 'status': 'running', 'attempts': 1}}
+        with tempfile.TemporaryDirectory() as tmp, patch('scripts.run_five_seed_experiments.process_token', return_value='original-process'):
+            with self.assertRaisesRegex(ValueError, 'still running'):
+                recover_queues(state, Path(tmp))
+            jobs = recover_queues(state, Path(tmp), adopt=True)
+            child, log = jobs['mem0:seed-17']
+            self.assertEqual(child.pid, 123)
+            self.assertIsNone(child.poll())
+            self.assertIsNone(log)
+            self.assertEqual(state['mem0:seed-17']['attempts'], 1)
+        with patch('scripts.run_five_seed_experiments.process_token', return_value=None):
+            self.assertEqual(child.poll(), 'unknown-adopted-process')
+
+    def test_reused_pid_does_not_adopt_an_unrelated_process(self):
+        state = {'mem0:seed-17': {'method': 'mem0', 'seed': 17, 'pid': 123,
+                 'process_token': 'old-process', 'status': 'running', 'attempts': 1}}
+        with tempfile.TemporaryDirectory() as tmp, patch('scripts.run_five_seed_experiments.process_token', return_value='unrelated-process'):
+            self.assertEqual(recover_queues(state, Path(tmp), adopt=True), {})
+            self.assertEqual(state['mem0:seed-17']['status'], 'pending')
 
 
 if __name__ == "__main__":

@@ -22,6 +22,14 @@
   "context_policy": "ranked evidence; no benchmark count or context truncation",
   "lifecycle": "offline-history-QA: chronological sessions, native finalize, queries",
   "naive_timestamp_timezone": "UTC",
-  "answer_output_policy": "model_maximum",
-  "judge_output_policy": "model_maximum"
+  "answer_output_policy": "available_model_window",
+  "judge_output_policy": "model_maximum",
+  "answer_context_policy": "model_window_v2",
+  "answer_min_output_tokens": 1024,
+  "answer_part_truncation_policy": "split_retry_v2",
+  "clbench_judge_protocol": "clbench-indexed-status-v2",
+  "judge_protocol_max_attempts": 3,
+  "persist_answer_responses": true,
+  "provider_error_diagnostics": true,
+  "add_chunk_policy": "aml_20_messages_2000_words_v1"
 }

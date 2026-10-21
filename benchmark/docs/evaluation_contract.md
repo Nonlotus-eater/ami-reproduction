@@ -1,7 +1,7 @@
 # 评测契约
 
 本次发布的 AMI、Mem0、InvMem、ReFind 共用规范输入、证据格式、Answer、评分与汇总，保留各自原生记忆和存储机制。
-当前为 seed 17–21 五轮 v3，抽样参数和冻结 ID 见 [configs/reproduction/](../configs/reproduction/)，部署见 [当前指导](model_handoff_99.md)。
+默认恢复报告 v1 策略（仓库历史名称 v3）：seed 17–21，历史最多 30、可用小类至少 2、大类最多 40。`configs/reproduction/` 的固定清单与此前 GitHub 发布一致；重新抽样的同规则配额见 [small_benchmark_v1.json](../configs/small_benchmark_v1.json)，部署见 [当前指导](model_handoff_99.md)。
 
 ## 数据与主指标
 
@@ -43,9 +43,21 @@ LongMemEval 保留重复会话的 source_session_id，并对出现次数作唯�
 
 检索证据保留方法原生返回顺序，tokenizer 为 o200k_base。当前公共默认的 top_k、Reader 证据预算、完整输入上限为 null，不额外截断。
 四方法已验证的实验配置另存于 `configs/reproduction/runtime.json`，分别为 100、4096、119000；有预算时跳过放不下的整条证据。
-InvMem/ReFind 固定原生 schema 要求整数 top_k；桥接不能直接使用 null。配置生成器显式使用已验证配置，不声称历史成绩来自当前无截断默认条件。
+InvMem/ReFind 固定原生 HTTP schema 要求整数 top_k；当前 adapter 对 null 按本任务作用域的实际记忆数量调用同一原生检索实现。配置生成器仍使用已验证的有界配置，不声称历史成绩来自当前无截断默认条件。
 调用量和费用写入运行账本，没有次数或费用 cap；API 自动重试为 0。
 输入预算、模型输出长度和超时是独立约束。
+
+## 新运行的可靠性策略（2026-10-20）
+
+公共默认及新抽样配置启用 `model_window_v2`：完整提示词按模型 tokenizer 计数，保留封装安全余量与至少 1,024 token 的回答空间（显式输出上限更小时遵守该上限）。证据超出可用窗口时分段读取；中间摘要截断时仅拆分失败片段并复用成功摘要。所有来源文字进入分段处理，不声称摘要在语义上绝不遗漏。
+
+CLBench 默认使用编号 yes/no 的严格结构协议，校验每项编号及总分一致性；协议无效或截断时最多重评 3 次，首次有效结果即停止，包括有效的 0 分。评分标准不变，不修补模型输出或按分数选择重评结果。
+
+普通文本 Add 采用 `aml_20_messages_2000_words_v1`，每块不超过 20 条消息或 2,000 个来源文本的 Unicode 空白分隔词。长单条消息按词边界无损拆分；不跨来源 session 合并，保留 role、时间戳和原始 `session_id`，以独立确定性 chunk ID 区分写入。每个 worker 保存 `add_plan.json`，包含来源字符范围及分段哈希。
+
+阈值来自 [AML API Guide](https://agentmemories.ai/api-guide) 与[官方中文文档](https://agentmemories.ai/zh-cn/docs)。公开页面说明词数由冻结 Adapter 计数，但未发布其完整实现；本地计词口径明确版本化，不声称逐字节复刻官方内部边界。适配器为原生方法补充的说话人标签及提示词不进入来源词数。
+
+AMI 在启动前检查所选源码对实际输入角色的支持，默认选择已有 system 兼容目录。历史运行的冻结源码、配置、输入与成绩不受这些新默认策略影响；新增 Add 分段和 Reader/Judge 策略应作为新实验条件记录。
 
 ## 分数与能力
 
