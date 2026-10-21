@@ -1,4 +1,5 @@
 """Regression checks for queue."""
+import csv
 import json
 from pathlib import Path
 import tempfile
@@ -114,6 +115,30 @@ class FiveSeedExperimentTests(unittest.TestCase):
             self.assertIsNone(summary['mem0']['overall_macro_benchmark'])
             self.assertIsNotNone(summary['refind']['overall_macro_capability'])
 
+    def test_single_method_export_counts_only_selected_method(self):
+        for partial in (False, True):
+            with self.subTest(partial=partial), tempfile.TemporaryDirectory() as tmp:
+                output = Path(tmp)
+                states = {key: value for key, value in self.fixtures(output, partial=partial).items()
+                          if key.startswith('mem0:')}
+                progress = export(output, states, {s: 10 for s in SEEDS}, methods=('mem0',))
+                self.assertEqual(progress['total_rounds'], 5)
+                self.assertEqual(progress['expected_scores'], 50)
+                self.assertEqual(progress['scored'], 49 if partial else 50)
+                self.assertEqual(progress['status'], 'incomplete' if partial else 'complete')
+                self.assertEqual(set(progress['rounds']), {'mem0'})
+                summary = read_json(output / 'summary.json')['overall']
+                self.assertEqual(set(summary), {'mem0'})
+                if partial:
+                    self.assertIsNone(summary['mem0']['overall_macro_capability'])
+                else:
+                    self.assertEqual(summary['mem0']['overall_macro_capability']['mean'], 30)
+                with (output / 'overall_comparison.csv').open(encoding='utf-8-sig') as handle:
+                    self.assertEqual([row['method'] for row in csv.DictReader(handle)], ['Mem0'])
+                report = (output / 'report.md').read_text()
+                self.assertIn('运行方法：Mem0。', report)
+                self.assertNotIn('ReFind', report)
+
     def test_missing_summary_is_unscored(self):
         with tempfile.TemporaryDirectory() as tmp:
             self.assertIsNone(round_summary(Path(tmp), 'mem0')['local_overall_macro_capability'])
@@ -128,6 +153,11 @@ class FiveSeedExperimentTests(unittest.TestCase):
         for changed in [{**resized, 'max_queue_passes': 4}, {**resized, 'file_sha256': {'input': 'changed'}}]:
             with self.assertRaisesRegex(ValueError, 'Frozen launch plan'):
                 validate_resume_plan(original, changed, resize=True)
+
+        original = {**original, 'methods': {'mem0': {'source_root': 'original'}}}
+        with self.assertRaisesRegex(ValueError, 'Frozen launch plan'):
+            validate_resume_plan(original, {**original, 'methods': {'invmem': {'source_root': 'original'}}},
+                                 resize=True)
 
     def test_adoption_preserves_live_pid_and_retry_count(self):
         state = {'mem0:seed-17': {'method': 'mem0', 'seed': 17, 'pid': 123,

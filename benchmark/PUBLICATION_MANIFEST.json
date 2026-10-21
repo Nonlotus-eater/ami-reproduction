@@ -32,7 +32,7 @@
   "files": {
     ".env.example": "07738371755cbf5783983f568229edcf28842ab4c6a7576431b3fcdf3dd703ac",
     ".gitignore": "7002222a90917a45b35e9ada94a08d692f482835adf8d5806d1df9324b8149a2",
-    "README.md": "437354d85be0ae81cdb43121f3c70499fe22096c401a9462112f8f061764d574",
+    "README.md": "d309bbadb5dee36585697f6a841e05edf1856ac1fb5f8111c99c2d7a02f51a9a",
     "configs/README.md": "93d82b097e556c6e3188ad620598685031afcdefc5316ded27932a04a23d1244",
     "configs/datasets/public_sources.json": "2e8375df70f50bbc27009b099d703701e4456cbc3447f5bbab8a33ff79e5d091",
     "configs/methods.json": "450c3729bdcd4eef247c37d6a91b6da569c89a2e2b62e98070cdba26af9f44b5",
@@ -53,12 +53,12 @@
     "docs/capability_label_mapping.md": "c6cc3db25cbe90b73337f6b592020cf17ffd506a2835517f34c6afc1b6f607d6",
     "docs/configuration_validation_20261017.md": "b8641576cac1aa5f51d7f62c37be186c0e22ca5d86e1b5cd05054180353a42f9",
     "docs/evaluation_contract.md": "7a0daf55414e859ec31114f569b8076636e089d11e7d238a2321c576756bae9c",
-    "docs/model_handoff_99.md": "ce20d90d21f19ea4a4d6069251c78a8a50bb19fe324ef720adc812ccfb1eedf2",
+    "docs/model_handoff_99.md": "f02d7c79d75de72eae2288a60d73eb4c61b34b1c7024c4e69b3df7bbb46aed98",
     "docs/publication_scope.md": "ea4f693e47ba2e0eb39b7bbca93b09fd01038201af7fb2c073c8bfb2d2345ae4",
     "docs/references/AMI_Benchmark_99_reference.docx": "b484a8494aaf0042f249b909091fda423b0eab95e34dc85fccad7a804b73105a",
     "docs/references/README.md": "7c1b479acd3ef179315822080a0e46e1baa9cd911ea6fd7a65c0eb05914b864d",
     "docs/sample.md": "95f6897214d5afd3ff3ec07a7c12a7eee9d6fdc411b85a44a69cfcdbbda8e5f4",
-    "docs/sync_20261021.md": "e0c8d88bbd663443b647a6b12d9d1eb1ce38dba044f49074baae92724b577bb8",
+    "docs/sync_20261021.md": "5bae391ef1dd38bcfa8cdb32f0bd3948543134cd901d701863c3df18ef541deb",
     "examples/smoke/locomo_refined/conversations.jsonl": "071491d4c101020a811df598e6fe53ddffb7b70961f6cf46b4a54f96fc4cfc68",
     "examples/smoke/locomo_refined/questions.jsonl": "2fc902abe7a9a7ad90ef2e11184b496c8ce6a869cbd0bc3ee8aa2d22d1d1398a",
     "examples/smoke/longmemeval_s.json": "f94afea9435efb859a8effa34effa24ecd7489b69039b52229c21ef34cbbe15c",
@@ -120,7 +120,7 @@
     "scripts/prepare_five_seeds.py": "9f87a5fbf243151884d25b2d95adc9437c39ec63722610f7a999b9dcb536d177",
     "scripts/prepare_sampled_seeds.py": "71bead1da74461feb9dde9c9d294045d515672d70832c5b5614d61475ccbd9c8",
     "scripts/release_smoke.py": "ac674956fcb4cda0866f1e327a36274f816da9e12787a46d06e94e2002b47fce",
-    "scripts/run_five_seed_experiments.py": "da673b30a37d43d2e46c3bd3093a16c0ccac288e9b243463649134f042b14c99",
+    "scripts/run_five_seed_experiments.py": "3fff25c0130ac53f66b45cb97a8ef84c487b819717dee9720726de2de7078591",
     "scripts/sample_small_benchmark.py": "cb02b09f0e56f130f4b278e45bb0784569362c8ba5b65e1b63fba2565b481659",
     "sources/aml/beam/pipeline.py": "3889e26ae696abc67711daab0ebf24e3082ed50d5f85df9d9f95540a0a9b8763",
     "sources/aml/clbench/pipeline.py": "65b9719dc22e055aad808f68d757c145b9f9115cb2275b1ee373610c6a8116c7",
@@ -195,11 +195,11 @@
     "tests/test_ingestion.py": "3f0047b8dfb21fb737325538857311bde74ecd12c0aaa4094b4bca775e2c8519",
     "tests/test_pipeline.py": "83322bf45a79551a7b1a90db124b44cd6f2d21173d54c9e550d8996ba27a2b18",
     "tests/test_public_datasets.py": "bb299fdb73c7c7e825ed78808001b9fe57e0924b7b56ee76503e017e3a20f109",
-    "tests/test_queue.py": "5fa96597fa8adb22776342c5f3a84dc28457522333d861274ecc81f80a85e55e",
+    "tests/test_queue.py": "0aff54ec9414cfb955a8dac790b6ad04b4d5f7f4298ecb34008fa2cede78b88d",
     "tests/test_reader.py": "bd877b4f4f5c301f42de3eeeec2f61f6943457ca9eb02cfb49083e7aca37bb9b",
-    "tests/test_reusability.py": "b0951ef48de5c4c0c278a49f011606167a8858f35bd00537b2507035a775a672",
+    "tests/test_reusability.py": "0bfc7c13f78c0d93212f2daca9f67aaf1a00eae6835628cda635c86d86a443a7",
     "tests/test_runtime.py": "a3427e6c6376304311799751fb438d880fc12d0d60337e8ab2a3fdbd6e94fbdc",
     "tests/test_sampling.py": "f71c698076ebb865ef372d69d083806b93e5cbd49fe238f6d5aace6f77066ac3"
   },
-  "total_bytes": 7969163
+  "total_bytes": 7978592
 }

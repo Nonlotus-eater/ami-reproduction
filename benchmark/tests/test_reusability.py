@@ -105,6 +105,76 @@ class SchedulerProcessTests(unittest.TestCase):
                 self.assertEqual(len({r['pid'] for r in state['launches']}), 20)
                 self.assertEqual(read_json(root / 'output/acceptance.json')['status'], 'passed')
 
+    def test_single_method_launches_five_overlapping_real_processes(self):
+        for method in METHODS:
+            with self.subTest(method=method), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                self.setup_run(root, barrier=5)
+                config = root / 'config'
+                available = read_json(config / 'methods.json')
+                write_json(config / 'methods.json', {method: available[method]})
+                for other in METHODS:
+                    if other != method:
+                        (config / f'methods.{other}.json').unlink()
+                state = self.finish(self.launch(root, parallel=5, per_method=5,
+                                                extra=['--method', method]), root)
+                self.assertEqual(state['peak'], 5)
+                self.assertEqual(state['method_peaks'], {method: 5})
+                self.assertEqual(len({row['pid'] for row in state['launches']}), 5)
+                self.assertEqual({row['key'] for row in state['launches']},
+                                 {f'{method}:seed-{seed}' for seed in range(17, 22)})
+                acceptance = read_json(root / 'output/acceptance.json')
+                self.assertEqual({key: acceptance[key] for key in ('status', 'scored', 'expected')},
+                                 {'status': 'passed', 'scored': 10, 'expected': 10})
+                progress = read_json(root / 'output/progress.json')
+                self.assertEqual(progress['total_rounds'], 5)
+                self.assertEqual(progress['completed_rounds'], 5)
+                self.assertEqual(set(read_json(root / 'output/summary.json')['overall']), {method})
+
+    def test_single_method_still_obeys_per_method_limit(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.setup_run(root, barrier=2)
+            state = self.finish(self.launch(root, parallel=5, per_method=2,
+                                           extra=['--method', 'mem0']), root)
+            self.assertEqual(state['peak'], 2)
+            self.assertEqual(state['method_peaks'], {'mem0': 2})
+            self.assertEqual(len(state['launches']), 5)
+
+    def test_selected_methods_resume_and_reject_changed_selection(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.setup_run(root, barrier=10)
+            state = self.finish(self.launch(root, parallel=10, per_method=5,
+                                           extra=['--method', 'invmem', '--method', 'mem0']), root)
+            self.assertEqual(state['peak'], 10)
+            self.assertEqual(state['method_peaks'], {'mem0': 5, 'invmem': 5})
+            self.assertEqual(len(state['launches']), 10)
+            self.assertEqual(read_json(root / 'output/progress.json')['total_rounds'], 10)
+            self.assertEqual(read_json(root / 'output/acceptance.json')['expected'], 20)
+            snapshots = {p: file_hash(p) for p in (root / 'output').rglob('answers.fixture.json')}
+            state = self.finish(self.launch(root, parallel=10, per_method=5,
+                                           extra=['--resume', '--method', 'mem0', '--method', 'invmem']), root)
+            self.assertEqual(len(state['launches']), 10)
+            self.assertEqual(snapshots, {p: file_hash(p) for p in snapshots})
+            changed = self.launch(root, parallel=10, per_method=5,
+                                  extra=['--resume', '--method', 'mem0'])
+            self.assertNotEqual(changed.wait(timeout=5), 0)
+            self.assertEqual(len(read_json(root / 'processes.json')['launches']), 10)
+            self.assertEqual(snapshots, {p: file_hash(p) for p in snapshots})
+
+    def test_invalid_method_selection_never_launches_a_queue(self):
+        for selected in [('mem0', 'mem0'), ('unknown',), ('invmem',)]:
+            with self.subTest(selected=selected), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                self.setup_run(root)
+                methods = read_json(root / 'config/methods.json')
+                write_json(root / 'config/methods.json', {'mem0': methods['mem0']})
+                flags = [part for method in selected for part in ('--method', method)]
+                process = self.launch(root, parallel=5, per_method=5, extra=flags)
+                self.assertEqual(process.wait(timeout=5), 2)
+                self.assertFalse((root / 'processes.json').exists())
+
     def test_failed_stage_retries_and_complete_resume_preserves_answers(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

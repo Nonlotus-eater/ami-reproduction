@@ -1,4 +1,4 @@
-"""Run the four supported methods on shared frozen seeds with bounded concurrency.
+"""Run selected methods on shared frozen seeds with bounded concurrency.
 
 Each queue freezes its framework/adapter, saves answers before judging, and
 resumes successful stages. Uniform recovery only retries unfinished stages;
@@ -108,18 +108,19 @@ def round_summary(folder, method):
             if summary.get("complete") and all(v is not None for v in scores) else None}
 
 
-def export(output, state, expected, limits=None):
-    rounds = {m: {} for m in METHODS}
-    for method in METHODS:
+def export(output, state, expected, limits=None, *, methods=METHODS):
+    rounds = {m: {} for m in methods}
+    for method in methods:
         for seed in SEEDS:
             rounds[method][str(seed)] = round_summary(output / method / f"seed-{seed}", method)
     complete = sum(v.get("complete", False) for r in rounds.values() for v in r.values())
     active = [key for key, v in state.items() if v["status"] == "running"]
     terminal = all(v["status"] in {"complete", "incomplete", "failed"} for v in state.values())
-    status = "complete" if complete == 20 else "incomplete" if terminal else "running"
+    total_rounds = len(methods) * len(SEEDS)
+    status = "complete" if complete == total_rounds else "incomplete" if terminal else "running"
     progress = {"status": status, "pid": os.getpid(), "updated_at": now(),
                 "active": active, "active_count": len(active), "completed_rounds": complete,
-                "total_rounds": 20, "expected_scores": 4 * sum(expected.values()),
+                "total_rounds": total_rounds, "expected_scores": len(methods) * sum(expected.values()),
                 "scored": sum(v.get("scored", 0) for r in rounds.values() for v in r.values()),
                 "tasks": state, "rounds": rounds}
     if limits:
@@ -148,9 +149,10 @@ def export(output, state, expected, limits=None):
             dataset = item["overall_macro_benchmark"] or {}
             writer.writerow(dict(zip(fields, [LABELS[method], item["complete"], item["expected"], item["scored"],
                                                cap.get("mean"), cap.get("sample_sd"), dataset.get("mean"), dataset.get("sample_sd")])))
-    lines = ["# 四方法五轮新抽样实验", "", f"状态：{status}；更新：{progress['updated_at']}。",
-             f"已评分 {progress['scored']}/{progress['expected_scores']}；完整方法/seed 组合 {complete}/20；当前并发 {len(active)}。", "",
-             "seed 17–21 共用冻结输入；AMI、Mem0、InvMem、ReFind 独立冷启动。实际题目与历史数量以本次 prepared manifest 为准。",
+    lines = ["# 方法五轮实验", "", f"状态：{status}；更新：{progress['updated_at']}。",
+             f"已评分 {progress['scored']}/{progress['expected_scores']}；完整方法/seed 组合 {complete}/{total_rounds}；当前并发 {len(active)}。", "",
+             "运行方法：" + "、".join(LABELS[m] for m in methods) + "。",
+             "seed 17–21 共用冻结输入；各方法独立冷启动。实际题目与历史数量以本次 prepared manifest 为准。",
              "抽样策略见输入清单；检索、Reader、Answer、Judge、超时等运行条件以本次冻结 runtime 为准。",
              "每轮先计算七能力大类等权 Overall，再对五轮取均值与样本标准差；六数据集等权作为对照。未完整时不发布替代 Overall。", "",
              "| 方法 | 已评分/总题次 | 完整轮数 | 七能力 Overall | 六数据集对照 |", "|---|---:|---:|---:|---:|"]
@@ -171,6 +173,8 @@ def main():
     parser.add_argument("--prepared", type=Path, required=True)
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--method", choices=METHODS, action="append",
+                        help="Select a method; repeat to select several (default: all four)")
     parser.add_argument("--parallel", type=int, default=8)
     parser.add_argument("--parallel-per-method", type=int, default=2)
     parser.add_argument("--passes", type=int, default=3)
@@ -184,19 +188,24 @@ def main():
         parser.error("Concurrency and passes must be positive")
     if (args.adopt_running or args.resize_concurrency) and not args.resume:
         parser.error('Adoption and concurrency changes require --resume')
+    requested = args.method or METHODS
+    if len(set(requested)) != len(requested):
+        parser.error('Select methods without duplicates')
+    selected = tuple(method for method in METHODS if method in requested)
     output, config, prepared = (p.resolve() for p in [args.output, args.config, args.prepared])
     output.mkdir(parents=True, exist_ok=True)
     lock = (output / "supervisor.lock").open("a")
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    methods = read(config / "methods.json")
-    if set(methods) != set(METHODS):
-        raise ValueError("This experiment requires exactly AMI/Mem0/InvMem/ReFind")
+    available = read(config / "methods.json")
+    if not isinstance(available, dict) or set(selected) - set(available):
+        parser.error('Selected methods must be present in methods.json')
+    methods = {method: available[method] for method in selected}
     manifests = {seed: verify_prepared(prepared / f"seed-{seed}") for seed in SEEDS}
     expected = {seed: sum(len(b["items"]) for b in m["benchmarks"].values()) for seed, m in manifests.items()}
     hashes = {str(p): file_hash(p) for p in [*config.glob("*.json"),
               *(prepared / f"seed-{s}" / "manifest.json" for s in SEEDS),
               *Path(ROOT / "src/memory_benchmark/runtime/native_bridge").glob("*.py"),
-              *(Path(methods[m]["adapter_file"]) for m in ["invmem", "refind"])]}
+              *(Path(methods[m]["adapter_file"]) for m in ["invmem", "refind"] if m in methods)]}
     plan = {"methods": methods, "seeds": list(SEEDS), "prepared": str(prepared), "config": str(config),
             "expected_per_seed": expected, "parallel": args.parallel, "parallel_per_method": args.parallel_per_method,
             "max_queue_passes": args.passes, "file_sha256": hashes,
@@ -224,7 +233,7 @@ def main():
         write(output / "launch_plan.json", plan)
         shutil.copyfile(__file__, output / "run_five_seed_experiments.executed.py")
         state = {f"{method}:seed-{seed}": {"method": method, "seed": seed, "attempts": 0,
-                 "status": "pending", "next_start": 0} for seed in SEEDS for method in METHODS}
+                 "status": "pending", "next_start": 0} for seed in SEEDS for method in methods}
         jobs = {}
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src"), "PYTHONUNBUFFERED": "1", "PYTHONDONTWRITEBYTECODE": "1",
            "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "TOKENIZERS_PARALLELISM": "false"}
@@ -275,7 +284,7 @@ def main():
             print(json.dumps({"task": key, "event": "queue_start", "pid": child.pid, "pass": task["attempts"]}), flush=True)
         progress = export(output, state, expected,
                           limits={'parallel': args.parallel, 'parallel_per_method': args.parallel_per_method,
-                                  'max_queue_passes': args.passes})
+                                  'max_queue_passes': args.passes}, methods=tuple(methods))
         if not jobs and all(t["status"] != "pending" for t in state.values()):
             write(output / "acceptance.json", {"status": "passed" if progress["status"] == "complete" else "incomplete",
                                                "finished_at": now(), "scored": progress["scored"], "expected": progress["expected_scores"]})

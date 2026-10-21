@@ -38,6 +38,23 @@ python3.11 -m venv .venv
 
 同一组参数追加 `--resume` 可续跑，复用已保存的答案和有效评分。调度器依赖 Linux；接管活动队列、调整并发及输出说明见 [交接文档](docs/model_handoff_99.md)。
 
+### 单方法五并发
+
+用 `--method` 选择一个方法，并将两个并发上限都设为 5，即可同时运行该方法的 seed 17–21。以 InvMem 为例：
+
+```bash
+.venv/bin/python scripts/run_five_seed_experiments.py \
+  --prepared runs/prepared-five-seeds-new \
+  --config configs/local \
+  --output runs/invmem-five-seeds-new \
+  --method invmem \
+  --parallel 5 --parallel-per-method 5
+```
+
+`--method` 可选 `activememoryindex`（AMI）、`mem0`、`invmem`、`refind`；省略时运行全部四方法，也可重复指定以选择多个方法。输出和汇总只包含所选方法，每个 seed 使用独立记忆库。
+
+续跑时保留相同的 `--method`、输入、输出和运行参数，追加 `--resume`；更换所选方法时使用新的输出目录。
+
 ## 代码与说明
 
 - `src/memory_benchmark/methods/`：四方法适配器与公共工厂。

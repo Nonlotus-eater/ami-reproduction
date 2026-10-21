@@ -191,7 +191,9 @@ adapter 检查禁止联网，以替身验证原生 API、system 消息、时间�
   --parallel 8 --parallel-per-method 2
 ```
 
-脚本要求配置目录包含四方法 `methods.json`、逐方法配置及 `embedding_policy.json`，prepared 目录包含 seed 17–21。四方法共用冻结输入，各方法/seed 独立建库。`--parallel` 是总活动队列上限，`--parallel-per-method` 是单方法活动队列上限；20 个队列全部并发时设为 20 和 5，若只需总计 5 个活动队列，可设为 5 和 2。
+脚本默认运行全部四方法；使用 `--method invmem` 可只运行 InvMem，重复 `--method` 可选择多个方法。配置目录须包含 `methods.json` 和所选方法的逐方法配置；InvMem/ReFind 还需要 `embedding_policy.json`。prepared 目录包含 seed 17–21。各方法共用冻结输入，各方法/seed 独立建库。`--parallel` 是总活动队列上限，`--parallel-per-method` 是单方法活动队列上限；20 个队列全部并发时设为 20 和 5，若只需总计 5 个活动队列，可设为 5 和 2。
+
+单方法五并发使用 `--method invmem --parallel 5 --parallel-per-method 5`，并设置独立输出目录；其他方法名称为 `activememoryindex`、`mem0`、`refind`。报告只汇总所选方法，续跑须保持方法选择一致，更换方法须另建输出目录。完整示例见 [README](../README.md#单方法五并发)。
 
 控制器通过独立子进程调用公共队列或原生桥接，队列内部依次处理历史和各题阶段。默认最多执行 3 次队列 pass，只继续失败或未完成阶段，保留已有答案和有效评分。`--passes` 不是模型 API 自动重试次数。`progress.json` 保存活动队列和逐轮状态，`summary.json`、`overall_comparison.csv` 同时保存七能力等权与六数据集等权统计，主报告使用七能力等权。
 
