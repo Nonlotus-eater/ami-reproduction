@@ -32,7 +32,7 @@
   "files": {
     ".env.example": "07738371755cbf5783983f568229edcf28842ab4c6a7576431b3fcdf3dd703ac",
     ".gitignore": "7002222a90917a45b35e9ada94a08d692f482835adf8d5806d1df9324b8149a2",
-    "README.md": "70e25b45088e1ce9448c528308b12b004cebfea229e26c143e478ce113959571",
+    "README.md": "437354d85be0ae81cdb43121f3c70499fe22096c401a9462112f8f061764d574",
     "configs/README.md": "93d82b097e556c6e3188ad620598685031afcdefc5316ded27932a04a23d1244",
     "configs/datasets/public_sources.json": "2e8375df70f50bbc27009b099d703701e4456cbc3447f5bbab8a33ff79e5d091",
     "configs/methods.json": "450c3729bdcd4eef247c37d6a91b6da569c89a2e2b62e98070cdba26af9f44b5",
@@ -58,7 +58,7 @@
     "docs/references/AMI_Benchmark_99_reference.docx": "b484a8494aaf0042f249b909091fda423b0eab95e34dc85fccad7a804b73105a",
     "docs/references/README.md": "7c1b479acd3ef179315822080a0e46e1baa9cd911ea6fd7a65c0eb05914b864d",
     "docs/sample.md": "95f6897214d5afd3ff3ec07a7c12a7eee9d6fdc411b85a44a69cfcdbbda8e5f4",
-    "docs/sync_20261021.md": "b34598a10a1e01fac8d7dd11ea84df9477d2f1cbe29abf3ff91ddee810105d4c",
+    "docs/sync_20261021.md": "e0c8d88bbd663443b647a6b12d9d1eb1ce38dba044f49074baae92724b577bb8",
     "examples/smoke/locomo_refined/conversations.jsonl": "071491d4c101020a811df598e6fe53ddffb7b70961f6cf46b4a54f96fc4cfc68",
     "examples/smoke/locomo_refined/questions.jsonl": "2fc902abe7a9a7ad90ef2e11184b496c8ce6a869cbd0bc3ee8aa2d22d1d1398a",
     "examples/smoke/longmemeval_s.json": "f94afea9435efb859a8effa34effa24ecd7489b69039b52229c21ef34cbbe15c",
@@ -201,5 +201,5 @@
     "tests/test_runtime.py": "a3427e6c6376304311799751fb438d880fc12d0d60337e8ab2a3fdbd6e94fbdc",
     "tests/test_sampling.py": "f71c698076ebb865ef372d69d083806b93e5cbd49fe238f6d5aace6f77066ac3"
   },
-  "total_bytes": 7967042
+  "total_bytes": 7969163
 }
