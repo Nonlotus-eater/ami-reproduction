@@ -11,6 +11,7 @@ import time
 from memory_benchmark.runtime.native_bridge.common import read, write
 from memory_benchmark.pipeline.prepare import native_identity
 from memory_benchmark.runtime.artifacts import file_hash, rows
+from memory_benchmark.runtime.execution_overlay import verify_frozen_file
 from memory_benchmark.runtime.queue import initialize, check_manifest, ordered_jobs, publish, execute_task
 
 
@@ -97,7 +98,7 @@ def main():
     manifest = check_manifest(output, prepared, methods)
     assert manifest['execution']['method_embedding_pacing'] == policy
     for relative, digest in manifest['execution']['method_side_bridge_sha256'].items():
-        assert file_hash(output / 'frozen_method_bridge' / relative) == digest
+        verify_frozen_file(output / 'frozen_method_bridge' / relative, digest)
     lock = (output / 'queue.lock').open('a')
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     tasks = read(output / 'progress.json').get('tasks', {})

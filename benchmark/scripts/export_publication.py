@@ -23,19 +23,22 @@ def export(output, profile=None):
     output = Path(output).resolve()
     if output == ROOT or ROOT.is_relative_to(output):
         raise ValueError('Choose a new output directory, not the workspace or its ancestor')
-    files = {Path(p) for p in ('.env.example', 'pyproject.toml', 'README.md',
+    files = {Path(p) for p in ('.env.example', '.dockerignore', 'pyproject.toml', 'README.md',
         'configs/README.md', 'configs/runtime.json', 'configs/suites/smoke.json',
         'configs/datasets/public_sources.json', 'configs/small_benchmark_v1.json', 'datasets/README.md',
         'docs/model_handoff_99.md', 'docs/evaluation_contract.md',
         'docs/capability_label_mapping.md', 'docs/publication_scope.md',
+        'docs/memory_checkpoint_recovery.md', 'docs/request_retry_deployment.md',
         'docs/configuration_validation_20261017.md',
         'docs/benchmark_guide.md', 'docs/sample.md', 'docs/sync_20261021.md', 'samples/README.md',
         'methods/my_method/README.md', 'methods/my_method/ATTRIBUTION.md',
-        'methods/my_method/ami/LICENSE',
+        'methods/my_method/Dockerfile', 'methods/my_method/compose.yaml',
         'patches/ami-system-role.patch', 'patches/invmem-native-interface.patch',
         'patches/refind-native-interface.patch', 'scripts/configure_release.py',
         'scripts/prepare_five_seeds.py', 'scripts/sample_small_benchmark.py',
         'scripts/prepare_sampled_seeds.py', 'scripts/run_five_seed_experiments.py',
+        'scripts/enable_memory_checkpoints.py', 'scripts/resume_with_memory_checkpoints.py',
+        'scripts/enable_request_retries.py',
         'scripts/release_smoke.py',
         'scripts/download_public_datasets.py', 'scripts/export_publication.py')}
     for folder in ('src', 'sources', 'examples', 'samples', 'methods/my_method', 'configs/reproduction', 'tests', 'patches/tests'):
@@ -46,7 +49,7 @@ def export(output, profile=None):
     if profile == 'core':
         files = {path for path in files if not str(path).startswith(
             ('src/aml_sdk/', 'examples/sdk/', 'methods/my_method/'))
-            and str(path) not in {'src/memory_benchmark/methods/aml_http.py', 'tests/test_sdk.py'}}
+            and str(path) not in {'.dockerignore', 'src/memory_benchmark/methods/aml_http.py', 'tests/test_sdk.py'}}
         for relative in ('docs/references/AMI_Benchmark_99_reference.docx', 'docs/references/README.md'):
             if (ROOT / relative).is_file():
                 files.add(Path(relative))
@@ -151,7 +154,7 @@ def export(output, profile=None):
               'sdk': {'entrypoint': 'aml-sdk', 'extra': 'sdk', 'storage': 'method_owned',
                       'reference_backend': 'examples/sdk/invmem_backend.py',
                       'research_backend': 'methods/my_method/backend.py',
-                      'research_starting_point': 'ActiveMemoryIndex reproduction-v1', 'track': 'textual'} if profile == 'full' else None,
+                      'research_starting_point': 'InvMem / vanilla-rag-memory 0.6.0', 'track': 'textual'} if profile == 'full' else None,
               'public_source_sampling': {'entrypoint': 'scripts/sample_small_benchmark.py',
                                          'config': 'configs/small_benchmark_v1.json',
                                          'strategy': 'v1-history30-leaf2',

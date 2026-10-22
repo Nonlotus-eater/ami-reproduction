@@ -31,5 +31,6 @@
   "judge_protocol_max_attempts": 3,
   "persist_answer_responses": true,
   "provider_error_diagnostics": true,
-  "add_chunk_policy": "aml_20_messages_2000_words_v1"
+  "add_chunk_policy": "aml_20_messages_2000_words_v1",
+  "max_retries": 10
 }

@@ -2,6 +2,7 @@
 from pathlib import Path
 from urllib.parse import urlsplit
 from .embedding import settings, STRATEGY
+from .retry import RetryPolicy
 
 ALLOWED_MODELS = {"gpt-4o-mini": {"gpt-4o-mini", "gpt-4o-mini-2024-07-18"}}
 # Model-native ceiling, used when Answer has no additional benchmark output cap.
@@ -47,9 +48,14 @@ def validate_profile(profile, model):
 
 def public_identity(profile, runtime):
     dimensions, batch = settings(profile)
-    return {"model": runtime["model"], "llm_base_url": profile["OPENAI_BASE_URL"],
+    identity = {"model": runtime["model"], "llm_base_url": profile["OPENAI_BASE_URL"],
             "embedding_base_url": profile["AMI_EMBED_BASE_URL"],
             "embedding_model": profile.get("AMI_EMBED_MODEL", "text-embedding-v4"),
             "embedding_dimensions": dimensions, "embedding_batch": batch,
             "embedding_preprocess": STRATEGY, "embedding_query_preprocess": "identity",
             "response_model_allowlist": sorted(ALLOWED_MODELS[runtime["model"]])}
+    # Old frozen runs record retry-policy changes in their execution overlay.
+    # Preserve their provider/store identity so existing checkpoints still load.
+    if "max_retries" in runtime:
+        identity["request_retry_policy"] = RetryPolicy.from_profile(profile, runtime["max_retries"]).public()
+    return identity

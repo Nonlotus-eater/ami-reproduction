@@ -10,6 +10,8 @@ from memory_benchmark.pipeline.context import normalize
 from memory_benchmark.pipeline.ingestion import plan as ingestion_plan
 from memory_benchmark.runtime.artifacts import append_row, file_hash, rows
 from memory_benchmark.runtime.model_client import Gateway
+from memory_benchmark.runtime.memory_checkpoint import MemoryCheckpoint
+from memory_benchmark.runtime.memory_retry import gateway_for_memory
 from memory_benchmark.schemas import History, Query
 
 
@@ -23,7 +25,7 @@ def main(path):
         'python': sys.executable, 'only_memory_and_retrieval': True,
         'packages': {n: metadata.version(n) for n in ['openai', 'httpx', 'tiktoken', 'fastapi', 'pydantic']}}
     write(output / 'report.json', report)
-    gateway = adapter = None
+    gateway = adapter = checkpoint = None
     start = time.monotonic()
     try:
         for field in ('history', 'queries'):
@@ -33,20 +35,39 @@ def main(path):
         chunks, chunk_audit = ingestion_plan(history, job['runtime'].get('add_chunk_policy'))
         write(output / 'add_plan.json', chunk_audit)
         report['add_chunk_policy'] = chunk_audit['policy']
-        gateway = Gateway(job['runtime'], output / 'usage.json', expected_identity=job['provider_identity'])
+        checkpoint = MemoryCheckpoint(job, chunk_audit, len(chunks))
+        report['scope'] = checkpoint.scope
+        if checkpoint.enabled:
+            report['resumed_add_chunks'] = checkpoint.completed
+            report['memory_checkpoint'] = checkpoint.describe()
+        gateway = gateway_for_memory(job, output / 'usage.json', Gateway)
+        if hasattr(gateway.budget, 'retry_policy'):
+            report['request_retry_policy'] = gateway.budget.retry_policy.public()
         pace_method_embeddings(gateway, job.get('method_embedding_pacing'))
         adapter = adapter_class(job['method_config']['adapter_file'], job['method'])(
-            job['method_config'], history, output, job['scope'], gateway)
-        for session in chunks:
+            job['method_config'], history, checkpoint.storage, checkpoint.scope, gateway)
+        for index, session in enumerate(chunks):
+            if index < checkpoint.completed:
+                continue
             gateway.budget.phase = 'memory_add'
             adapter.add(session)
             gateway.budget.check()
+            if checkpoint.enabled:
+                checkpoint.commit(index + 1)
+                report['memory_checkpoint'] = checkpoint.describe()
+                write(output / 'report.json', report)
             append_row(output / 'events.jsonl', {'stage': 'add', 'session_id': session.session_id,
                 'chunk_id': getattr(session, 'chunk_id', None),
                 'messages': len(session.messages), 'timestamp': session.timestamp})
-        gateway.budget.phase = 'memory_finalize'
-        adapter.finalize()
-        append_row(output / 'events.jsonl', {'stage': 'finalize'})
+        if not checkpoint.finalized:
+            gateway.budget.phase = 'memory_finalize'
+            adapter.finalize()
+            gateway.budget.check()
+            if checkpoint.enabled:
+                checkpoint.commit(len(chunks), finalized=True)
+                report['memory_checkpoint'] = checkpoint.describe()
+                write(output / 'report.json', report)
+            append_row(output / 'events.jsonl', {'stage': 'finalize'})
         for query in queries:
             assert query.benchmark == history.benchmark and query.episode_id == history.episode_id
             gateway.budget.phase = 'memory_search'
@@ -59,11 +80,16 @@ def main(path):
             stack=[{'file': f.filename, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__)])
     finally:
         if adapter:
-            adapter.close()
+            try:
+                adapter.close()
+            except Exception as error:
+                report.update(status='failed', close_error_type=type(error).__name__)
         if gateway:
             gateway.close()
             if gateway.budget.failed:
                 report.update(status='failed', provider_failure=gateway.budget.failed)
+        if checkpoint:
+            checkpoint.close()
         report['seconds'] = time.monotonic() - start
         write(output / 'report.json', report)
     return 0 if report['status'] == 'complete' else 1

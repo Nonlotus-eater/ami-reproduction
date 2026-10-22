@@ -23,5 +23,6 @@
   "lifecycle": "offline-history-QA: chronological sessions, native finalize, queries",
   "naive_timestamp_timezone": "UTC",
   "answer_output_policy": "model_maximum",
-  "judge_output_policy": "model_maximum"
+  "judge_output_policy": "model_maximum",
+  "max_retries": 10
 }

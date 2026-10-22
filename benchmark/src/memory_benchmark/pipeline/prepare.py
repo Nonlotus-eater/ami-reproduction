@@ -143,8 +143,10 @@ def verify_prepared(output):
     manifest = validate_manifest(read_json(output / "manifest.json"))
     if contract_hash(manifest) != read_json(output / "prepared.json")["contract_sha256"]:
         raise ValueError("Prepared manifest was modified")
-    if manifest["framework"] != code_identity():
-        raise ValueError("Framework changed: prepare a new input contract")
+    actual_framework = code_identity()
+    if manifest["framework"] != actual_framework:
+        from ..runtime.execution_overlay import verify_framework_overlay
+        verify_framework_overlay(ROOT, manifest["framework"], actual_framework)
     for relative, digest in manifest["inputs"].items():
         if file_hash(output / relative) != digest:
             raise ValueError("Prepared input changed")

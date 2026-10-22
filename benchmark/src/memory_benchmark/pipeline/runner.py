@@ -45,6 +45,9 @@ def validate_runtime(runtime):
     from .ingestion import POLICY as ADD_POLICY
     if runtime.get("add_chunk_policy") not in {None, ADD_POLICY}:
         raise ValueError("Unknown Add chunk policy")
+    from ..runtime.memory_checkpoint import POLICY as CHECKPOINT_POLICY
+    if runtime.get("memory_checkpoint_policy") not in {None, CHECKPOINT_POLICY}:
+        raise ValueError("Unknown memory checkpoint policy")
     from ..benchmarks.clbench_judge import JUDGE_PROTOCOL, STRICT_JUDGE_PROTOCOL
     if runtime.get("clbench_judge_protocol") not in {None, JUDGE_PROTOCOL, STRICT_JUDGE_PROTOCOL}:
         raise ValueError("Unknown CLBench Judge protocol")

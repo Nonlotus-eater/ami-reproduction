@@ -15,6 +15,8 @@ from ..pipeline.ingestion import plan as ingestion_plan
 from ..schemas import History, Query
 from .artifacts import append_row, file_hash, read_json, rows, write_json
 from .model_client import Gateway
+from .memory_checkpoint import MemoryCheckpoint
+from .memory_retry import gateway_for_memory
 from .resources import limits
 
 
@@ -44,7 +46,7 @@ def execute(job):
     (output / "attempt.lock").open("x").close()
     if job["offline"]:
         deny_network()
-    gateway, adapter = None, None
+    gateway, adapter, checkpoint = None, None, None
     report = {"status": "running", "method": job["method"], "scope": job["scope"],
               "offline_fixture": job["offline"], "environment": environment(), "phase_seconds": {}}
     write_json(output / "report.json", report)
@@ -67,24 +69,43 @@ def execute(job):
         chunks, chunk_audit = ingestion_plan(history, job["runtime"].get("add_chunk_policy"))
         write_json(output / "add_plan.json", chunk_audit)
         report["add_chunk_policy"] = chunk_audit["policy"]
+        checkpoint = MemoryCheckpoint(job, chunk_audit, len(chunks))
+        report["scope"] = checkpoint.scope
+        if checkpoint.enabled:
+            report["resumed_add_chunks"] = checkpoint.completed
+            report["memory_checkpoint"] = checkpoint.describe()
         if not job["offline"] and job["method"] != "aml_http":
-            gateway = Gateway(job["runtime"], output / "usage.json",
-                              expected_identity=job["provider_identity"])
+            gateway = gateway_for_memory(job, output / "usage.json", Gateway)
+            if hasattr(gateway.budget, "retry_policy"):
+                report["request_retry_policy"] = gateway.budget.retry_policy.public()
             gateway.install_native()
             report["embedding"] = {key: value for key, value in gateway.identity.items()
                                    if key.startswith("embedding_")}
             write_json(output / "report.json", report)
-        adapter = measured("init", create, job["method"], job["method_config"], history, output,
-                         job["scope"], gateway, offline=job["offline"])
-        for session in chunks:
+        adapter = measured("init", create, job["method"], job["method_config"], history, checkpoint.storage,
+                         checkpoint.scope, gateway, offline=job["offline"])
+        for index, session in enumerate(chunks):
+            if index < checkpoint.completed:
+                continue
             before = report["phase_seconds"].get("add", 0)
             measured("add", adapter.add, session)
+            if checkpoint.enabled:
+                if gateway:
+                    gateway.budget.check()
+                measured("checkpoint", checkpoint.commit, index + 1)
+                report["memory_checkpoint"] = checkpoint.describe()
             append_row(output / "events.jsonl", {"stage": "add", "session_id": session.session_id,
                 "chunk_id": getattr(session, "chunk_id", None),
                 "timestamp": session.timestamp, "messages": len(session.messages),
                 "seconds": report["phase_seconds"]["add"] - before})
-        measured("finalize", adapter.finalize)
-        append_row(output / "events.jsonl", {"stage": "finalize"})
+        if not checkpoint.finalized:
+            measured("finalize", adapter.finalize)
+            if checkpoint.enabled:
+                if gateway:
+                    gateway.budget.check()
+                measured("checkpoint", checkpoint.commit, len(chunks), finalized=True)
+                report["memory_checkpoint"] = checkpoint.describe()
+            append_row(output / "events.jsonl", {"stage": "finalize"})
         for query in queries:
             if query.benchmark != history.benchmark or query.episode_id != history.episode_id:
                 raise ValueError("Query is outside worker history scope")
@@ -111,6 +132,8 @@ def execute(job):
             gateway.close()
             if gateway.budget.failed:
                 report.update(status="failed", provider_failure=gateway.budget.failed)
+        if checkpoint:
+            checkpoint.close()
         report["seconds"] = round(time.monotonic() - started, 3)
         consumed = resource.getrusage(resource.RUSAGE_SELF)
         report["resources"] = {"user_cpu_seconds": consumed.ru_utime, "system_cpu_seconds": consumed.ru_stime,

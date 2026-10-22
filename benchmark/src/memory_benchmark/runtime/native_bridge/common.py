@@ -64,7 +64,9 @@ def pace_method_embeddings(gateway, policy):
     if not policy:
         return
     import httpx
-    original = gateway.transports['embedding']
+    guard = gateway.transports['embedding']
+    per_attempt = hasattr(guard, 'sender')
+    original = guard.sender if per_attempt else guard
     folder = Path(policy['state_directory'])
     folder.mkdir(parents=True, exist_ok=True)
     class MethodPacedTransport(httpx.BaseTransport):
@@ -77,10 +79,13 @@ def pace_method_embeddings(gateway, policy):
                     time.sleep(wait)
                 state['next_start'] = time.monotonic() + policy['minimum_interval_seconds']
                 state['requests'] = state.get('requests', 0) + 1
+                response = None
                 try:
-                    return original.handle_request(request)
+                    response = original.handle_request(request)
+                    return response
                 finally:
-                    if str(gateway.budget.failed or '').startswith('embedding HTTP 429'):
+                    if ((response is not None and response.status_code == 429)
+                            or str(gateway.budget.failed or '').startswith('embedding HTTP 429')):
                         state['next_start'] = time.monotonic() + policy['cooldown_seconds']
                         state['rate_limit_events'] = state.get('rate_limit_events', 0) + 1
                     write(folder / 'state.json', state)
@@ -88,4 +93,7 @@ def pace_method_embeddings(gateway, policy):
             original.close()
     # Gateway's own SDK transport closes over this same dictionary. No source,
     # payload, model, response validation or embedding preprocessing is replaced.
-    gateway.transports['embedding'] = MethodPacedTransport()
+    if per_attempt:
+        guard.sender = MethodPacedTransport()
+    else:
+        gateway.transports['embedding'] = MethodPacedTransport()

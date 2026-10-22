@@ -4,6 +4,8 @@
 
 本轮新增统一并发、记忆写入分段与长文本处理、评分与请求诊断、四方法接入整理、公开数据选题与运行配置。详见 [同步说明](docs/sync_20261021.md)。
 
+2026-10-22 发布请求重试与预算修复，保留已有错误诊断，并支持已有实验在下一次记忆 worker 启动时接入。配置、验证结果、生效边界及回退步骤见 [上线文档](docs/request_retry_deployment.md)。
+
 ## 配置与数据
 
 在 Benchmark 根目录使用 Python 3.11 安装公共依赖；四方法原生源码与环境按 [交接文档](docs/model_handoff_99.md) 单独准备。
@@ -37,6 +39,8 @@ python3.11 -m venv .venv
 每个“方法 × seed”为独立队列，共 20 个。`--parallel` 控制总活动队列数，`--parallel-per-method` 控制单方法活动队列数；全部同时启动使用 `--parallel 20 --parallel-per-method 5`。队列并发数与实时 API 请求数不同，运行会调用真实模型 API。
 
 同一组参数追加 `--resume` 可续跑，复用已保存的答案和有效评分。调度器依赖 Linux；接管活动队列、调整并发及输出说明见 [交接文档](docs/model_handoff_99.md)。
+
+同份历史内的 Add 分块恢复可通过 runtime 的 `memory_checkpoint_policy: "add_chunks_sqlite_snapshot_v1"` 启用，支持四方法。每块成功后保存数据库快照，失败时从最近的完整分块继续；建库完成后的检索失败也会复用建库状态。配置、恢复边界与已有实验接入见 [分块恢复说明](docs/memory_checkpoint_recovery.md)。
 
 ### 单方法五并发
 

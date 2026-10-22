@@ -38,8 +38,10 @@
 
 队列读取 prepared 中冻结的 runtime；修改配置不会更新旧 prepared，条件变化须新建目录。凭据仅填本地 `.env`，详见 [当前模型交接](../docs/model_handoff_99.md)。
 
+请求重试需要在上述 runtime 中设置 `"max_retries": 10`，并在 runtime 的 `env_file` 所指向的本地 `.env` 中设置 `AMI_ALLOW_RETRIES=1`。两份公共 runtime 模板已设置为 10；配置生成器会继承。10 表示首次请求失败后最多再试 10 次；OpenAI SDK 的 `max_retries` 保持 0，由 transport 统一执行和计账。已有本机配置不会自动被覆盖；旧实验接入步骤见 [重试上线文档](../docs/request_retry_deployment.md)。
+
 ## 历史与入口维护
 
 `family40-history40-50-leaf8-five-seeds-v4/` 及其历史结果仅供追溯，不作为默认部署入口。`reproduction/sampling.json` 中的 historical_sampler 记录原始生成工具；该旧脚本已清理，精确复现由固定 ID 与来源指纹保证。
 
-`scripts/` 保留配置、下载、公开来源抽样、固定/新抽样冻结、四方法运行、真实 smoke、发布导出八个入口。旧 99 题恢复及批次专用补跑/补评脚本已删除；当前队列保留 resume/retry 能力。`tests/` 按聚合、数据、流水线、队列、抽样、Reader、运行时和 CLBench 评分组织，保留现用逻辑的检查。
+`scripts/` 保留配置、下载、公开来源抽样、固定/新抽样冻结、四方法运行、真实 smoke、发布导出，以及已有实验的分块恢复与请求重试接入入口。旧 99 题恢复及批次专用补跑/补评脚本已删除；当前队列保留 resume/retry 能力。`tests/` 按聚合、数据、流水线、队列、抽样、Reader、运行时和 CLBench 评分组织，保留现用逻辑的检查。

@@ -47,7 +47,7 @@ class Gateway:
         profile.update(AMI_TEST_INPUT_CNY_PER_MILLION=str(rates["input"]),
                        AMI_TEST_OUTPUT_CNY_PER_MILLION=str(rates["output"]),
                        AMI_TEST_EMBED_CNY_PER_MILLION=str(rates["embedding"]))
-        self.budget = CallBudget(profile)
+        self.budget = CallBudget(profile, max_retries=runtime.get("max_retries", 0))
         if runtime.get("provider_error_diagnostics"):
             self.budget.provider_error_redactions = [value for key, value in self.profile.items()
                 if value and (key.endswith("_API_KEY") or key.endswith("_AUTH_TOKEN")
@@ -58,15 +58,13 @@ class Gateway:
         transports = {"llm": make_transport(self.budget, "llm", llm_url, runtime["model"],
                           disable_thinking_required=False,
                           allowed_response_models=ALLOWED_MODELS[runtime["model"]],
-                          timeout=runtime["request_timeout_seconds"]),
+                          timeout=runtime["request_timeout_seconds"],
+                          request_pacing=runtime.get("provider_request_pacing")),
                       "embedding": make_transport(self.budget, "embedding", embedding_url,
                           self.profile.get("AMI_EMBED_MODEL", "text-embedding-v4"),
                           embedding_dimensions=self.embedding_dimensions, embedding_batch=self.embedding_batch,
                           timeout=runtime["request_timeout_seconds"])}
         self.transports = transports
-        if runtime.get("provider_request_pacing"):
-            from .pacing import paced_transport
-            transports["llm"] = paced_transport(transports["llm"], runtime["provider_request_pacing"])
         class Transport(httpx.BaseTransport):
             def handle_request(self, request):
                 kind = "llm" if str(request.url) == llm_url else "embedding"
@@ -150,7 +148,12 @@ class Gateway:
         write_json(self.output, {"calls": self.budget.rows, "failure": self.budget.failed,
             "estimated_cny": sum(r.get("estimated_cny", 0) for r in self.budget.rows),
             "reserved_cny": self.budget.reserved, "request_and_cost_limits": "none",
-            "provider_identity": self.identity})
+            "provider_identity": self.identity,
+            "request_retry_policy": self.budget.retry_policy.public(),
+            "memory_retry_activation": getattr(self, "memory_retry_activation", None),
+            "unknown_usage_attempts": sum(r.get("usage_status") == "unknown" for r in self.budget.rows),
+            "unknown_usage_reservation_cny": sum(r["reserved_cny"] for r in self.budget.rows
+                                                 if r.get("usage_status") == "unknown")})
 
     def embed(self, texts):
         self.budget.check()
