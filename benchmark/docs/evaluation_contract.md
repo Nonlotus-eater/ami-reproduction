@@ -43,7 +43,7 @@ LongMemEval 保留重复会话的 source_session_id，并对出现次数作唯�
 
 检索证据保留方法原生返回顺序，tokenizer 为 o200k_base。当前公共默认的 top_k、Reader 证据预算、完整输入上限为 null，不额外截断。
 四方法已验证的实验配置另存于 `configs/reproduction/runtime.json`，分别为 100、4096、119000；有预算时跳过放不下的整条证据。
-InvMem/ReFind 固定原生 HTTP schema 要求整数 top_k；当前 adapter 对 null 按本任务作用域的实际记忆数量调用同一原生检索实现。配置生成器仍使用已验证的有界配置，不声称历史成绩来自当前无截断默认条件。
+InvMem/ReFind 固定原生 HTTP schema 要求整数 top_k；当前 adapter 对 null 按本任务作用域的实际记忆数量调用同一原生检索实现。配置生成器默认保留 top_k=100，但 Reader 证据预算与完整输入上限均为 null，并启用模型窗口分段读取；旧实验参数仅在显式选择复现 runtime 时应用，不声称历史成绩来自当前无截断默认条件。
 调用量和费用写入运行账本，没有次数或费用 cap；API 自动重试为 0。
 输入预算、模型输出长度和超时是独立约束。
 

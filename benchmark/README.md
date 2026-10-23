@@ -24,7 +24,7 @@ python3.11 -m venv .venv
 
 默认按 `configs/reproduction/` 的固定清单恢复 seed 17–21，五轮分别 202 / 199 / 196 / 201 / 205 题，共 1,003 题次、791 道不同题目。四方法共用冻结输入，每轮独立建库。[seed 17 样例](samples/README.md) 包含完整的 22 份历史和 202 组 QA pairs。
 
-重新抽样使用 `scripts/sample_small_benchmark.py`、`scripts/prepare_sampled_seeds.py` 及 `configs/small_benchmark_v1.json`。配置生成器采用 `configs/reproduction/runtime.json` 的有界参数；`configs/runtime.json` 提供无额外检索及输入截断的默认值，详见 [配置说明](configs/README.md)。
+重新抽样使用 `scripts/sample_small_benchmark.py`、`scripts/prepare_sampled_seeds.py` 及 `configs/small_benchmark_v1.json`。配置生成器默认取消 Reader 证据预算与完整输入硬上限，超长证据按模型窗口分段读取；检索数量仍为 top_k=100。旧有界运行参数保存在 `configs/reproduction/runtime.json`，详见 [配置说明](configs/README.md)。
 
 ## 四方法五轮并发
 

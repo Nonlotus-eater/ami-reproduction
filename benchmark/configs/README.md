@@ -30,10 +30,11 @@
 
 配置生成器输出四方法 `methods.json`、逐方法 JSON、`suite.json`、`runtime.json` 和桥接 `embedding_policy.json`。可用 `--ami-root ..` 指向 fork 根 AMI；脚本不读取或复制密钥。
 
-抽样策略回改不改动 LLM 运行条件：
+默认部署取消 Reader 的额外 token 限制：
 
 - `configs/runtime.json`：公共模板，top_k、Reader 证据、完整输入上限为 null。
-- `configs/reproduction/runtime.json`：四方法已验证的有界配置，top_k=100、Reader=4096、完整输入=119000、请求/worker 超时 180/86400 秒。生成器采用这一份。
+- `configure_release.py` 生成的本机 runtime：top_k=100、`reader_token_budget=null`、`answer_input_token_limit=null`，请求/worker 超时 180/86400 秒。Reader 使用 `model_window_v2`，超出模型窗口的证据分段读取。
+- `configs/reproduction/runtime.json`：保留旧实验的有界配置，top_k=100、Reader=4096、完整输入=119000。仅显式选择这一份 runtime 时应用这些旧限制；默认生成器会覆盖两个 Reader token 上限。
 - InvMem/ReFind adapter 对 null top_k 使用当前作用域的实际记忆数量；ReFind 保留原生 agent 策略。
 
 队列读取 prepared 中冻结的 runtime；修改配置不会更新旧 prepared，条件变化须新建目录。凭据仅填本地 `.env`，详见 [当前模型交接](../docs/model_handoff_99.md)。

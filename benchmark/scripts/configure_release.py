@@ -45,10 +45,13 @@ def main():
                          'embedding_backend': 'shared_api' if name == 'invmem' else 'not_used_by_native_bm25_agent'}
     runtime = json.loads((ROOT / 'configs/reproduction/runtime.json').read_text())
     defaults = json.loads((ROOT / 'configs/runtime.json').read_text())
-    for key in ('answer_context_policy', 'answer_output_policy', 'answer_min_output_tokens',
+    # Keep compatible retrieval counts/timeouts, but use current Reader limits and policies.
+    for key in ('reader_token_budget', 'answer_input_token_limit',
+                'answer_context_policy', 'answer_output_policy', 'answer_min_output_tokens',
                 'answer_part_truncation_policy', 'clbench_judge_protocol', 'judge_protocol_max_attempts',
                 'persist_answer_responses', 'provider_error_diagnostics', 'add_chunk_policy'):
         runtime[key] = defaults[key]
+    runtime['context_policy'] = 'ranked evidence; retrieval count follows top_k; no benchmark context truncation'
     runtime['env_file'] = str(args.env_file.resolve())
     suite = json.loads((ROOT / 'configs/reproduction/suite.example.json').read_text())
     for config in suite['benchmarks'].values():

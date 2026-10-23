@@ -16,9 +16,13 @@ import unittest
 from unittest.mock import patch
 
 from memory_benchmark.benchmarks.native_contract import ROOT
+from memory_benchmark.pipeline.context import FixtureTokenizer
 from memory_benchmark.pipeline.ingestion import POLICY, plan
 from memory_benchmark.pipeline.prepare import prepare
+from memory_benchmark.pipeline.reader import answer
+from memory_benchmark.pipeline.windowed_reader import count_prompt
 from memory_benchmark.runtime.artifacts import file_hash, read_json, write_json, write_rows
+from memory_benchmark.runtime.model_client import Reply
 from memory_benchmark.runtime import worker
 from memory_benchmark.runtime.native_bridge import worker as bridge_worker
 from memory_benchmark.schemas import Evidence, History, Message, Query, Session
@@ -329,6 +333,30 @@ class ConfigPortabilityTests(unittest.TestCase):
             self.assertEqual(runtime['add_chunk_policy'], POLICY)
             self.assertEqual(runtime['top_k'], 100)
             self.assertEqual(runtime['answer_context_policy'], 'model_window_v2')
+            self.assertIsNone(runtime['reader_token_budget'])
+            self.assertIsNone(runtime['answer_input_token_limit'])
+
+            source = 'fact ' * 26000
+            calls = []
+            class Client:
+                def complete(inner, prompt, **options):
+                    calls.append((prompt, options))
+                    return Reply('evidence notes' if options['stage'] == 'answer_map' else 'answer',
+                                 runtime['model'])
+            tokenizer = FixtureTokenizer()
+            result = answer(Query('longmemeval_s', 'e', 'q', 'What are the facts?'),
+                            [Evidence('full', source)], ('user', 'assistant'),
+                            Client(), tokenizer, runtime)
+            self.assertEqual(result['included_ids'], ['full'])
+            self.assertEqual(result['omitted_ids'], [])
+            self.assertGreater(result['context_tokens'], 119000)
+            self.assertEqual(result['reader_mode'], 'hierarchical_evidence')
+            parts = [prompt[1]['content'].split('Evidence part:\n', 1)[1]
+                     for prompt, options in calls if options['stage'] == 'answer_map']
+            self.assertEqual(''.join(parts), source)
+            for prompt, options in calls:
+                self.assertLessEqual(count_prompt(prompt, tokenizer) + options['max_tokens'] + 256,
+                                     128000)
 
     def test_sampling_replays_and_freezing_rejects_modified_source_or_selected_list(self):
         from test_sampling import PublicSourceSamplingTests

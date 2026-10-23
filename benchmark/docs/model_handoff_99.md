@@ -1,6 +1,6 @@
 # Benchmark 模型交接：v1 抽样与四方法部署
 
-更新日期：2026-10-21（Asia/Shanghai）。保留旧文件名以兼容链接；默认恢复此前 GitHub 发布的固定五轮，也支持同一 v1 规则的公开来源重新抽样。
+更新日期：2026-10-23（Asia/Shanghai）。保留旧文件名以兼容链接；默认恢复此前 GitHub 发布的固定五轮，也支持同一 v1 规则的公开来源重新抽样。
 部署前先确认源码包含下面的新入口和配额文件；旧发布包可能仍使用历史入口，不能仅凭同名交接文档判断版本一致。
 
 ## 1. 当前入口与数据依赖
@@ -35,8 +35,9 @@ CLBench Judge 协议读取本次冻结 runtime；最新 continuation 使用 inde
 ## 3. 抽样参数与运行条件
 
 抽样配额和 LLM runtime 分别配置。实际 prepared/运行 manifest 的冻结 runtime 才是依据，修改配置文件不会改变旧运行。
-`configure_release.py` 仍生成四方法已验证的有界 runtime（top_k=100、Reader=4096、完整输入=119000）。
-`configs/runtime.json` 则为公共无额外检索/输入截断模板；需要使用它时，把所需字段写入本机 runtime 后重新 prepare，不能把两种条件混为一轮。
+`configure_release.py` 默认生成 top_k=100、`reader_token_budget=null`、`answer_input_token_limit=null` 的 runtime，并启用 `model_window_v2`。检索证据不再按 4096 token 截断，完整输入不再被 119000 的硬上限提前拒绝；超出模型窗口时分段读取全部来源文本后回答。
+`configs/reproduction/runtime.json` 保留旧实验参数（top_k=100、Reader=4096、完整输入=119000），需要旧限制时显式选择这一份；历史成绩仍对应各自冻结的 runtime。
+`configs/runtime.json` 为公共无额外检索/输入截断模板。已有本机配置不会自动覆盖；采用新的 Reader 条件时生成新配置并重新 prepare，不能把两种条件混为一轮。
 当前 InvMem/ReFind adapter 已支持 null top_k：根据本任务作用域中的记忆数量调用同一原生检索实现。
 
 模型为 GPT-4o mini，tokenizer 为 o200k_base，Answer/Judge temperature=0。

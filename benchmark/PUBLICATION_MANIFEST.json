@@ -32,8 +32,8 @@
   "files": {
     ".env.example": "6579aab19c5cc1603c4349644bae9a094e0d9d89a7f13ccc92b52d73385f9fe0",
     ".gitignore": "7002222a90917a45b35e9ada94a08d692f482835adf8d5806d1df9324b8149a2",
-    "README.md": "b0f962b2d382d6a24c858e73239a1188aeaeba28cf464a66ff06e1b59ebc5577",
-    "configs/README.md": "f4d9178008aa0a0c2c0b4fd52bb08318620067d018a63c96ab718d0b08e50cee",
+    "README.md": "828a6375af5ef5915856a92c989fa2c30b0638ce035442b4e552c4889178d137",
+    "configs/README.md": "8ddf230d610ad9a2cd8c55841fb12e50451738921dc48f3477df4b6b0f6660ab",
     "configs/datasets/public_sources.json": "2e8375df70f50bbc27009b099d703701e4456cbc3447f5bbab8a33ff79e5d091",
     "configs/methods.json": "450c3729bdcd4eef247c37d6a91b6da569c89a2e2b62e98070cdba26af9f44b5",
     "configs/reproduction/frozen_samples.json": "9d75a129fb0401130047bae444d4e2cb1ed8bf57cd7ff59da47a9d93041c3b47",
@@ -52,9 +52,9 @@
     "docs/benchmark_guide.md": "d50fb0273a148a6830b314f23c060be0029cfae9f92d2e5f97449158c9f8a128",
     "docs/capability_label_mapping.md": "c6cc3db25cbe90b73337f6b592020cf17ffd506a2835517f34c6afc1b6f607d6",
     "docs/configuration_validation_20261017.md": "b8641576cac1aa5f51d7f62c37be186c0e22ca5d86e1b5cd05054180353a42f9",
-    "docs/evaluation_contract.md": "7a0daf55414e859ec31114f569b8076636e089d11e7d238a2321c576756bae9c",
+    "docs/evaluation_contract.md": "3a8aced4c1c1c099c4ef968b174796e7713e1493a9fa592dcc68596aecda06cb",
     "docs/memory_checkpoint_recovery.md": "f993cb61f6538dfe644935ec16af28258b549475fe0952f36da722610f3ae551",
-    "docs/model_handoff_99.md": "f02d7c79d75de72eae2288a60d73eb4c61b34b1c7024c4e69b3df7bbb46aed98",
+    "docs/model_handoff_99.md": "4831c195245c02bc642ff65183bc737c23f70c02b4846a276a48f57c4b3ad50c",
     "docs/publication_scope.md": "126cf22c93b677417a919337f21b12d299c217049a24c11ce659c65837df9ced",
     "docs/references/AMI_Benchmark_99_reference.docx": "b484a8494aaf0042f249b909091fda423b0eab95e34dc85fccad7a804b73105a",
     "docs/references/README.md": "7c1b479acd3ef179315822080a0e46e1baa9cd911ea6fd7a65c0eb05914b864d",
@@ -116,7 +116,7 @@
     "samples/seed-17/personamem_v2/2f456ffa22220fcb7d92044d/qa_pairs.jsonl": "9927884912b4c9804b072d048d778c51925f0a05b40ab4a119a45c5a2ebd5ccc",
     "samples/seed-17/personamem_v2/b501e77576c4008e5c26f665/history.json": "500e117457c06b31ef70c5b0aaf7f8959bc0132f787c54633fe83aec1a7e668d",
     "samples/seed-17/personamem_v2/b501e77576c4008e5c26f665/qa_pairs.jsonl": "1b046ee11ca2b45afdf402ba1ad7ecd692c72a41156223b7301957a14b30dbe2",
-    "scripts/configure_release.py": "db4d9a4a86a11facb0454f30c0a8affa6a35206ed26ff20a467dca22e09dd41c",
+    "scripts/configure_release.py": "e5e491e54c03c9cfa7fb9a14928d3a18a011fa601eea4bdbc001b5b89d700555",
     "scripts/download_public_datasets.py": "67ce94c6baa5e1da9471e2b1f22c3784bc6c3edac4b99942456c38ab4acd4432",
     "scripts/enable_memory_checkpoints.py": "5957b9762a115a4d16dd6eecf6ed440eb709f7845a24c5bfdf67d51c00046b9c",
     "scripts/enable_request_retries.py": "e16291166f338effd1cb3583f3d57197733d89cfa1b6959fe484131bf55278c6",
@@ -211,9 +211,9 @@
     "tests/test_reader.py": "bd877b4f4f5c301f42de3eeeec2f61f6943457ca9eb02cfb49083e7aca37bb9b",
     "tests/test_retry.py": "045e371d0be7d9d451e93ce0c5bd72c0c1f92c3a09676c4577a34b4165921996",
     "tests/test_retry_rollout.py": "97f49a60bedb8ce77b9a58e6160f4b81ecfd7a6e758311ee997b7aaef84d15d0",
-    "tests/test_reusability.py": "0bfc7c13f78c0d93212f2daca9f67aaf1a00eae6835628cda635c86d86a443a7",
+    "tests/test_reusability.py": "f85f1d396bf3855982cbbff13a3661ae30a902d4e580775421c6eb387005b6dd",
     "tests/test_runtime.py": "a3427e6c6376304311799751fb438d880fc12d0d60337e8ab2a3fdbd6e94fbdc",
     "tests/test_sampling.py": "f71c698076ebb865ef372d69d083806b93e5cbd49fe238f6d5aace6f77066ac3"
   },
-  "total_bytes": 8103044
+  "total_bytes": 8105875
 }
