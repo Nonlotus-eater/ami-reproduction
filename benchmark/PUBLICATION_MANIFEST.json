@@ -32,8 +32,8 @@
   "files": {
     ".env.example": "6579aab19c5cc1603c4349644bae9a094e0d9d89a7f13ccc92b52d73385f9fe0",
     ".gitignore": "7002222a90917a45b35e9ada94a08d692f482835adf8d5806d1df9324b8149a2",
-    "README.md": "9daf7a33779625f21060ecc1caca91c7cc5f1126a2b6ce8a27de920646bd6ab2",
-    "configs/README.md": "18215c9893dcff67949cecac9c88fd129e1f8f2c090e4e18ac503e72f7ebee8b",
+    "README.md": "b0f962b2d382d6a24c858e73239a1188aeaeba28cf464a66ff06e1b59ebc5577",
+    "configs/README.md": "f4d9178008aa0a0c2c0b4fd52bb08318620067d018a63c96ab718d0b08e50cee",
     "configs/datasets/public_sources.json": "2e8375df70f50bbc27009b099d703701e4456cbc3447f5bbab8a33ff79e5d091",
     "configs/methods.json": "450c3729bdcd4eef247c37d6a91b6da569c89a2e2b62e98070cdba26af9f44b5",
     "configs/reproduction/frozen_samples.json": "9d75a129fb0401130047bae444d4e2cb1ed8bf57cd7ff59da47a9d93041c3b47",
@@ -55,10 +55,10 @@
     "docs/evaluation_contract.md": "7a0daf55414e859ec31114f569b8076636e089d11e7d238a2321c576756bae9c",
     "docs/memory_checkpoint_recovery.md": "f993cb61f6538dfe644935ec16af28258b549475fe0952f36da722610f3ae551",
     "docs/model_handoff_99.md": "f02d7c79d75de72eae2288a60d73eb4c61b34b1c7024c4e69b3df7bbb46aed98",
-    "docs/publication_scope.md": "9eb477d41c2568f4500cdb14e0620e3468e22665074e30693241f7ffeb21a15c",
+    "docs/publication_scope.md": "126cf22c93b677417a919337f21b12d299c217049a24c11ce659c65837df9ced",
     "docs/references/AMI_Benchmark_99_reference.docx": "b484a8494aaf0042f249b909091fda423b0eab95e34dc85fccad7a804b73105a",
     "docs/references/README.md": "7c1b479acd3ef179315822080a0e46e1baa9cd911ea6fd7a65c0eb05914b864d",
-    "docs/request_retry_deployment.md": "657dc87a618edec4e8ba77aa6a2f771179cfb6ecb59baaa3430994ed301c6038",
+    "docs/request_retry_deployment.md": "2705f3290e193a745aac5fef20558f0dd8c57b9af1f3d21ba4a8098f1d7ad55b",
     "docs/sample.md": "95f6897214d5afd3ff3ec07a7c12a7eee9d6fdc411b85a44a69cfcdbbda8e5f4",
     "docs/sync_20261021.md": "5bae391ef1dd38bcfa8cdb32f0bd3948543134cd901d701863c3df18ef541deb",
     "examples/smoke/locomo_refined/conversations.jsonl": "071491d4c101020a811df598e6fe53ddffb7b70961f6cf46b4a54f96fc4cfc68",
@@ -215,5 +215,5 @@
     "tests/test_runtime.py": "a3427e6c6376304311799751fb438d880fc12d0d60337e8ab2a3fdbd6e94fbdc",
     "tests/test_sampling.py": "f71c698076ebb865ef372d69d083806b93e5cbd49fe238f6d5aace6f77066ac3"
   },
-  "total_bytes": 8112587
+  "total_bytes": 8102201
 }
