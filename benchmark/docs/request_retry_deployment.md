@@ -19,7 +19,7 @@
 
 `AMI_ALLOW_RETRIES` 是本项目的开关，写在 `.env` 中，名称须全大写；runtime.json 通过 `env_file` 指定读取哪个文件。它不由 OpenAI SDK 直接读取。
 
-生效流程：[`Gateway`](../src/memory_benchmark/runtime/model_client.py) 读取该凭据文件，将开关和 runtime 的 `max_retries` 交给 `CallBudget`；[`RetryPolicy.from_profile()`](../src/memory_benchmark/runtime/retry.py) 决定有效重试次数，transport 按此执行。开关为 1 时采用配置次数，为 0 或缺省时有效重试次数为 0。
+程序会读取 `.env` 中的重试开关和 `runtime.json` 中的重试次数。开关为 `1`、次数为 `10` 时，单个请求遇到暂时性错误，最多再试 10 次；开关为 `0` 或未填写时，不重试。
 
 公共 runtime 模板和 `.env.example` 已补充配置，已有本机文件需自行核对。修改文件不会自动更新已创建客户端或旧实验的冻结配置。
 
