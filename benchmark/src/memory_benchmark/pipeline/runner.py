@@ -38,8 +38,11 @@ def validate_runtime(runtime):
         value = runtime.get(name)
         if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
             raise ValueError(f"Invalid positive runtime field: {name}")
-    if runtime.get("answer_context_policy") not in {None, "model_window_v1", "model_window_v2"}:
+    from .aml_reader import POLICY as AML_POLICY, validate_settings
+    if runtime.get("answer_context_policy") not in {None, "model_window_v1", "model_window_v2", AML_POLICY}:
         raise ValueError("Unknown answer context policy")
+    if runtime.get("answer_context_policy") == AML_POLICY:
+        validate_settings(runtime)
     if runtime.get("answer_part_truncation_policy") not in {None, "split_retry_v1", "split_retry_v2"}:
         raise ValueError("Unknown evidence truncation policy")
     from .ingestion import POLICY as ADD_POLICY

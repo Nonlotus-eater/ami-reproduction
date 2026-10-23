@@ -1,6 +1,7 @@
 """Regression checks for reader."""
 import json
 from pathlib import Path
+import runpy
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -8,8 +9,10 @@ from unittest.mock import Mock, patch
 from memory_benchmark.benchmarks.native_contract import ROOT
 from memory_benchmark.methods.activememoryindex import Adapter as AMI
 from memory_benchmark.methods.mem0 import Adapter as Mem0
-from memory_benchmark.pipeline.context import FixtureTokenizer, GPTTokenizer, normalize
+from memory_benchmark.pipeline.context import FixtureTokenizer, GPTTokenizer, normalize, pack_ranked_prefix
+from memory_benchmark.pipeline.aml_reader import POLICY as AML_POLICY
 from memory_benchmark.pipeline.reader import answer
+from memory_benchmark.pipeline.runner import validate_runtime
 from memory_benchmark.pipeline.windowed_reader import collect_part, count_prompt, generate, split_text
 from memory_benchmark.runtime.model_client import OutputTruncatedError, Reply
 from memory_benchmark.schemas import Evidence, Query
@@ -18,7 +21,7 @@ class UnboundedReaderTests(unittest.TestCase):
 
     def test_reader_keeps_all_evidence_and_sends_large_prompt_without_extra_cap(self):
         runtime = json.loads((ROOT / 'configs/runtime.json').read_text())
-        runtime.pop('answer_context_policy', None)
+        runtime.update(answer_context_policy=None, top_k=None, reader_token_budget=None, answer_input_token_limit=None, answer_max_tokens=None)
         evidence = [Evidence(str(i), 'evidence ' * 16) for i in range(125)]
         query = Query('longmemeval_s', 'e', 'q', 'Q' * 120001)
         client = Mock()
@@ -64,6 +67,89 @@ class UnboundedReaderTests(unittest.TestCase):
         self.assertEqual(native_config.RETURN_LIMIT, 100)
         self.assertEqual(native_config.RETURN_CHAR_BUDGET, 400000)
         native_store.get.assert_called_once_with('scope')
+
+class AMLReaderTests(unittest.TestCase):
+
+    def setUp(self):
+        self.runtime = json.loads((ROOT / 'configs/runtime.json').read_text())
+
+    def test_long_evidence_is_audited_but_only_prefix_reaches_one_answer_call(self):
+        source = 'evidence ' * 20000
+        evidence = [Evidence('first', source), Evidence('later', 'LATER_SENTINEL')]
+        original = [item.to_wire() for item in evidence]
+        client = Mock()
+        client.complete.return_value = Reply('answer', 'gpt-4o-mini')
+        result = answer(Query('longmemeval_s', 'e', 'q', 'QUESTION_SENTINEL'), evidence, ('user', 'assistant'), client, FixtureTokenizer(), self.runtime)
+        self.assertEqual(result['answer_context_policy'], AML_POLICY)
+        self.assertEqual(result['reader_mode'], 'ranked_prefix')
+        self.assertTrue(result['context_truncated'])
+        self.assertEqual(result['included_ids'], ['first'])
+        self.assertEqual(result['partially_included_ids'], ['first'])
+        self.assertEqual(result['omitted_ids'], ['later'])
+        self.assertTrue(source.startswith(result['reader_context']))
+        self.assertNotIn('LATER_SENTINEL', result['reader_prompt'])
+        self.assertIn('QUESTION_SENTINEL', result['reader_prompt'])
+        self.assertEqual(result['prompt_tokens_counted'], 117760)
+        self.assertGreater(result['original_prompt_tokens_counted'], 117760)
+        self.assertEqual([item.to_wire() for item in evidence], original)
+        client.complete.assert_called_once_with(result['reader_prompt'], stage='answer', max_tokens=8192, temperature=0)
+        self.assertEqual(result['prompt_tokens_counted'] + 8192 + result['context_safety_margin'], 128000)
+
+    def test_questions_alone_over_budget_fail_without_shortening_or_model_call(self):
+        client = Mock()
+        with self.assertRaisesRegex(ValueError, 'without evidence'):
+            answer(Query('longmemeval_s', 'e', 'q', 'Q' * 117761), [], ('user', 'assistant'), client, FixtureTokenizer(), self.runtime)
+        client.complete.assert_not_called()
+
+    def test_unicode_prefix_counts_chat_prompt_and_preserves_question_options_instructions(self):
+        tokenizer = GPTTokenizer('gpt-4o-mini')
+        evidence = [Evidence('a', '第一段🙂' * 30), Evidence('b', '第二段🙂' * 200), Evidence('c', '不应跳到此段')]
+
+        def render(context):
+            return [{'role': 'system', 'content': 'INSTRUCTIONS_SENTINEL'}, {'role': 'user', 'content': 'QUESTION_SENTINEL\nOPTIONS_SENTINEL\n' + context}]
+        budget = count_prompt(render(evidence[0].text + '\n'), tokenizer) + 50
+        (context, prompt, stats) = pack_ranked_prefix(evidence, tokenizer, render, budget)
+        self.assertTrue('\n'.join((item.text for item in evidence)).startswith(context))
+        self.assertLessEqual(count_prompt(prompt, tokenizer), budget)
+        self.assertEqual(prompt, render(context))
+        self.assertEqual(stats['included_ids'], ['a', 'b'])
+        self.assertEqual(stats['partially_included_ids'], ['b'])
+        self.assertEqual(stats['omitted_ids'], ['c'])
+        self.assertNotIn('�', context)
+
+    def test_exact_fit_and_empty_retrieval_need_no_truncation(self):
+        tokenizer = FixtureTokenizer()
+        render = lambda context: 'QUESTION\n' + context
+        evidence = [Evidence('a', 'fact', timestamp='2026-10-23')]
+        expected = '[2026-10-23] fact'
+        budget = count_prompt(render(expected), tokenizer)
+        (context, prompt, stats) = pack_ranked_prefix(evidence, tokenizer, render, budget)
+        self.assertEqual(context, expected)
+        self.assertFalse(stats['context_truncated'])
+        self.assertEqual(stats['included_ids'], ['a'])
+        self.assertEqual(stats['partially_included_ids'], [])
+        (context, prompt, stats) = pack_ranked_prefix([], tokenizer, render, budget)
+        self.assertEqual(context, '')
+        self.assertEqual(stats['retrieved'], 0)
+        self.assertFalse(stats['context_truncated'])
+
+    def test_more_than_top_k_is_contract_error_instead_of_silent_slicing(self):
+        client = Mock()
+        with self.assertRaisesRegex(ValueError, 'Top K'):
+            answer(Query('longmemeval_s', 'e', 'q', 'Q'), [Evidence(str(i), 'fact') for i in range(101)], ('user', 'assistant'), client, FixtureTokenizer(), self.runtime)
+        client.complete.assert_not_called()
+
+    def test_aml_policy_rejects_conflicting_budgets_before_calling_model(self):
+        validate_runtime(self.runtime)
+        for (field, value) in (('top_k', None), ('answer_input_token_limit', 119000), ('answer_max_tokens', None), ('answer_max_tokens', 16384), ('answer_safety_margin_tokens', 256), ('reader_token_budget', 4096), ('answer_output_policy', 'model_maximum'), ('answer_part_truncation_policy', 'split_retry_v2')):
+            with self.subTest(field=field, value=value):
+                runtime = {**self.runtime, field: value}
+                with self.assertRaises(ValueError):
+                    validate_runtime(runtime)
+                client = Mock()
+                with self.assertRaises(ValueError):
+                    answer(Query('longmemeval_s', 'e', 'q', 'Q'), [], ('user', 'assistant'), client, FixtureTokenizer(), runtime)
+                client.complete.assert_not_called()
 
 class WindowedReaderTests(unittest.TestCase):
 

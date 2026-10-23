@@ -182,6 +182,26 @@ class GatewayTests(unittest.TestCase):
         finally:
             gateway.close()
 
+    def test_aml_reader_sends_fixed_output_budget_in_actual_http_payload(self):
+        from memory_benchmark.pipeline.context import GPTTokenizer
+        from memory_benchmark.pipeline.reader import answer
+        from memory_benchmark.schemas import Evidence, Query
+
+        gateway = self.gateway()
+        try:
+            tokenizer = GPTTokenizer(self.runtime["model"])
+            result = answer(Query("longmemeval_s", "e", "q", "When did it happen?"),
+                            [Evidence("a", "It happened on October 23, 2026.")],
+                            ("user", "assistant"), gateway, tokenizer, self.runtime)
+            self.assertEqual(len(self.requests), 1)
+            self.assertEqual(self.requests[0]["max_tokens"], 8192)
+            self.assertEqual(gateway.budget.rows[0]["output_token_bound"], 8192)
+            self.assertEqual(self.requests[0]["messages"],
+                             [{"role": "user", "content": result["reader_prompt"]}])
+            self.assertLessEqual(result["prompt_tokens_counted"] + 8192 + 2048, 128000)
+        finally:
+            gateway.close()
+
     def test_unset_judge_cap_is_rejected_before_request(self):
         gateway = self.gateway()
         try:

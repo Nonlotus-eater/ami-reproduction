@@ -28,7 +28,7 @@ def export(output, profile=None):
         'configs/datasets/public_sources.json', 'configs/small_benchmark_v1.json', 'datasets/README.md',
         'docs/model_handoff_99.md', 'docs/evaluation_contract.md',
         'docs/capability_label_mapping.md', 'docs/publication_scope.md',
-        'docs/memory_checkpoint_recovery.md', 'docs/request_retry_deployment.md',
+        'docs/memory_checkpoint_recovery.md', 'docs/request_retry_deployment.md', 'docs/reader_aml_update.md',
         'docs/configuration_validation_20261017.md',
         'docs/benchmark_guide.md', 'docs/sample.md', 'docs/sync_20261021.md', 'samples/README.md',
         'methods/my_method/README.md', 'methods/my_method/ATTRIBUTION.md',
@@ -87,7 +87,9 @@ def export(output, profile=None):
                 and n.module == 'memory_benchmark.methods.lightmem')]
     for node in tree.body:
         if isinstance(node, ast.ClassDef):
-            node.body = [n for n in node.body if not (isinstance(n, ast.FunctionDef) and n.name.startswith('test_lightmem_'))]
+            node.body = [n for n in node.body if not (isinstance(n, ast.FunctionDef) and
+                (n.name.startswith('test_lightmem_') or
+                 n.name == 'test_v2_regression_keeps_summary_reader_when_default_templates_follow_aml'))]
     test.write_text(ast.unparse(tree) + '\n')
     if profile == 'core':
         readme = output / 'README.md'
@@ -162,7 +164,7 @@ def export(output, profile=None):
               'sample_data': {'seed': 17, 'history_instances': 22, 'qa_pairs': 202},
               'raw_dataset_snapshots_included': False, 'results_included': False,
               'credential_value_scan': 'passed',
-              'transformations': ['remove optional LightMem factory registrations and test',
+              'transformations': ['remove optional LightMem registrations/tests and local-only historical v2 regression test',
                                   'portable AMI/Mem0 template paths', 'four-method baseline lock'] + (
                                       ['exclude SDK and research backend; adapt docs and entrypoints'] if profile == 'core' else []),
               'files': {str(p.relative_to(output)): digest(p) for p in exported},

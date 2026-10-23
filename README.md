@@ -153,3 +153,5 @@ Add 必填 `request_id/messages/user_id/session_id`，回显三个 ID；支持 `
 
 
 [功能与运行流程](benchmark/docs/benchmark_guide.md)介绍目录分工和 Pipeline；[seed 17 数据说明](benchmark/docs/sample.md)展示抽样过程与六个数据集的案例，完整历史和 QA pairs 位于 [samples/](benchmark/samples/README.md)。
+
+2026-10-23 Reader 的 AML 预算配置与升级方式见[简短说明](benchmark/docs/reader_aml_update.md)。

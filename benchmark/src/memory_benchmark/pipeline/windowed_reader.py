@@ -7,15 +7,11 @@ the native answer prompt; these calls and their intermediate evidence are saved.
 from ..runtime.artifacts import contract_hash, read_json, write_json
 from ..runtime.profile import MODEL_CONTEXT_TOKEN_LIMITS, MODEL_OUTPUT_TOKEN_LIMITS
 from ..runtime.model_client import OutputTruncatedError
+from .context import count_prompt
 
 POLICY = "model_window_v1"
 SAFE_POLICY = "model_window_v2"
 MARGIN = 256
-
-
-def count_prompt(prompt, tokenizer):
-    messages = [{"role": "user", "content": prompt}] if isinstance(prompt, str) else prompt
-    return sum(tokenizer.count(message["content"]) + 4 for message in messages) + 2
 
 
 def output_allowance(prompt, tokenizer, runtime):

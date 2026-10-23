@@ -58,6 +58,8 @@ class InputTests(unittest.TestCase):
 
     def test_runtime_accepts_model_maximum_answer_and_rejects_invalid_limits(self):
         runtime = read_json(ROOT / "configs/runtime.json")
+        # Legacy/research policies still support explicit non-AML budgets.
+        runtime["answer_context_policy"] = None
         validate_runtime({**runtime, "answer_max_tokens": None})
         validate_runtime(runtime)
         for value in (0, -1, True, "unlimited"):

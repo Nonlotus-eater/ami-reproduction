@@ -1,6 +1,6 @@
 # 发布范围：ami-reproduction / benchmark
 
-核对日期：2026-10-21。目标为 `https://github.com/Nonlotus-eater/ami-reproduction` 的 `benchmark/`，保留 fork 根 AMI 实现、README、许可和 attribution。抽样默认恢复报告 v1，与 main 的 `27b57e4` 所发布固定五轮一致。
+核对日期：2026-10-23。目标为 `https://github.com/Nonlotus-eater/ami-reproduction` 的 `benchmark/`，保留 fork 根 AMI 实现、README、许可和 attribution。抽样默认恢复报告 v1，与 main 的 `27b57e4` 所发布固定五轮一致。
 本次采用 core 范围，只发布四方法评测相关功能；SDK 和自定义方法研究入口暂不发布。保留 AMI、Mem0、InvMem、ReFind；不发布 LightMem / MemMA / LLMLingua。
 
 ## 上传清单
@@ -18,6 +18,7 @@
 | `.env.example`、`pyproject.toml`、发布版 `.gitignore` | 上传 | 凭据模板、公共依赖和入口 |
 | README、功能与流程介绍、当前 handoff、评测契约、能力映射、发布范围、配置/数据 README | 上传 | 运行与解释结果所需的说明 |
 | 分块恢复说明、请求重试上线说明 | 上传 | 分块恢复接入、重试配置及恢复行为 |
+| `docs/reader_aml_update.md` | 上传 | AML Reader 预算、裁剪方式和升级生效说明 |
 | 旧 99 题入口、旧抽样与批次补跑/补评脚本 | 已从 scripts 删除 | 抽样复用公共模块，固定复现使用已发布 ID，当前队列自带 resume/retry；旧脚本清理前在工作区外备份 |
 | 参考 Word | 保留此前已发布的参考资料 | 仅供历史报告追溯；当前入口不依赖它 |
 | 论文 Word、五轮题目长附录、分析、每日记录、旧抽样说明 | 本地保留 | 不是运行依赖，避免把研究笔记当部署指导 |
@@ -39,7 +40,7 @@ python3 scripts/export_publication.py --profile core --output runs/publication-c
 工具按白名单复制当前工作区文件（包含尚未提交的新代码），不读取旧 Git 对象、不修改索引或 remote、不 commit/push。
 `PUBLICATION_MANIFEST.json` 列出输出文件和 SHA-256，记录四方法、生成变换和字节数。导出时针对本地长凭据值检查内容，只报告是否通过，不输出密钥。
 
-它保留当前 `configs/runtime.json` 的无截断默认值，另附四方法已验证的 `configs/reproduction/runtime.json`，不把两者合并成同一实验。
+它保留当前 `configs/runtime.json` 的 AML Reader 默认值（输入 117760、输出 8192、安全余量 2048、top_k=100），另附四方法历史实验的 `configs/reproduction/runtime.json`，不把两者合并成同一实验。
 原生方法从固定版本独立获取，不把整个第三方 checkout 放进 fork。InvMem/ReFind 适配器位于 `src/memory_benchmark/methods/`，桥接位于 `src/memory_benchmark/runtime/native_bridge/`；适配器、桥接和补丁均在发布白名单中，不依赖历史 runs。
 
 之后应在目标 fork 的独立本地 clone/分支中，把生成的 `benchmark/` 复制进去，review `git diff`，再按用户后续指令提交、push。
@@ -54,4 +55,4 @@ python3 scripts/export_publication.py --profile core --output runs/publication-c
 验证应在导出目录执行公共 tests 和公开来源抽样入口，确认移除历史脚本、Word 和旧 runs 后仍可抽样并衔接 prepare。默认固定五轮须核对其逐题 ID、1,003 题次和 112 个历史任务。
 源码/接口检查通过与“全新服务器重新安装所有依赖”和“重新运行付费评测”分别记录。
 
-当前 InvMem/ReFind adapter 已支持 null top_k，配置生成器仍采用已验证的整数 100。运行配置变化需重新冻结和验证，不能用旧成绩证明新条件已完成评测。
+当前 InvMem/ReFind adapter 仍支持显式研究配置的 null top_k；AML 默认配置固定为 100。运行配置变化需重新冻结和验证，不能用旧成绩证明新条件已完成评测。

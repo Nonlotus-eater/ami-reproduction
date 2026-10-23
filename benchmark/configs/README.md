@@ -30,14 +30,25 @@
 
 配置生成器输出四方法 `methods.json`、逐方法 JSON、`suite.json`、`runtime.json` 和桥接 `embedding_policy.json`。可用 `--ami-root ..` 指向 fork 根 AMI；脚本不读取或复制密钥。
 
-默认部署取消 Reader 的额外 token 限制：
+默认部署从 2026-10-23 起按 [AML Runtime Rules](https://agentmemories.ai/api-guide) 的公开 Reader 预算运行：
 
-- `configs/runtime.json`：公共模板，top_k、Reader 证据、完整输入上限为 null。
-- `configure_release.py` 生成的本机 runtime：top_k=100、`reader_token_budget=null`、`answer_input_token_limit=null`，请求/worker 超时 180/86400 秒。Reader 使用 `model_window_v2`，超出模型窗口的证据分段读取。
-- `configs/reproduction/runtime.json`：保留旧实验的有界配置，top_k=100、Reader=4096、完整输入=119000。仅显式选择这一份 runtime 时应用这些旧限制；默认生成器会覆盖两个 Reader token 上限。
-- InvMem/ReFind adapter 对 null top_k 使用当前作用域的实际记忆数量；ReFind 保留原生 agent 策略。
+| 配置项 | 默认值 | 含义 |
+|---|---|---|
+| `top_k` | `100` | Search 最多返回 100 条；超量判契约错误 |
+| `answer_input_token_limit` | `117760` | 包括问题、选项、指令、证据及消息封装的完整输入预算 |
+| `answer_max_tokens` | `8192` | Reader 传给模型调用的 `max_tokens` |
+| `answer_safety_margin_tokens` | `2048` | 128,000 上下文窗口的安全余量 |
+| `answer_context_policy` | `aml_ranked_prefix_v1` | 超预算时只保留按检索排名排列的证据文本前缀 |
+| `answer_output_policy` | `fixed_aml_budget` | 固定输出额度，不再按剩余窗口扩展 |
+| `reader_token_budget` | `null` | 不另设证据额度；证据与其他输入共同使用完整输入预算 |
 
-队列读取 prepared 中冻结的 runtime；修改配置不会更新旧 prepared，条件变化须新建目录。凭据仅填本地 `.env`，详见 [当前模型交接](../docs/model_handoff_99.md)。
+`configs/runtime.json`、各非 reproduction 的 runtime 模板以及本机 `configs/local/runtime.json` 已同步上述设置。配置生成器也继承全部 Reader 参数，生成的请求/worker 超时仍为 180/86400 秒；这些是本地模型调用与 worker 超时，不等同于官网 Add/Search 接口的单次请求时限。
+
+证据裁剪按完整提示词计数，不会跳过放不下的高排名证据后再装入低排名记录；最后一条可只保留文本前缀。原始检索结果保留用于审计，Answer 记录包含完整/部分保留及省略的记忆 ID。问题、选项、指令本身已超预算时明确报错，不裁剪这些字段，也不调用模型。
+
+`configs/reproduction/runtime.json` 仅保存历史实验参数（top_k=100、Reader=4096、完整输入=119000），不作为新运行默认值。旧 `model_window_v1/v2` 分段摘要策略保留用于显式历史/研究配置；`aml_ranked_prefix_v1` 不调用摘要模型。启动时会校验新策略的预算组合，避免配置漂移。
+
+队列读取 prepared 中冻结的 runtime；修改配置不会更新旧 prepared，条件变化须新建目录并重新 prepare，不能直接续跑旧实验来应用新预算。凭据仅填本地 `.env`，详见 [当前模型交接](../docs/model_handoff_99.md)。
 
 请求重试需要在上述 runtime 中设置 `"max_retries": 10`，并在 runtime 的 `env_file` 所指向的本地 `.env` 中设置 `AMI_ALLOW_RETRIES=1`。两份公共 runtime 模板已设置为 10；配置生成器会继承。10 表示首次请求失败后最多再试 10 次；OpenAI SDK 的 `max_retries` 保持 0，由 transport 统一执行和计账。已有本机配置不会自动被覆盖；功能与配置概览见 [上线说明](../docs/request_retry_deployment.md)。
 

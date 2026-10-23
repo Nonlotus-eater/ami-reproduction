@@ -332,9 +332,11 @@ class ConfigPortabilityTests(unittest.TestCase):
             runtime = read_json(root / 'config-1/runtime.json')
             self.assertEqual(runtime['add_chunk_policy'], POLICY)
             self.assertEqual(runtime['top_k'], 100)
-            self.assertEqual(runtime['answer_context_policy'], 'model_window_v2')
+            self.assertEqual(runtime['answer_context_policy'], 'aml_ranked_prefix_v1')
             self.assertIsNone(runtime['reader_token_budget'])
-            self.assertIsNone(runtime['answer_input_token_limit'])
+            self.assertEqual(runtime['answer_input_token_limit'], 117760)
+            self.assertEqual(runtime['answer_max_tokens'], 8192)
+            self.assertEqual(runtime['answer_safety_margin_tokens'], 2048)
 
             source = 'fact ' * 26000
             calls = []
@@ -349,13 +351,14 @@ class ConfigPortabilityTests(unittest.TestCase):
                             Client(), tokenizer, runtime)
             self.assertEqual(result['included_ids'], ['full'])
             self.assertEqual(result['omitted_ids'], [])
-            self.assertGreater(result['context_tokens'], 119000)
-            self.assertEqual(result['reader_mode'], 'hierarchical_evidence')
-            parts = [prompt[1]['content'].split('Evidence part:\n', 1)[1]
-                     for prompt, options in calls if options['stage'] == 'answer_map']
-            self.assertEqual(''.join(parts), source)
+            self.assertEqual(result['partially_included_ids'], ['full'])
+            self.assertTrue(source.startswith(result['reader_context']))
+            self.assertEqual(result['reader_mode'], 'ranked_prefix')
+            self.assertEqual(len(calls), 1)
             for prompt, options in calls:
-                self.assertLessEqual(count_prompt(prompt, tokenizer) + options['max_tokens'] + 256,
+                self.assertLessEqual(count_prompt(prompt, tokenizer), 117760)
+                self.assertEqual(options['max_tokens'], 8192)
+                self.assertLessEqual(count_prompt(prompt, tokenizer) + options['max_tokens'] + 2048,
                                      128000)
 
     def test_sampling_replays_and_freezing_rejects_modified_source_or_selected_list(self):

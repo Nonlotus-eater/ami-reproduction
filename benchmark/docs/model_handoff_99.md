@@ -35,10 +35,10 @@ CLBench Judge 协议读取本次冻结 runtime；最新 continuation 使用 inde
 ## 3. 抽样参数与运行条件
 
 抽样配额和 LLM runtime 分别配置。实际 prepared/运行 manifest 的冻结 runtime 才是依据，修改配置文件不会改变旧运行。
-`configure_release.py` 默认生成 top_k=100、`reader_token_budget=null`、`answer_input_token_limit=null` 的 runtime，并启用 `model_window_v2`。检索证据不再按 4096 token 截断，完整输入不再被 119000 的硬上限提前拒绝；超出模型窗口时分段读取全部来源文本后回答。
+`configure_release.py` 默认生成 `aml_ranked_prefix_v1` runtime：top_k=100、`reader_token_budget=null`、`answer_input_token_limit=117760`、`answer_max_tokens=8192`、`answer_safety_margin_tokens=2048`。完整提示词超预算时只裁剪排名证据前缀，不执行分段摘要，完整保留问题、选项、指令及归档检索结果。
 `configs/reproduction/runtime.json` 保留旧实验参数（top_k=100、Reader=4096、完整输入=119000），需要旧限制时显式选择这一份；历史成绩仍对应各自冻结的 runtime。
-`configs/runtime.json` 为公共无额外检索/输入截断模板。已有本机配置不会自动覆盖；采用新的 Reader 条件时生成新配置并重新 prepare，不能把两种条件混为一轮。
-当前 InvMem/ReFind adapter 已支持 null top_k：根据本任务作用域中的记忆数量调用同一原生检索实现。
+`configs/runtime.json`、非 reproduction 的 runtime 模板和本机 `configs/local/runtime.json` 已于 2026-10-23 同步 AML Reader 参数；已有 prepared、运行目录及成绩仍保持原冻结条件。采用新条件时重新 prepare 并另建运行目录，不能把两种条件混为一轮。
+当前 InvMem/ReFind adapter 仍支持显式研究配置中的 null top_k；AML 默认运行固定使用整数 100。
 
 模型为 GPT-4o mini，tokenizer 为 o200k_base，Answer/Judge temperature=0。
 AMI/Mem0/InvMem 共用配置的 embedding API；ReFind 保留原生 BM25/agent，不调用 embedding。

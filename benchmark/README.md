@@ -6,6 +6,8 @@
 
 2026-10-22 发布请求重试与预算修复，保留已有错误诊断，并支持已有实验在下一次记忆 worker 启动时接入。重试配置与 Add 断点恢复行为见 [上线说明](docs/request_retry_deployment.md)。
 
+2026-10-23 Reader 对齐 AML 公开预算与排名前缀规则，升级方式见[简短说明](docs/reader_aml_update.md)。
+
 ## 配置与数据
 
 在 Benchmark 根目录使用 Python 3.11 安装公共依赖；四方法原生源码与环境按 [交接文档](docs/model_handoff_99.md) 单独准备。
@@ -24,7 +26,7 @@ python3.11 -m venv .venv
 
 默认按 `configs/reproduction/` 的固定清单恢复 seed 17–21，五轮分别 202 / 199 / 196 / 201 / 205 题，共 1,003 题次、791 道不同题目。四方法共用冻结输入，每轮独立建库。[seed 17 样例](samples/README.md) 包含完整的 22 份历史和 202 组 QA pairs。
 
-重新抽样使用 `scripts/sample_small_benchmark.py`、`scripts/prepare_sampled_seeds.py` 及 `configs/small_benchmark_v1.json`。配置生成器默认取消 Reader 证据预算与完整输入硬上限，超长证据按模型窗口分段读取；检索数量仍为 top_k=100。旧有界运行参数保存在 `configs/reproduction/runtime.json`，详见 [配置说明](configs/README.md)。
+重新抽样使用 `scripts/sample_small_benchmark.py`、`scripts/prepare_sampled_seeds.py` 及 `configs/small_benchmark_v1.json`。Reader 默认按 AML 公开规则运行：top_k=100，完整输入最多 117,760 tokens，输出最多 8,192 tokens，安全余量 2,048 tokens；超预算时按检索排名保留证据前缀，问题、选项、指令和归档检索结果保持完整。历史运行参数保存在 `configs/reproduction/runtime.json`，详见 [配置说明](configs/README.md)。
 
 ## 四方法五轮并发
 
