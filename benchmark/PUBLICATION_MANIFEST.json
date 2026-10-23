@@ -58,7 +58,7 @@
     "docs/publication_scope.md": "126cf22c93b677417a919337f21b12d299c217049a24c11ce659c65837df9ced",
     "docs/references/AMI_Benchmark_99_reference.docx": "b484a8494aaf0042f249b909091fda423b0eab95e34dc85fccad7a804b73105a",
     "docs/references/README.md": "7c1b479acd3ef179315822080a0e46e1baa9cd911ea6fd7a65c0eb05914b864d",
-    "docs/request_retry_deployment.md": "2705f3290e193a745aac5fef20558f0dd8c57b9af1f3d21ba4a8098f1d7ad55b",
+    "docs/request_retry_deployment.md": "f0d36dbec43a4b450c71170b2c6b2bc75e772a2dda5c3263cf89bf57e40a8930",
     "docs/sample.md": "95f6897214d5afd3ff3ec07a7c12a7eee9d6fdc411b85a44a69cfcdbbda8e5f4",
     "docs/sync_20261021.md": "5bae391ef1dd38bcfa8cdb32f0bd3948543134cd901d701863c3df18ef541deb",
     "examples/smoke/locomo_refined/conversations.jsonl": "071491d4c101020a811df598e6fe53ddffb7b70961f6cf46b4a54f96fc4cfc68",
@@ -215,5 +215,5 @@
     "tests/test_runtime.py": "a3427e6c6376304311799751fb438d880fc12d0d60337e8ab2a3fdbd6e94fbdc",
     "tests/test_sampling.py": "f71c698076ebb865ef372d69d083806b93e5cbd49fe238f6d5aace6f77066ac3"
   },
-  "total_bytes": 8102201
+  "total_bytes": 8103087
 }

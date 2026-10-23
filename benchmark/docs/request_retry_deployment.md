@@ -4,7 +4,9 @@
 
 ## 请求重试与预算修复
 
-此前，transport 一次失败就会锁定 `budget.failed`，后续重试被立即拒绝。现在由 transport 统一完成有限重试，永久错误或重试耗尽后才锁定失败；SDK 的 `max_retries` 保持为 0，避免两层重试叠加。
+**transport** 是本项目放在 OpenAI SDK 与模型 API 之间的 HTTP 传输层，负责实际发送请求、重试和用量记账。此前它一次失败就会锁定 `budget.failed`，后续重试被立即拒绝；现在由它执行有限重试，仅在请求最终失败时锁定。
+
+**SDK 的 `max_retries`** 控制 OpenAI Python SDK 遇到可重试错误后自动再次发送请求的次数，设为 0 表示关闭 SDK 自身的重试。本项目固定为 0，由 transport 统一重试，避免两层叠加；runtime 中同名的 `max_retries` 控制的是 transport 的次数上限。
 
 超时、限流和服务暂时故障可以重试；鉴权、参数错误及真实模型不存在等永久错误立即终止。每次实际请求独立记录用量、只结算一次；缺失 usage 时保留未知用量及保守预留。
 
@@ -15,7 +17,11 @@
 | `configs/local/runtime.json` | `"max_retries": 10` | 首次请求失败后最多再试 10 次，共最多 11 次请求 |
 | runtime 的 `env_file` 指向的 `.env` | `AMI_ALLOW_RETRIES=1` | 启用请求重试；设为 0 则关闭 |
 
-两项共同生效。公共 runtime 模板和 `.env.example` 已补充这些配置，已有本机文件需自行核对；修改它们不会自动更新旧实验的冻结配置。
+`AMI_ALLOW_RETRIES` 是本项目的开关，写在 `.env` 中，名称须全大写；runtime.json 通过 `env_file` 指定读取哪个文件。它不由 OpenAI SDK 直接读取。
+
+生效流程：[`Gateway`](../src/memory_benchmark/runtime/model_client.py) 读取该凭据文件，将开关和 runtime 的 `max_retries` 交给 `CallBudget`；[`RetryPolicy.from_profile()`](../src/memory_benchmark/runtime/retry.py) 决定有效重试次数，transport 按此执行。开关为 1 时采用配置次数，为 0 或缺省时有效重试次数为 0。
+
+公共 runtime 模板和 `.env.example` 已补充配置，已有本机文件需自行核对。修改文件不会自动更新已创建客户端或旧实验的冻结配置。
 
 ## Add 断点恢复
 
