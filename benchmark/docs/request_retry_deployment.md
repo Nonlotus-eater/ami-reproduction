@@ -1,5 +1,7 @@
 # 请求重试与 Add 断点恢复上线说明
 
+功能上线 commit：[1703af8](https://github.com/Nonlotus-eater/ami-reproduction/commit/1703af8)。
+
 发布位置：`Nonlotus-eater/ami-reproduction/benchmark/`。基于 `22c975d`，保留已有错误诊断和恢复功能。
 
 ## 请求重试与预算修复
