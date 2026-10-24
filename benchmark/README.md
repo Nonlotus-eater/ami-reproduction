@@ -4,6 +4,8 @@
 
 本轮新增统一并发、记忆写入分段与长文本处理、评分与请求诊断、四方法接入整理、公开数据选题与运行配置。详见 [同步说明](docs/sync_20261021.md)。
 
+2026-10-24 发布记忆 worker 隔离、原生配置冻结和 AML HTTP 重试；Reader 预算及模型直连一并核对。更新说明见 [发布说明](docs/request_retry_deployment.md#2026-10-24reader-与审查第-136-项更新说明)。
+
 2026-10-22 发布请求重试与预算修复，保留已有错误诊断，并支持已有实验在下一次记忆 worker 启动时接入。重试配置与 Add 断点恢复行为见 [上线说明](docs/request_retry_deployment.md)。
 
 2026-10-23 Reader 对齐 AML 公开预算与排名前缀规则，升级方式见[简短说明](docs/reader_aml_update.md)。
@@ -68,3 +70,7 @@ python3.11 -m venv .venv
 - `src/memory_benchmark/pipeline/`：数据冻结、Add 分段、Reader 与评测流程。
 - `scripts/`、`configs/`：调度、抽样、配置生成与发布导出。
 - [功能流程](docs/benchmark_guide.md)、[评测契约](docs/evaluation_contract.md)、[发布范围](docs/publication_scope.md)。
+
+## AML HTTP 记忆接口
+
+安装 `.[api,data,http_memory]` 后，可使用 `aml_sdk.client.MemoryClient` 或 `aml_http` adapter 连接兼容 Add/Search 的记忆服务。客户端提供有界重试及响应校验；请求重试规则见 [上线说明](docs/request_retry_deployment.md)。

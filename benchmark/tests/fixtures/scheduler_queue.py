@@ -64,7 +64,12 @@ try:
     summary = {'complete': not failed, 'expected': 2, 'scored': 0 if failed else 2,
                'local_overall_macro_benchmark': None if failed else 50.0,
                'capabilities': {c: {'score': 50.0} for c in 'ABCDEGH'}}
-    (output / (method + '.summary.json')).write_text(json.dumps(summary))
+    # Match the real queue's atomic publication: the supervisor may read this
+    # file while the fixture is still running.
+    summary_path = output / (method + '.summary.json')
+    temporary = summary_path.with_suffix('.tmp')
+    temporary.write_text(json.dumps(summary))
+    temporary.replace(summary_path)
 finally:
     with registry() as state:
         state['active'].pop(str(os.getpid()), None)

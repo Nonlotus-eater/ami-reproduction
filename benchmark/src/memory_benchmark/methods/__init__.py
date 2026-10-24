@@ -1,6 +1,6 @@
 from importlib import import_module
 
-MODULES = {'mem0': 'mem0', 'activememoryindex': 'activememoryindex', 'invmem': 'invmem', 'refind': 'refind'}
+MODULES = {'mem0': 'mem0', 'activememoryindex': 'activememoryindex', 'invmem': 'invmem', 'refind': 'refind', 'aml_http': 'aml_http'}
 
 
 def create(name, config, history, output, scope, gateway, *, offline=False):

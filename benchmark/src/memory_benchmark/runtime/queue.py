@@ -24,6 +24,8 @@ from ..schemas import History, Query, Target
 from .artifacts import append_row, contract_hash, file_hash, read_json, rows, write_json, write_rows
 from .model_client import Gateway
 from .profile import public_identity, read_profile, validate_profile
+from .native_freeze import freeze_methods, verify_method
+from .worker_launch import POLICY as ISOLATION_POLICY, run_memory_worker
 
 
 def atomic_json(path, value):
@@ -53,8 +55,9 @@ def initialize(prepared, methods, output):
         shutil.copyfile(ROOT / relative, target)
     manifest = {**manifest, "prepared_contract_sha256": contract_hash(manifest),
         "execution": {"run_id": output.name, "offline_fixture": False, "provider_identity": identity,
+                      "worker_isolation": ISOLATION_POLICY,
                       "actual_reader_tokenizer": GPTTokenizer(runtime["model"]).name},
-        "methods": {name: {"config": config, "native_code": native_identity(config)} for name, config in methods.items()}}
+        "methods": freeze_methods(methods, output, runtime)}
     write_json(output / "manifest.json", manifest)
     write_json(output / "launch.json", {"prepared": str(prepared), "output": str(output), "methods": list(methods)})
     return manifest
@@ -67,8 +70,10 @@ def check_manifest(output, prepared, methods):
     if contract_hash(expected) != manifest["prepared_contract_sha256"]:
         raise ValueError("Prepared contract changed")
     for name, config in methods.items():
-        if manifest["methods"].get(name) != {"config": config, "native_code": native_identity(config)}:
+        record = manifest["methods"].get(name)
+        if not record or record["config"] != config:
             raise ValueError("Native method config or code changed")
+        verify_method(record, manifest["runtime"])
     if set(methods) != set(manifest["methods"]):
         raise ValueError("Queue method set changed")
     identity = public_identity(validate_profile(read_profile(manifest["runtime"]["env_file"]), manifest["runtime"]["model"]), manifest["runtime"])
@@ -153,12 +158,10 @@ def execute_task(prepared, output, manifest, method, case, retry_failed=False):
                 "history": str(prepared / case["history"]), "queries": str(prepared / case["queries"]),
                 "input_hashes": {field: manifest["inputs"][case[field]] for field in ("history", "queries")},
                 "output": str(stage)}
-            write_json(stage / "job.json", job)
-            env = {**os.environ, "PYTHONPATH": str(output / "frozen_framework/src"), "PYTHONDONTWRITEBYTECODE": "1"}
             with (stage / "worker.log").open("w") as log:
-                process = subprocess.run([manifest["methods"][method]["config"]["python"],
-                    "-m", "memory_benchmark.runtime.worker", str(stage / "job.json")], env=env,
-                    stdout=log, stderr=subprocess.STDOUT, timeout=runtime["worker_timeout_seconds"])
+                process = run_memory_worker(job, executable=manifest["methods"][method]["config"]["python"],
+                    framework=output / "frozen_framework", queue_output=output,
+                    record=manifest["methods"][method], timeout=runtime["worker_timeout_seconds"], log=log)
             worker = read_json(stage / "report.json") if (stage / "report.json").exists() else {}
             if process.returncode or worker.get("status") != "complete":
                 return {"status": "failed", "phase": "memory", "error_type": worker.get("error_type", "WorkerProcessExit"),

@@ -1,7 +1,7 @@
 # 发布范围：ami-reproduction / benchmark
 
-核对日期：2026-10-23。目标为 `https://github.com/Nonlotus-eater/ami-reproduction` 的 `benchmark/`，保留 fork 根 AMI 实现、README、许可和 attribution。抽样默认恢复报告 v1，与 main 的 `27b57e4` 所发布固定五轮一致。
-本次采用 core 范围，只发布四方法评测相关功能；SDK 和自定义方法研究入口暂不发布。保留 AMI、Mem0、InvMem、ReFind；不发布 LightMem / MemMA / LLMLingua。
+核对日期：2026-10-24。目标为 `https://github.com/Nonlotus-eater/ami-reproduction` 的 `benchmark/`，保留 fork 根 AMI 实现、README、许可和 attribution。抽样默认恢复报告 v1，与 main 的 `27b57e4` 所发布固定五轮一致。
+本次采用 benchmark 范围，包含四方法评测及 AML HTTP 客户端；服务端和自定义方法研究入口单独提供。保留 AMI、Mem0、InvMem、ReFind；不发布 LightMem / MemMA / LLMLingua。
 
 ## 上传清单
 
@@ -34,10 +34,11 @@
 从原工作区运行，输出目录必须不存在：
 
 ```bash
-python3 scripts/export_publication.py --profile core --output runs/publication-candidate-new/benchmark
+python3 scripts/export_publication.py --profile benchmark --output runs/publication-candidate-new/benchmark
 ```
 
 工具按白名单复制当前工作区文件（包含尚未提交的新代码），不读取旧 Git 对象、不修改索引或 remote、不 commit/push。
+`--profile benchmark` 包含四方法、审查第 1/3 项的执行隔离与配置冻结，以及第 6 项所需的 AML HTTP 客户端和 `http_memory` 依赖声明；`core` 排除该客户端，`full` 还包含 SDK 服务端和自定义研究后端。公开仓库的本次主发布范围使用 `benchmark`。
 `PUBLICATION_MANIFEST.json` 列出输出文件和 SHA-256，记录四方法、生成变换和字节数。导出时针对本地长凭据值检查内容，只报告是否通过，不输出密钥。
 
 它保留当前 `configs/runtime.json` 的 AML Reader 默认值（输入 117760、输出 8192、安全余量 2048、top_k=100），另附四方法历史实验的 `configs/reproduction/runtime.json`，不把两者合并成同一实验。

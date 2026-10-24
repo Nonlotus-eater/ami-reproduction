@@ -12,6 +12,7 @@ dependencies = []
 [project.optional-dependencies]
 data = ["pyarrow>=15,<26", "tiktoken>=0.12,<1"]
 api = ["httpx>=0.27,<1", "openai>=1.59,<3", "tiktoken>=0.12,<1"]
+http_memory = ["pydantic>=2.7,<3", "httpx>=0.27,<1"]
 
 [project.scripts]
 memory-benchmark = "memory_benchmark.cli:main"

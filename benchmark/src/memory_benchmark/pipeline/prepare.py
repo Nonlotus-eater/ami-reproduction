@@ -7,6 +7,7 @@ from ..benchmarks.native_contract import ROOT, contract
 from ..runtime.artifacts import (append_row, contract_hash, file_hash, read_json,
                                  rows, write_json, write_rows)
 from .aggregate import validate_manifest
+from ..runtime.native_freeze import native_identity
 
 
 def code_identity(root=ROOT):
@@ -14,28 +15,6 @@ def code_identity(root=ROOT):
                     *(root / "sources").rglob("*.py"), *(root / "sources").rglob("*.json")])
     hashes = {str(p.relative_to(root)): file_hash(p) for p in files}
     return {"sha256": contract_hash(hashes), "files": hashes}
-
-
-def native_identity(config):
-    result = {}
-    for key in ("source_root", "lightmem_root", "memma_root"):
-        if key not in config:
-            continue
-        root = Path(config[key])
-        # Walk only tracked source-like directories; virtualenvs/data are never hashed.
-        import os
-        hashes = {}
-        for directory, dirs, files in os.walk(root):
-            dirs[:] = sorted(d for d in dirs if not d.startswith(".") and
-                             d not in {"__pycache__", "node_modules", "dataset", "datasets", "models", "runs", "artifacts"})
-            for name in sorted(files):
-                if name.endswith(".py"):
-                    p = Path(directory) / name
-                    hashes[str(p.relative_to(root))] = file_hash(p)
-        if not hashes:
-            raise ValueError("Native source directory has no Python code")
-        result[key] = {"path": str(root), "python_files": len(hashes), "sha256": contract_hash(hashes)}
-    return result
 
 
 def data_paths(name, config):

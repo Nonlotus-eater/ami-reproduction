@@ -6,3 +6,5 @@
 - 升级已有部署时须重新生成或同步本机 runtime，并重新 prepare 到新目录。旧 prepared、运行记录和历史复现配置保留原参数。
 
 字段与操作细节见[配置说明](../configs/README.md#运行配置)。
+
+2026-10-24 补充：Reader、Judge 和 embedding 请求统一设置 `trust_env=False`，直接连接配置的模型接口。预算规则和审查第 1、3、6 项的完整发布说明见[更新说明](request_retry_deployment.md#2026-10-24reader-与审查第-136-项更新说明)。

@@ -9,6 +9,8 @@ import json
 import os
 from pathlib import Path
 import socket
+import shutil
+import subprocess
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -71,6 +73,86 @@ def model_boundaries(method, adapter, stack):
 
 
 class MethodReuseTests(unittest.TestCase):
+    def test_real_adapter_runs_in_filesystem_sandbox_with_checkpoint_resume(self):
+        from memory_benchmark.benchmarks.native_contract import ROOT
+        from memory_benchmark.runtime.artifacts import file_hash, read_json, write_json, write_rows
+        from memory_benchmark.runtime.native_freeze import freeze_methods
+        from memory_benchmark.runtime.worker_launch import run_memory_worker
+        source, method = Path(sys.argv[1]).resolve(), sys.argv[2]
+        cache = os.environ.get('MEMORY_BENCHMARK_FASTEMBED_CACHE',
+                               str(source.parents[1] / 'models/fastembed'))
+        config = {'source_root': str(source), 'python': sys.executable, 'embedding_backend': 'shared_api',
+                  'extraction_max_tokens': 2048, 'fastembed_cache': cache}
+        if method != 'mem0':
+            config.pop('fastembed_cache')
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            framework = root / 'queue/frozen_framework'
+            shutil.copytree(ROOT / 'src', framework / 'src', ignore=shutil.ignore_patterns('__pycache__'))
+            history = History('locomo_refined', 'sandbox', ('Alice',), (
+                Session('s', None, '', (Message('m', 'user', 'Alice', 'Alice lives in Kyoto.', None),)),))
+            hp, qp = root / 'prepared/history.json', root / 'prepared/queries.jsonl'
+            write_json(hp, history.to_wire())
+            write_rows(qp, [Query('locomo_refined', 'sandbox', 'q', 'Where does Alice live?').to_wire()])
+            profile = root / 'fixture.env'
+            profile.write_text('OPENAI_API_KEY=offline-fixture-key\nAMI_ALLOW_RETRIES=0\n')
+            runtime = {'env_file': str(profile), 'top_k': 100, 'add_chunk_policy': POLICY,
+                       'memory_checkpoint_policy': 'add_chunks_sqlite_snapshot_v1'}
+            record = freeze_methods({method: config}, root / 'queue', runtime)[method]
+            bootstrap = root / 'bootstrap.py'
+            fixture = root / 'native_fixture.py'
+            fixture.write_text(Path(__file__).read_text())
+            bootstrap.write_text('''import importlib.util,json,sys,socket
+from pathlib import Path
+from contextlib import ExitStack
+from unittest.mock import patch
+spec=importlib.util.spec_from_file_location('native_fixture',Path(__file__).with_name('native_fixture.py'))
+fixture=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixture)
+job=json.loads(Path(sys.argv[1]).read_text())
+bridge=job['method'] in ('invmem','refind')
+if bridge:
+ from memory_benchmark.runtime.native_bridge import worker
+else:
+ from memory_benchmark.runtime import worker
+gateway=fixture.FixtureGateway()
+gateway.install_native=lambda:None
+gateway.close=lambda:None
+worker.gateway_for_memory=lambda *a,**k:gateway
+stack=ExitStack()
+if not bridge:
+ original=worker.create
+ def create(*a,**k):
+  adapter=original(*a,**k)
+  fixture.model_boundaries(job['method'],adapter,stack)
+  return adapter
+ worker.create=create
+def denied(*a,**k):raise RuntimeError('Network forbidden in sandbox integration test')
+socket.socket.connect=socket.socket.connect_ex=socket.create_connection=denied
+try:status=worker.main(sys.argv[1]) if bridge else (0 if worker.execute(job)['status']=='complete' else 1)
+finally:stack.close()
+raise SystemExit(status)
+''')
+            for attempt in (1, 2):
+                output = root / f'queue/{method}/locomo_refined/h/memory_attempt_{attempt:03d}'
+                output.mkdir(parents=True)
+                job = {'method': method, 'method_config': config, 'runtime': runtime, 'offline': False,
+                       'scope': f'sandbox:{method}:h:{output.name}', 'provider_identity': {},
+                       'history': str(hp), 'queries': str(qp), 'output': str(output),
+                       'input_hashes': {'history': file_hash(hp), 'queries': file_hash(qp)}}
+                if method in ('invmem', 'refind'):
+                    job['method_config'] = {**config, 'adapter_file': str(framework / 'src/memory_benchmark/methods' / (method + '.py'))}
+                with (output / 'worker.log').open('w') as log:
+                    child = run_memory_worker(job, executable=sys.executable, framework=framework,
+                        queue_output=root / 'queue', record=record, timeout=45, log=log,
+                        script=bootstrap, extra_readonly=[(bootstrap, bootstrap), (fixture, fixture)])
+                self.assertTrue((output / 'report.json').exists(), (output / 'worker.log').read_text())
+                report = read_json(output / 'report.json')
+                self.assertEqual(child.returncode, 0, ((output / 'worker.log').read_text(), report))
+                evidence = (output / 'retrievals.jsonl').read_text()
+                self.assertIn('Kyoto', evidence)
+                self.assertFalse((output / 'worker_inputs/provider.env').exists())
+                self.assertEqual(report.get('resumed_add_chunks', 0), attempt - 1)
+
     def check(self, *, frozen=False):
         source, method = Path(sys.argv[1]), sys.argv[2]
         history = History('locomo_refined', 'reuse', ('Alice',), (

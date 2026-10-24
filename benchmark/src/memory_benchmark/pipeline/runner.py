@@ -18,6 +18,8 @@ from .context import FixtureTokenizer, GPTTokenizer
 from .evaluate import evaluate
 from .prepare import native_identity, verify_prepared
 from .reader import answer
+from ..runtime.native_freeze import freeze_methods
+from ..runtime.worker_launch import POLICY as ISOLATION_POLICY, run_memory_worker
 
 
 def validate_runtime(runtime):
@@ -92,9 +94,9 @@ def run(prepared, methods, output, *, offline=False):
     (output / "attempt.lock").open("x").close()
     manifest = {**manifest, "prepared_contract_sha256": contract_hash(manifest),
         "execution": {"run_id": output.name, "offline_fixture": offline,
+            "worker_isolation": ISOLATION_POLICY,
             "provider_identity": identity, "actual_reader_tokenizer": tokenizer.name},
-        "methods": {name: {"config": config, "native_code": {} if offline else native_identity(config)}
-                    for name, config in methods.items()}}
+        "methods": freeze_methods(methods, output, runtime, offline=offline)}
     write_json(output / "manifest.json", manifest)
     # Workers execute this run's exact source copy, including fixed scoring sources.
     frozen_root = output / "frozen_framework"
@@ -118,14 +120,12 @@ def run(prepared, methods, output, *, offline=False):
                     "history": str(prepared / case["history"]), "queries": str(prepared / case["queries"]),
                     "input_hashes": {field: manifest["inputs"][case[field]] for field in ("history", "queries")},
                     "output": str(stage_output)}
-                job_path = stage_output / "job.json"
-                write_json(job_path, job)
-                env = {**os.environ, "PYTHONPATH": str(frozen_root / "src"), "PYTHONDONTWRITEBYTECODE": "1"}
                 executable = sys.executable if offline else config["python"]
                 print(f"memory {name} {case['benchmark']} {case['episode_id']}", flush=True)
                 with (stage_output / "worker.log").open("w") as log:
-                    process = subprocess.run([executable, "-m", "memory_benchmark.runtime.worker", str(job_path)],
-                        env=env, stdout=log, stderr=subprocess.STDOUT, timeout=runtime["worker_timeout_seconds"])
+                    process = run_memory_worker(job, executable=executable, framework=frozen_root,
+                        queue_output=output, record=manifest["methods"][name],
+                        timeout=runtime["worker_timeout_seconds"], log=log)
                 report_path = stage_output / "report.json"
                 if process.returncode or not report_path.exists() or read_json(report_path)["status"] != "complete":
                     worker_failures.append({"method": name, "benchmark": case['benchmark'],

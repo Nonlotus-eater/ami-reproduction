@@ -280,6 +280,29 @@ class WorkerParityTests(unittest.TestCase):
 
 
 class ConfigPortabilityTests(unittest.TestCase):
+    @unittest.skipUnless((ROOT / "src/aml_sdk/client.py").is_file(), "HTTP client excluded from core export")
+    def test_benchmark_export_keeps_http_retries_and_reexports_without_research_sources(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            first, second = root / 'first', root / 'second'
+            for script, output in [(ROOT / 'scripts/export_publication.py', first),
+                                   (first / 'scripts/export_publication.py', second)]:
+                result = subprocess.run([sys.executable, str(script), '--profile', 'benchmark', '--output', str(output)],
+                                        cwd=root, capture_output=True, text=True, timeout=15)
+                self.assertEqual(result.returncode, 0, result.stderr)
+            a, b = read_json(first / 'PUBLICATION_MANIFEST.json'), read_json(second / 'PUBLICATION_MANIFEST.json')
+            self.assertEqual(a['files'], b['files'])
+            self.assertEqual(a['publication_profile'], 'benchmark')
+            self.assertEqual(a['sdk']['client'], 'aml_sdk.client.MemoryClient')
+            self.assertTrue((first / 'src/aml_sdk/client.py').is_file())
+            self.assertFalse((first / 'src/aml_sdk/server.py').exists())
+            self.assertFalse((first / 'methods/my_method').exists())
+            self.assertIn('http_memory =', (first / 'pyproject.toml').read_text())
+            self.assertIn('aml_http', (first / 'src/memory_benchmark/methods/__init__.py').read_text())
+            result = subprocess.run([sys.executable, '-c', 'from aml_sdk.client import MemoryClient; print(MemoryClient.__name__)'],
+                cwd=root, env={**os.environ, 'PYTHONPATH': str(first / 'src')}, capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_core_export_is_self_contained_and_can_export_itself_again(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

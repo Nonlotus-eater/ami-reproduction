@@ -13,6 +13,7 @@ from memory_benchmark.pipeline.prepare import native_identity
 from memory_benchmark.runtime.artifacts import file_hash, rows
 from memory_benchmark.runtime.execution_overlay import verify_frozen_file
 from memory_benchmark.runtime.queue import initialize, check_manifest, ordered_jobs, publish, execute_task
+from memory_benchmark.runtime.worker_launch import run_memory_worker
 
 
 def memory(prepared, output, manifest, method, case, policy):
@@ -36,12 +37,16 @@ def memory(prepared, output, manifest, method, case, policy):
         'history': str(prepared / case['history']), 'queries': str(prepared / case['queries']),
         'input_hashes': {f: manifest['inputs'][case[f]] for f in ('history', 'queries')},
         'output': str(stage), 'method_embedding_pacing': policy}
-    write(stage / 'job.json', job)
-    env = {**os.environ, 'PYTHONPATH': str(output / 'frozen_framework/src')}
+    pacing = Path(policy['state_directory']) if policy else None
+    if pacing:
+        pacing.mkdir(parents=True, exist_ok=True)
     with (stage / 'worker.log').open('w') as log:
-        child = subprocess.run([config['python'], '-u', str(output / 'frozen_method_bridge/worker.py'),
-            str(stage / 'job.json')], cwd=config['source_root'], env=env,
-            stdout=log, stderr=subprocess.STDOUT, timeout=manifest['runtime']['worker_timeout_seconds'])
+        bridge = output / 'frozen_method_bridge'
+        child = run_memory_worker(job, executable=config['python'], framework=output / 'frozen_framework',
+            queue_output=output, record=manifest['methods'][method],
+            timeout=manifest['runtime']['worker_timeout_seconds'], log=log,
+            script=bridge / 'worker.py', extra_readonly=[(bridge, bridge)],
+            extra_writable=[pacing] if pacing else [])
     report = read(stage / 'report.json')
     if child.returncode or report.get('status') != 'complete':
         return False

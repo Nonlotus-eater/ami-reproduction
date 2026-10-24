@@ -38,8 +38,7 @@ class QueueTests(unittest.TestCase):
                 "benchmarks": {"personamem_v1": {"primary_metric": "mcq_accuracy", "items": {"q": {"capability_leaves": ["E1"], "cluster_id": "p"}}}},
                 "inputs": {field: file_hash(prepared / field) for field in ["history.json", "queries.jsonl"]}}
             calls = []
-            def worker(command, **kwargs):
-                job = read_json(command[-1])
+            def worker(job, **kwargs):
                 self.assertNotIn("targets", job)
                 calls.append("worker")
                 stage = Path(job["output"])
@@ -61,7 +60,7 @@ class QueueTests(unittest.TestCase):
                 def __init__(self, *args):
                     pass
             self_test = self
-            with patch("memory_benchmark.runtime.queue.subprocess.run", side_effect=worker), patch("memory_benchmark.runtime.queue.Gateway", Client), patch("memory_benchmark.runtime.queue.GPTTokenizer", Tokenizer):
+            with patch("memory_benchmark.runtime.queue.run_memory_worker", side_effect=worker), patch("memory_benchmark.runtime.queue.Gateway", Client), patch("memory_benchmark.runtime.queue.GPTTokenizer", Tokenizer):
                 first = execute_task(prepared, output, manifest, "mem0", case)
                 self.assertEqual(first["status"], "complete", first)
                 second = execute_task(prepared, output, manifest, "mem0", case)

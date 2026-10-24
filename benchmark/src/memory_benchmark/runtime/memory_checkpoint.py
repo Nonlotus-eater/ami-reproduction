@@ -128,7 +128,7 @@ class MemoryCheckpoint:
             binding = {"policy": POLICY, "method": job["method"], "config": job["method_config"],
                 "runtime": job["runtime"], "provider_identity": job.get("provider_identity"),
                 "input_hashes": job["input_hashes"], "add_plan": chunk_audit, "scope": scope,
-                "native_code": manifest.get("methods", {}).get(job["method"], {}).get("native_code"),
+                "native_code": job.get("native_code", manifest.get("methods", {}).get(job["method"], {}).get("native_code")),
                 "adapter_sha256": file_hash(adapter_file),
                 "checkpoint_code_sha256": file_hash(Path(__file__))}
             self.contract = contract_hash(binding)

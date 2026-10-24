@@ -54,13 +54,13 @@ class UnboundedReaderTests(unittest.TestCase):
         native_config = SimpleNamespace(RETURN_LIMIT=100, RETURN_CHAR_BUDGET=400000)
         native_store = SimpleNamespace(get=Mock(return_value=SimpleNamespace(items=list(range(151)))))
         adapter = object.__new__(AMI)
-        (adapter.scope, adapter.history, adapter.gateway) = ('scope', SimpleNamespace(sessions=[]), Mock())
+        adapter.scope, adapter.history, adapter.gateway = ('scope', SimpleNamespace(sessions=[]), Mock())
 
         def respond(path, json):
             self.assertEqual(native_config.RETURN_LIMIT, 151)
             self.assertEqual(native_config.RETURN_CHAR_BUDGET, float('inf'))
             self.assertEqual(json['top_k'], 151)
-            return SimpleNamespace(status_code=200, json=lambda : {'data': []})
+            return SimpleNamespace(status_code=200, json=lambda: {'data': []})
         adapter.service = SimpleNamespace(post=Mock(side_effect=respond))
         with patch.dict('sys.modules', {'app': SimpleNamespace(config=native_config, store=native_store)}):
             self.assertEqual(adapter.search(Query('clbench', 'e', 'q', 'question'), None), [])
@@ -108,7 +108,7 @@ class AMLReaderTests(unittest.TestCase):
         def render(context):
             return [{'role': 'system', 'content': 'INSTRUCTIONS_SENTINEL'}, {'role': 'user', 'content': 'QUESTION_SENTINEL\nOPTIONS_SENTINEL\n' + context}]
         budget = count_prompt(render(evidence[0].text + '\n'), tokenizer) + 50
-        (context, prompt, stats) = pack_ranked_prefix(evidence, tokenizer, render, budget)
+        context, prompt, stats = pack_ranked_prefix(evidence, tokenizer, render, budget)
         self.assertTrue('\n'.join((item.text for item in evidence)).startswith(context))
         self.assertLessEqual(count_prompt(prompt, tokenizer), budget)
         self.assertEqual(prompt, render(context))
@@ -123,12 +123,12 @@ class AMLReaderTests(unittest.TestCase):
         evidence = [Evidence('a', 'fact', timestamp='2026-10-23')]
         expected = '[2026-10-23] fact'
         budget = count_prompt(render(expected), tokenizer)
-        (context, prompt, stats) = pack_ranked_prefix(evidence, tokenizer, render, budget)
+        context, prompt, stats = pack_ranked_prefix(evidence, tokenizer, render, budget)
         self.assertEqual(context, expected)
         self.assertFalse(stats['context_truncated'])
         self.assertEqual(stats['included_ids'], ['a'])
         self.assertEqual(stats['partially_included_ids'], [])
-        (context, prompt, stats) = pack_ranked_prefix([], tokenizer, render, budget)
+        context, prompt, stats = pack_ranked_prefix([], tokenizer, render, budget)
         self.assertEqual(context, '')
         self.assertEqual(stats['retrieved'], 0)
         self.assertFalse(stats['context_truncated'])
@@ -141,7 +141,7 @@ class AMLReaderTests(unittest.TestCase):
 
     def test_aml_policy_rejects_conflicting_budgets_before_calling_model(self):
         validate_runtime(self.runtime)
-        for (field, value) in (('top_k', None), ('answer_input_token_limit', 119000), ('answer_max_tokens', None), ('answer_max_tokens', 16384), ('answer_safety_margin_tokens', 256), ('reader_token_budget', 4096), ('answer_output_policy', 'model_maximum'), ('answer_part_truncation_policy', 'split_retry_v2')):
+        for field, value in (('top_k', None), ('answer_input_token_limit', 119000), ('answer_max_tokens', None), ('answer_max_tokens', 16384), ('answer_safety_margin_tokens', 256), ('reader_token_budget', 4096), ('answer_output_policy', 'model_maximum'), ('answer_part_truncation_policy', 'split_retry_v2')):
             with self.subTest(field=field, value=value):
                 runtime = {**self.runtime, field: value}
                 with self.assertRaises(ValueError):
@@ -167,15 +167,15 @@ class WindowedReaderTests(unittest.TestCase):
             client = Client()
             from memory_benchmark.pipeline.windowed_reader import complete_part, part_prompt
             prompt = part_prompt('Question one', 'evidence')
-            (_, detail) = complete_part(prompt, client, self.tokenizer, self.runtime)
+            _, detail = complete_part(prompt, client, self.tokenizer, self.runtime)
             self.assertFalse(detail['reused'])
-            (_, detail) = complete_part(prompt, client, self.tokenizer, self.runtime)
+            _, detail = complete_part(prompt, client, self.tokenizer, self.runtime)
             self.assertTrue(detail['reused'])
             self.assertEqual(client.calls, 1)
             complete_part(part_prompt('Question two', 'evidence'), client, self.tokenizer, self.runtime)
             complete_part(prompt, client, self.tokenizer, {**self.runtime, 'seed': 18})
             client.identity = {'provider': 'two'}
-            (_, detail) = complete_part(prompt, client, self.tokenizer, self.runtime)
+            _, detail = complete_part(prompt, client, self.tokenizer, self.runtime)
             self.assertEqual(client.calls, 4)
             path = Path(detail['artifact']) / 'reply.json'
             value = json.loads(path.read_text())
@@ -201,7 +201,7 @@ class WindowedReaderTests(unittest.TestCase):
                     raise OutputTruncatedError(stage='answer_map', response_path='original-length-response.json')
                 pieces.append(part)
                 return Reply('notes', 'gpt-4o-mini')
-        (notes, details, events) = collect_part('Q', source, Client(), self.tokenizer, {**self.runtime, 'answer_part_truncation_policy': 'split_retry_v2'})
+        notes, details, events = collect_part('Q', source, Client(), self.tokenizer, {**self.runtime, 'answer_part_truncation_policy': 'split_retry_v2'})
         self.assertGreaterEqual(len(pieces), 4)
         self.assertEqual(''.join(pieces), source)
         self.assertEqual(events[0]['split_factor'], 4)
@@ -218,10 +218,10 @@ class WindowedReaderTests(unittest.TestCase):
                 return Reply('short evidence notes' if kwargs['stage'] == 'answer_map' else 'answer', 'gpt-4o-mini')
         runtime = {**self.runtime, 'answer_context_policy': 'model_window_v2', 'answer_min_output_tokens': 512}
         with patch.dict('memory_benchmark.pipeline.windowed_reader.MODEL_CONTEXT_TOKEN_LIMITS', {'gpt-4o-mini': 4096}), patch.dict('memory_benchmark.pipeline.windowed_reader.MODEL_OUTPUT_TOKEN_LIMITS', {'gpt-4o-mini': 512}):
-            (_, _, meta) = generate(Query('beam', 'e', 'q', 'Q'), source, lambda s: s, Client(), self.tokenizer, runtime)
+            _, _, meta = generate(Query('beam', 'e', 'q', 'Q'), source, lambda s: s, Client(), self.tokenizer, runtime)
         self.assertEqual(meta['reader_mode'], 'hierarchical_evidence')
         self.assertGreaterEqual(calls[-1][1]['max_tokens'], 512)
-        for (prompt, options) in calls:
+        for prompt, options in calls:
             self.assertLessEqual(count_prompt(prompt, self.tokenizer) + options['max_tokens'] + 256, 4096)
 
     def test_remaining_output_space_preserves_the_entire_prompt(self):
@@ -234,7 +234,7 @@ class WindowedReaderTests(unittest.TestCase):
                 calls.append((sent, kwargs))
                 return Reply('answer', 'gpt-4o-mini')
         with patch.dict('memory_benchmark.pipeline.windowed_reader.MODEL_CONTEXT_TOKEN_LIMITS', {'gpt-4o-mini': 4096}):
-            (reply, sent, meta) = generate(Query('beam', 'e', 'q', 'Q'), prompt, lambda s: s, Client(), self.tokenizer, self.runtime)
+            reply, sent, meta = generate(Query('beam', 'e', 'q', 'Q'), prompt, lambda s: s, Client(), self.tokenizer, self.runtime)
         self.assertEqual(sent, prompt)
         self.assertEqual(len(calls), 1)
         self.assertEqual(meta['reader_mode'], 'single_call')
@@ -258,13 +258,13 @@ class WindowedReaderTests(unittest.TestCase):
                 return Reply('evidence notes' if kwargs['stage'] == 'answer_map' else 'answer', 'gpt-4o-mini')
         render = lambda s: 'NATIVE QUESTION\n' + s
         with patch.dict('memory_benchmark.pipeline.windowed_reader.MODEL_CONTEXT_TOKEN_LIMITS', {'gpt-4o-mini': 4096}), patch.dict('memory_benchmark.pipeline.windowed_reader.MODEL_OUTPUT_TOKEN_LIMITS', {'gpt-4o-mini': 512}):
-            (reply, final, meta) = generate(Query('beam', 'e', 'q', 'Q'), source, render, Client(), self.tokenizer, self.runtime)
-        maps = [prompt for (prompt, kwargs) in calls if kwargs['stage'] == 'answer_map']
+            reply, final, meta = generate(Query('beam', 'e', 'q', 'Q'), source, render, Client(), self.tokenizer, self.runtime)
+        maps = [prompt for prompt, kwargs in calls if kwargs['stage'] == 'answer_map']
         restored = ''.join((prompt[1]['content'].split('Evidence part:\n', 1)[1] for prompt in maps))
         self.assertEqual(restored, source)
         self.assertTrue(final.startswith('NATIVE QUESTION\n'))
         self.assertEqual(meta['reader_mode'], 'hierarchical_evidence')
-        self.assertTrue(all((count_prompt(prompt, self.tokenizer) + kw['max_tokens'] + 256 <= 4096 for (prompt, kw) in calls)))
+        self.assertTrue(all((count_prompt(prompt, self.tokenizer) + kw['max_tokens'] + 256 <= 4096 for prompt, kw in calls)))
 
     def test_saved_parts_are_reused_after_a_final_answer_failure(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -293,7 +293,7 @@ class WindowedReaderTests(unittest.TestCase):
 
     def test_truncated_summaries_split_without_losing_any_source_characters(self):
         source = 'a fact with a date\n' * 1600
-        (completed, truncated) = ([], [])
+        completed, truncated = ([], [])
         tokenizer = self.tokenizer
 
         class Client:
@@ -309,7 +309,7 @@ class WindowedReaderTests(unittest.TestCase):
                 return Reply('notes', 'gpt-4o-mini')
         runtime = {**self.runtime, 'answer_part_truncation_policy': 'split_retry_v1'}
         with patch.dict('memory_benchmark.pipeline.windowed_reader.MODEL_CONTEXT_TOKEN_LIMITS', {'gpt-4o-mini': 4096}), patch.dict('memory_benchmark.pipeline.windowed_reader.MODEL_OUTPUT_TOKEN_LIMITS', {'gpt-4o-mini': 512}):
-            (_, _, meta) = generate(Query('beam', 'e', 'q', 'Q'), source, lambda s: s, Client(), tokenizer, runtime)
+            _, _, meta = generate(Query('beam', 'e', 'q', 'Q'), source, lambda s: s, Client(), tokenizer, runtime)
         self.assertTrue(truncated)
         self.assertEqual(''.join(completed), source)
         self.assertTrue(meta['reader_parts'][0]['truncation_splits'])
@@ -335,10 +335,10 @@ class WindowedReaderTests(unittest.TestCase):
                 collect_part('Q', source, client, self.tokenizer, self.runtime)
             self.assertEqual(client.calls, 1)
             runtime = {**self.runtime, 'answer_part_truncation_policy': 'split_retry_v1'}
-            (notes, details, events) = collect_part('Q', source, client, self.tokenizer, runtime)
+            notes, details, events = collect_part('Q', source, client, self.tokenizer, runtime)
             self.assertEqual(client.calls, 1 + sum((not d['reused'] for d in details)))
             calls = client.calls
-            (cached, _, _) = collect_part('Q', source, client, self.tokenizer, runtime)
+            cached, _, _ = collect_part('Q', source, client, self.tokenizer, runtime)
             self.assertEqual(cached, notes)
             self.assertEqual(client.calls, calls)
             self.assertEqual(events[0]['response_path'], 'recorded-response.json')
