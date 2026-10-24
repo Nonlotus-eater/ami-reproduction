@@ -27,13 +27,14 @@
     "remove optional LightMem registrations/tests and local-only historical v2 regression test",
     "portable AMI/Mem0 template paths",
     "four-method baseline lock",
-    "exclude SDK and research backend; adapt docs and entrypoints"
+    "exclude SDK and research backend; adapt docs and entrypoints",
+    "model transports use trust_env=False; checkpoint-preserving direct-network resume helper"
   ],
   "files": {
     ".env.example": "6579aab19c5cc1603c4349644bae9a094e0d9d89a7f13ccc92b52d73385f9fe0",
     ".gitignore": "7002222a90917a45b35e9ada94a08d692f482835adf8d5806d1df9324b8149a2",
     "README.md": "843c4226cbaceb63a1e7adbbb10f0279b42ff68c1cd7c3a6389749c277a12823",
-    "configs/README.md": "a8ba9bafc7b46c7a7498ab13ba14b2b61c493fc57ca801fae8ff7cb9db354ee9",
+    "configs/README.md": "74edc21e025b03d18a4d3b7beebe755863730e728d6995574c36c55ad00e0c60",
     "configs/datasets/public_sources.json": "2e8375df70f50bbc27009b099d703701e4456cbc3447f5bbab8a33ff79e5d091",
     "configs/methods.json": "450c3729bdcd4eef247c37d6a91b6da569c89a2e2b62e98070cdba26af9f44b5",
     "configs/reproduction/frozen_samples.json": "9d75a129fb0401130047bae444d4e2cb1ed8bf57cd7ff59da47a9d93041c3b47",
@@ -118,10 +119,11 @@
     "samples/seed-17/personamem_v2/b501e77576c4008e5c26f665/history.json": "500e117457c06b31ef70c5b0aaf7f8959bc0132f787c54633fe83aec1a7e668d",
     "samples/seed-17/personamem_v2/b501e77576c4008e5c26f665/qa_pairs.jsonl": "1b046ee11ca2b45afdf402ba1ad7ecd692c72a41156223b7301957a14b30dbe2",
     "scripts/configure_release.py": "776345b4fda3d22d8451c4bcd372c6a6081e7915584e0c3773071ff141b1629a",
+    "scripts/disable_model_proxy.py": "deb2faf07477f025f5711f2672dc6622b2fbd2ca20bfd69644dfac0b36559e39",
     "scripts/download_public_datasets.py": "67ce94c6baa5e1da9471e2b1f22c3784bc6c3edac4b99942456c38ab4acd4432",
     "scripts/enable_memory_checkpoints.py": "5957b9762a115a4d16dd6eecf6ed440eb709f7845a24c5bfdf67d51c00046b9c",
     "scripts/enable_request_retries.py": "e16291166f338effd1cb3583f3d57197733d89cfa1b6959fe484131bf55278c6",
-    "scripts/export_publication.py": "a5ad29cce60fc40b88f301a0e8cc3a264fb5d60112f939010f01fc855932f0b8",
+    "scripts/export_publication.py": "26edbe71a4e6ec4cb9de48d6d37a01ef25dc06132e0976ca9721419c53e97239",
     "scripts/prepare_five_seeds.py": "9f87a5fbf243151884d25b2d95adc9437c39ec63722610f7a999b9dcb536d177",
     "scripts/prepare_sampled_seeds.py": "71bead1da74461feb9dde9c9d294045d515672d70832c5b5614d61475ccbd9c8",
     "scripts/release_smoke.py": "ac674956fcb4cda0866f1e327a36274f816da9e12787a46d06e94e2002b47fce",
@@ -179,13 +181,13 @@
     "src/memory_benchmark/pipeline/windowed_reader.py": "eab3f083bc8aaa2b340939db35b66d803e25440c5eb4775b4e1ff17896c092a0",
     "src/memory_benchmark/runtime/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "src/memory_benchmark/runtime/artifacts.py": "42fc415d0286927766780fa10ce93aabc67fe8fb6ac41e2882fb53e65780220f",
-    "src/memory_benchmark/runtime/budget.py": "015022115e36c7761ebc4ddbc3b8a92bd4f06bea4c31ca192e7ce23ea173db72",
+    "src/memory_benchmark/runtime/budget.py": "d86b9cc8c4cc8819d63484c5d75a64ffcb9d07af4a25d6bd6f1ea6a6ec719ea9",
     "src/memory_benchmark/runtime/demo.py": "f510b6a50f95f8999f038b35155af7ba2ba097987c8db314081d302506952dcd",
     "src/memory_benchmark/runtime/embedding.py": "0f10087ee2fe8a8da1589af949d0d5275002815da9f3c46bd03c054d5a8a0e25",
     "src/memory_benchmark/runtime/execution_overlay.py": "fd464a126182d37bd522e323d7a88f3b707bd166e9072ad9e13e9addb3d5e798",
     "src/memory_benchmark/runtime/memory_checkpoint.py": "0eb482bb637e6745463c7f8a18ffde031d3756b5465f7e9c114da8f89c9efbc8",
     "src/memory_benchmark/runtime/memory_retry.py": "e37ab28eaf2ad9dabd3c2e87f9b6d4cfadf288d29add28a3a5e77f7c77c406be",
-    "src/memory_benchmark/runtime/model_client.py": "784afef787eb84b8324b57be86b5911371ab10ebe8cd74708b5accb008c58b93",
+    "src/memory_benchmark/runtime/model_client.py": "4a98227d97d1a22cde8aab3b890447a23e2549746f5993b1d9c0186050d00471",
     "src/memory_benchmark/runtime/native_bridge/__init__.py": "e7c793ae62dfc0fa38053b849d555f5a02aa491824a452a83f347bbe00acf5e7",
     "src/memory_benchmark/runtime/native_bridge/common.py": "c0e248631653f1a72d03a37b221c3a0a9333c4e0a58cd56be54d031837244a13",
     "src/memory_benchmark/runtime/native_bridge/runner.py": "abdd6196b0163d1b5736cf3ba0e9aeeceff71f21a4af8d0eaa8909ee3c9116d2",
@@ -205,6 +207,7 @@
     "tests/test_aggregation.py": "c1ec85a6bd34b1543fa38b732b5d9c4f4be3ea6631698f434d70fb0a76dcb349",
     "tests/test_checkpoint_rollout.py": "9c24bcde09bab12fa8dac215b9ec3b85cfccaac28e16d08f8c7405a5b22a5430",
     "tests/test_clbench_judge.py": "d7f70040d9a842c575d681142192031e4d26f15d0fa85f1cd4b9aecd7a0d6df7",
+    "tests/test_direct_network.py": "93b117a65018822bbbcd1997f044f16b602fd8e05aa67530924ade29380d5ec6",
     "tests/test_ingestion.py": "3f0047b8dfb21fb737325538857311bde74ecd12c0aaa4094b4bca775e2c8519",
     "tests/test_memory_checkpoint.py": "0a202741fcf4f6719779f9074714078a01474b2260ae343c49974cccbd0074e8",
     "tests/test_pipeline.py": "fd36232565c428e9dcc0749076e06be2b95b6454b2cbd7dff158500876accebd",
@@ -217,5 +220,6 @@
     "tests/test_runtime.py": "0eecd02caaeeae063a6978e86b97e23d9eba1cdd2d48e5c5e1080fa08564c741",
     "tests/test_sampling.py": "f71c698076ebb865ef372d69d083806b93e5cbd49fe238f6d5aace6f77066ac3"
   },
-  "total_bytes": 8120868
+  "total_bytes": 8137233,
+  "model_network_policy": "direct configured endpoints; HTTP clients ignore environment proxies"
 }

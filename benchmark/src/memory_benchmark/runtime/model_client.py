@@ -85,7 +85,7 @@ class Gateway:
         class GuardedOpenAI(original):
             def __init__(self, *args, **kwargs):
                 kwargs.update(max_retries=0, timeout=runtime["request_timeout_seconds"],
-                    http_client=httpx.Client(transport=Transport(), follow_redirects=False))
+                    http_client=httpx.Client(transport=Transport(), follow_redirects=False, trust_env=False))
                 super().__init__(*args, **kwargs)
         self.original_class, self.client_class = original, GuardedOpenAI
         self.openai_module = openai

@@ -61,7 +61,8 @@ def make_transport(budget, kind, endpoint, model, *,
 
     class GuardedTransport(httpx.BaseTransport):
         def __init__(self):
-            self.client = httpx.Client(timeout=timeout, follow_redirects=False)
+            # Model traffic must not depend on an IDE/shell's local proxy.
+            self.client = httpx.Client(timeout=timeout, follow_redirects=False, trust_env=False)
             owner = self
 
             class Sender(httpx.BaseTransport):

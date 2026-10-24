@@ -38,7 +38,7 @@ def export(output, profile=None):
         'scripts/prepare_five_seeds.py', 'scripts/sample_small_benchmark.py',
         'scripts/prepare_sampled_seeds.py', 'scripts/run_five_seed_experiments.py',
         'scripts/enable_memory_checkpoints.py', 'scripts/resume_with_memory_checkpoints.py',
-        'scripts/enable_request_retries.py',
+        'scripts/enable_request_retries.py', 'scripts/disable_model_proxy.py',
         'scripts/release_smoke.py',
         'scripts/download_public_datasets.py', 'scripts/export_publication.py')}
     for folder in ('src', 'sources', 'examples', 'samples', 'methods/my_method', 'configs/reproduction', 'tests', 'patches/tests'):

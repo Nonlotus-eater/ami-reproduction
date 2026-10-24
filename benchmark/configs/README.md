@@ -57,3 +57,9 @@
 `family40-history40-50-leaf8-five-seeds-v4/` 及其历史结果仅供追溯，不作为默认部署入口。`reproduction/sampling.json` 中的 historical_sampler 记录原始生成工具；该旧脚本已清理，精确复现由固定 ID 与来源指纹保证。
 
 `scripts/` 保留配置、下载、公开来源抽样、固定/新抽样冻结、四方法运行、真实 smoke、发布导出，以及已有实验的分块恢复与请求重试接入入口。旧 99 题恢复及批次专用补跑/补评脚本已删除；当前队列保留 resume/retry 能力。`tests/` 按聚合、数据、流水线、队列、抽样、Reader、运行时和 CLBench 评分组织，保留现用逻辑的检查。
+
+## 模型网络连接
+
+模型请求直接连接配置的 `OPENAI_BASE_URL` / `AMI_EMBED_BASE_URL`，HTTP 客户端设置 `trust_env=False`，不继承 IDE 或终端的 `HTTP_PROXY`、`HTTPS_PROXY`、`ALL_PROXY`。
+
+对已经运行、仍继承代理的旧实验，可在全部记忆检索完成后执行 `PYTHONPATH=src python -m scripts.disable_model_proxy --experiment <run目录>`。该命令先暂停并核对所有答案/评分检查点，再清除代理变量续跑原实验；保存原启动脚本及切换记录，保留已完成输出和自动合并流程。
