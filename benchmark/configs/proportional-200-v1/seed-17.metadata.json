@@ -1,0 +1,2002 @@
+[
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:abstention:0",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "abstention",
+    "length_split": "100K",
+    "leaf": "H1",
+    "family": "H"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:abstention:1",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "abstention",
+    "length_split": "100K",
+    "leaf": "H1",
+    "family": "H"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:contradiction_resolution:0",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "contradiction_resolution",
+    "length_split": "100K",
+    "leaf": "D2",
+    "family": "D"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:contradiction_resolution:1",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "contradiction_resolution",
+    "length_split": "100K",
+    "leaf": "D2",
+    "family": "D"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:event_ordering:0",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "event_ordering",
+    "length_split": "100K",
+    "leaf": "C2",
+    "family": "C"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:event_ordering:1",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "event_ordering",
+    "length_split": "100K",
+    "leaf": "C2",
+    "family": "C"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:information_extraction:0",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "information_extraction",
+    "length_split": "100K",
+    "leaf": "A3",
+    "family": "A"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:information_extraction:1",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "information_extraction",
+    "length_split": "100K",
+    "leaf": "A3",
+    "family": "A"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:instruction_following:0",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "instruction_following",
+    "length_split": "100K",
+    "leaf": "G5",
+    "family": "G"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:knowledge_update:0",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "knowledge_update",
+    "length_split": "100K",
+    "leaf": "D1",
+    "family": "D"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:knowledge_update:1",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "knowledge_update",
+    "length_split": "100K",
+    "leaf": "D1",
+    "family": "D"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:multi_session_reasoning:1",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "multi_session_reasoning",
+    "length_split": "100K",
+    "leaf": "B1",
+    "family": "B"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:preference_following:0",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "preference_following",
+    "length_split": "100K",
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:summarization:0",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "summarization",
+    "length_split": "100K",
+    "leaf": "F1",
+    "family": "D"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:summarization:1",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "summarization",
+    "length_split": "100K",
+    "leaf": "F1",
+    "family": "D"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:temporal_reasoning:0",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "temporal_reasoning",
+    "length_split": "100K",
+    "leaf": "C1",
+    "family": "C"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:6:temporal_reasoning:1",
+    "source_unit_id": "100K:6",
+    "cluster_id": "6",
+    "native_type": "temporal_reasoning",
+    "length_split": "100K",
+    "leaf": "C1",
+    "family": "C"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:abstention:0",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "abstention",
+    "length_split": "100K",
+    "leaf": "H1",
+    "family": "H"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:abstention:1",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "abstention",
+    "length_split": "100K",
+    "leaf": "H1",
+    "family": "H"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:contradiction_resolution:1",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "contradiction_resolution",
+    "length_split": "100K",
+    "leaf": "D2",
+    "family": "D"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:event_ordering:0",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "event_ordering",
+    "length_split": "100K",
+    "leaf": "C2",
+    "family": "C"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:event_ordering:1",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "event_ordering",
+    "length_split": "100K",
+    "leaf": "C2",
+    "family": "C"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:information_extraction:0",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "information_extraction",
+    "length_split": "100K",
+    "leaf": "A3",
+    "family": "A"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:information_extraction:1",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "information_extraction",
+    "length_split": "100K",
+    "leaf": "A3",
+    "family": "A"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:instruction_following:0",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "instruction_following",
+    "length_split": "100K",
+    "leaf": "G5",
+    "family": "G"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:instruction_following:1",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "instruction_following",
+    "length_split": "100K",
+    "leaf": "G5",
+    "family": "G"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:knowledge_update:0",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "knowledge_update",
+    "length_split": "100K",
+    "leaf": "D1",
+    "family": "D"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:multi_session_reasoning:0",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "multi_session_reasoning",
+    "length_split": "100K",
+    "leaf": "B1",
+    "family": "B"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:multi_session_reasoning:1",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "multi_session_reasoning",
+    "length_split": "100K",
+    "leaf": "B1",
+    "family": "B"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:preference_following:0",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "preference_following",
+    "length_split": "100K",
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:preference_following:1",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "preference_following",
+    "length_split": "100K",
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:summarization:0",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "summarization",
+    "length_split": "100K",
+    "leaf": "F1",
+    "family": "D"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:temporal_reasoning:0",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "temporal_reasoning",
+    "length_split": "100K",
+    "leaf": "C1",
+    "family": "C"
+  },
+  {
+    "benchmark": "beam",
+    "qa_id": "beam:100K:8:temporal_reasoning:1",
+    "source_unit_id": "100K:8",
+    "cluster_id": "8",
+    "native_type": "temporal_reasoning",
+    "length_split": "100K",
+    "leaf": "C1",
+    "family": "C"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:1169adaf-ad74-4afd-9eca-8cee2afb52b0",
+    "source_unit_id": "1169adaf-ad74-4afd-9eca-8cee2afb52b0",
+    "cluster_id": "7f8cc51f-ba34-4f90-816d-30e336c5cafc",
+    "native_type": "Procedural Task Execution",
+    "length_split": null,
+    "leaf": "G3",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:161c909e-02a2-417d-a455-6ce3c2f76acd",
+    "source_unit_id": "161c909e-02a2-417d-a455-6ce3c2f76acd",
+    "cluster_id": "886449e2-6e73-419a-8dfa-287d6c13e2fe",
+    "native_type": "Procedural Task Execution",
+    "length_split": null,
+    "leaf": "G3",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:171c772d-3ef4-409f-844d-dba91c6ba843",
+    "source_unit_id": "171c772d-3ef4-409f-844d-dba91c6ba843",
+    "cluster_id": "330ae8f8-7bb4-4fd8-aee8-e875572c32a9",
+    "native_type": "Procedural Task Execution",
+    "length_split": null,
+    "leaf": "G3",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:1d30287b-ffbe-4124-8bbb-2eb47678688f",
+    "source_unit_id": "1d30287b-ffbe-4124-8bbb-2eb47678688f",
+    "cluster_id": "0cd43911-38b1-432e-b13d-bdab4cfbabf0",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:2bbe2e03-972d-45d5-8e54-0654115fddd1",
+    "source_unit_id": "2bbe2e03-972d-45d5-8e54-0654115fddd1",
+    "cluster_id": "71a2cd92-6978-4ea8-a37f-d99728129d89",
+    "native_type": "Rule System Application",
+    "length_split": null,
+    "leaf": "G2",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:2ea2ca82-32e7-406a-96a5-a334573cbc77",
+    "source_unit_id": "2ea2ca82-32e7-406a-96a5-a334573cbc77",
+    "cluster_id": "9461f812-a1ac-4784-a7ab-befadfc1c935",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:30225b25-8263-4906-b187-679d9a4a5ef0",
+    "source_unit_id": "30225b25-8263-4906-b187-679d9a4a5ef0",
+    "cluster_id": "7ff1e8d7-f74c-4707-96c8-44a94b53d48a",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:30e74d1f-434b-4513-8688-b491a7f59fca",
+    "source_unit_id": "30e74d1f-434b-4513-8688-b491a7f59fca",
+    "cluster_id": "1fde454a-5535-4d9e-a1f1-5bc20d55e501",
+    "native_type": "Empirical Discovery & Simulation",
+    "length_split": null,
+    "leaf": "G4",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:3975ea23-1d53-409c-a34e-a5ae767209a9",
+    "source_unit_id": "3975ea23-1d53-409c-a34e-a5ae767209a9",
+    "cluster_id": "109fdd40-dff3-42cf-be11-23fa4f6c437c",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:3b3032f8-da0c-49bb-803c-125ce75f5e44",
+    "source_unit_id": "3b3032f8-da0c-49bb-803c-125ce75f5e44",
+    "cluster_id": "205cd102-ad63-4243-a053-f653fcb677db",
+    "native_type": "Rule System Application",
+    "length_split": null,
+    "leaf": "G2",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:41118387-558e-449b-a1b5-e7ed08fd401c",
+    "source_unit_id": "41118387-558e-449b-a1b5-e7ed08fd401c",
+    "cluster_id": "f5a27818-2061-418f-96ac-7ae7fae4886c",
+    "native_type": "Rule System Application",
+    "length_split": null,
+    "leaf": "G2",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:49644fb6-524c-4544-94f6-e64a9a0ba005",
+    "source_unit_id": "49644fb6-524c-4544-94f6-e64a9a0ba005",
+    "cluster_id": "33b34368-5a91-4927-a79a-35fa478cb3c0",
+    "native_type": "Rule System Application",
+    "length_split": null,
+    "leaf": "G2",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:4a7b8f15-4a48-462d-842b-a5cad7de3d3b",
+    "source_unit_id": "4a7b8f15-4a48-462d-842b-a5cad7de3d3b",
+    "cluster_id": "992a415a-326e-4caf-abbe-4818f9002320",
+    "native_type": "Empirical Discovery & Simulation",
+    "length_split": null,
+    "leaf": "G4",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:6250b085-0e6e-434d-9ccb-4e7016c4dd86",
+    "source_unit_id": "6250b085-0e6e-434d-9ccb-4e7016c4dd86",
+    "cluster_id": "ce2f2c3b-8585-4ed5-af8f-b71cd88c1e38",
+    "native_type": "Empirical Discovery & Simulation",
+    "length_split": null,
+    "leaf": "G4",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:712b7a00-b050-48ef-8e69-2ed3c681b21a",
+    "source_unit_id": "712b7a00-b050-48ef-8e69-2ed3c681b21a",
+    "cluster_id": "df5f5be5-c201-4be1-83f9-c970d0cac15b",
+    "native_type": "Rule System Application",
+    "length_split": null,
+    "leaf": "G2",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:76e9e0a4-5b02-42a3-8cbd-fae8c723813d",
+    "source_unit_id": "76e9e0a4-5b02-42a3-8cbd-fae8c723813d",
+    "cluster_id": "c2f26f19-74fb-4924-82fd-bb2de36691c8",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:78045c5b-798a-4790-8a23-622e760bc6e4",
+    "source_unit_id": "78045c5b-798a-4790-8a23-622e760bc6e4",
+    "cluster_id": "6c006417-0ec8-413b-bf2c-406292941675",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:7c1c8b36-544b-42f1-a865-500900566082",
+    "source_unit_id": "7c1c8b36-544b-42f1-a865-500900566082",
+    "cluster_id": "1e86fe83-55f0-49ed-a952-3d5b59073748",
+    "native_type": "Procedural Task Execution",
+    "length_split": null,
+    "leaf": "G3",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:80ece7ab-a6f7-4840-af94-11c36b817dd6",
+    "source_unit_id": "80ece7ab-a6f7-4840-af94-11c36b817dd6",
+    "cluster_id": "e3902829-df7a-4121-aca7-115d491af67c",
+    "native_type": "Procedural Task Execution",
+    "length_split": null,
+    "leaf": "G3",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:84d59c71-28a7-4df6-9394-16960b5770d8",
+    "source_unit_id": "84d59c71-28a7-4df6-9394-16960b5770d8",
+    "cluster_id": "4374d5a5-be8e-453d-8a10-9c2e8ce5aa87",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:92044a3d-454b-41fa-9703-82d233808f10",
+    "source_unit_id": "92044a3d-454b-41fa-9703-82d233808f10",
+    "cluster_id": "e6846a0c-1eb8-4f61-af7f-87554a2eecde",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:95592c18-c7f7-4686-bd95-32483565b979",
+    "source_unit_id": "95592c18-c7f7-4686-bd95-32483565b979",
+    "cluster_id": "162bb573-f097-417b-9e6a-60f27b828c9e",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:97aa2b2d-a4fe-46a7-9c3a-4fc020cc8de7",
+    "source_unit_id": "97aa2b2d-a4fe-46a7-9c3a-4fc020cc8de7",
+    "cluster_id": "c4fd0075-0236-47ab-984f-b1f0f13fa679",
+    "native_type": "Procedural Task Execution",
+    "length_split": null,
+    "leaf": "G3",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:9bb1ff18-43f6-4894-979a-02cb82320b07",
+    "source_unit_id": "9bb1ff18-43f6-4894-979a-02cb82320b07",
+    "cluster_id": "2e00dce7-8045-4107-8f50-bd5e601a3989",
+    "native_type": "Procedural Task Execution",
+    "length_split": null,
+    "leaf": "G3",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:b1ec4f50-30be-439e-b2ab-d9a46bed830e",
+    "source_unit_id": "b1ec4f50-30be-439e-b2ab-d9a46bed830e",
+    "cluster_id": "b42ca3de-2cde-46c3-9deb-784e0a0da75f",
+    "native_type": "Rule System Application",
+    "length_split": null,
+    "leaf": "G2",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:bb89a77e-5d44-4d9c-9541-5a808415191d",
+    "source_unit_id": "bb89a77e-5d44-4d9c-9541-5a808415191d",
+    "cluster_id": "4024c607-1c2d-4387-aed0-89eae57d1004",
+    "native_type": "Rule System Application",
+    "length_split": null,
+    "leaf": "G2",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:c56af0ff-a03b-403f-b56d-0dff288a0f25",
+    "source_unit_id": "c56af0ff-a03b-403f-b56d-0dff288a0f25",
+    "cluster_id": "0f5da630-b26d-49b4-ac0d-659d8ce82df3",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:c7277a87-e088-42b2-8294-182ad815f4a4",
+    "source_unit_id": "c7277a87-e088-42b2-8294-182ad815f4a4",
+    "cluster_id": "46cb9ae9-b854-4e11-98c8-a98699980818",
+    "native_type": "Rule System Application",
+    "length_split": null,
+    "leaf": "G2",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:c85e227e-3c43-4cc1-b21a-ecbbd8ab4e47",
+    "source_unit_id": "c85e227e-3c43-4cc1-b21a-ecbbd8ab4e47",
+    "cluster_id": "e2bbc65c-e7bd-406f-b00c-3dac9265e9cd",
+    "native_type": "Procedural Task Execution",
+    "length_split": null,
+    "leaf": "G3",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:d2dec765-1ec2-45dd-adbe-93332387a37b",
+    "source_unit_id": "d2dec765-1ec2-45dd-adbe-93332387a37b",
+    "cluster_id": "9e9ea5cb-c0e5-4217-b59d-ea07083bc6a0",
+    "native_type": "Rule System Application",
+    "length_split": null,
+    "leaf": "G2",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:dbb995c5-a6b2-48de-b946-21a025e8f035",
+    "source_unit_id": "dbb995c5-a6b2-48de-b946-21a025e8f035",
+    "cluster_id": "4def3548-a636-4f3c-a2a9-b27f6eaf8e91",
+    "native_type": "Rule System Application",
+    "length_split": null,
+    "leaf": "G2",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:e6b865f3-121a-4809-ab4f-9267f86b7228",
+    "source_unit_id": "e6b865f3-121a-4809-ab4f-9267f86b7228",
+    "cluster_id": "638a455e-5ea0-44b9-91eb-36721a17e7aa",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:e734bf7f-4f6b-407b-821d-89bd2b233893",
+    "source_unit_id": "e734bf7f-4f6b-407b-821d-89bd2b233893",
+    "cluster_id": "641e5f9c-3e2f-46ea-bcee-c3be23d49e22",
+    "native_type": "Domain Knowledge Reasoning",
+    "length_split": null,
+    "leaf": "G1",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:eaac718f-9161-4f44-a0c6-d8a77cc84436",
+    "source_unit_id": "eaac718f-9161-4f44-a0c6-d8a77cc84436",
+    "cluster_id": "d04a3814-daa4-4703-bb0d-3bc9558ff55c",
+    "native_type": "Procedural Task Execution",
+    "length_split": null,
+    "leaf": "G3",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:ec05ee1b-1fd3-4ac9-a1e8-718403094f14",
+    "source_unit_id": "ec05ee1b-1fd3-4ac9-a1e8-718403094f14",
+    "cluster_id": "957af586-ca85-499f-921a-21da238f92fc",
+    "native_type": "Empirical Discovery & Simulation",
+    "length_split": null,
+    "leaf": "G4",
+    "family": "G"
+  },
+  {
+    "benchmark": "clbench",
+    "qa_id": "clbench:f10b9ec1-666b-4a51-af39-cc7dcf007b51",
+    "source_unit_id": "f10b9ec1-666b-4a51-af39-cc7dcf007b51",
+    "cluster_id": "b642a8c2-ec71-40fe-a4c6-aaa8f8e2f78f",
+    "native_type": "Rule System Application",
+    "length_split": null,
+    "leaf": "G2",
+    "family": "G"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-47#q0028",
+    "source_unit_id": "conv-47",
+    "cluster_id": "conv-47",
+    "native_type": "2",
+    "length_split": null,
+    "leaf": "C1",
+    "family": "C"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-47#q0048",
+    "source_unit_id": "conv-47",
+    "cluster_id": "conv-47",
+    "native_type": "2",
+    "length_split": null,
+    "leaf": "C1",
+    "family": "C"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-47#q0066",
+    "source_unit_id": "conv-47",
+    "cluster_id": "conv-47",
+    "native_type": "4",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-47#q0072",
+    "source_unit_id": "conv-47",
+    "cluster_id": "conv-47",
+    "native_type": "4",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-47#q0082",
+    "source_unit_id": "conv-47",
+    "cluster_id": "conv-47",
+    "native_type": "4",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-47#q0089",
+    "source_unit_id": "conv-47",
+    "cluster_id": "conv-47",
+    "native_type": "4",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-47#q0112",
+    "source_unit_id": "conv-47",
+    "cluster_id": "conv-47",
+    "native_type": "4",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-47#q0124",
+    "source_unit_id": "conv-47",
+    "cluster_id": "conv-47",
+    "native_type": "4",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-50#q0037",
+    "source_unit_id": "conv-50",
+    "cluster_id": "conv-50",
+    "native_type": "3",
+    "length_split": null,
+    "leaf": "B4",
+    "family": "B"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-50#q0038",
+    "source_unit_id": "conv-50",
+    "cluster_id": "conv-50",
+    "native_type": "2",
+    "length_split": null,
+    "leaf": "C1",
+    "family": "C"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-50#q0045",
+    "source_unit_id": "conv-50",
+    "cluster_id": "conv-50",
+    "native_type": "1",
+    "length_split": null,
+    "leaf": "B1",
+    "family": "B"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-50#q0064",
+    "source_unit_id": "conv-50",
+    "cluster_id": "conv-50",
+    "native_type": "4",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-50#q0096",
+    "source_unit_id": "conv-50",
+    "cluster_id": "conv-50",
+    "native_type": "4",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-50#q0098",
+    "source_unit_id": "conv-50",
+    "cluster_id": "conv-50",
+    "native_type": "4",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-50#q0105",
+    "source_unit_id": "conv-50",
+    "cluster_id": "conv-50",
+    "native_type": "4",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "locomo_refined",
+    "qa_id": "conv-50#q0120",
+    "source_unit_id": "conv-50",
+    "cluster_id": "conv-50",
+    "native_type": "4",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "longmemeval_s",
+    "qa_id": "1b9b7252",
+    "source_unit_id": "1b9b7252",
+    "cluster_id": "1b9b7252",
+    "native_type": "single-session-assistant",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "longmemeval_s",
+    "qa_id": "1c0ddc50",
+    "source_unit_id": "1c0ddc50",
+    "cluster_id": "1c0ddc50",
+    "native_type": "single-session-preference",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "longmemeval_s",
+    "qa_id": "51a45a95",
+    "source_unit_id": "51a45a95",
+    "cluster_id": "51a45a95",
+    "native_type": "single-session-user",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "longmemeval_s",
+    "qa_id": "b6019101",
+    "source_unit_id": "b6019101",
+    "cluster_id": "b6019101",
+    "native_type": "knowledge-update",
+    "length_split": null,
+    "leaf": "D1",
+    "family": "D"
+  },
+  {
+    "benchmark": "longmemeval_s",
+    "qa_id": "c4a1ceb8",
+    "source_unit_id": "c4a1ceb8",
+    "cluster_id": "c4a1ceb8",
+    "native_type": "multi-session",
+    "length_split": null,
+    "leaf": "B1",
+    "family": "B"
+  },
+  {
+    "benchmark": "longmemeval_s",
+    "qa_id": "cc06de0d",
+    "source_unit_id": "cc06de0d",
+    "cluster_id": "cc06de0d",
+    "native_type": "multi-session",
+    "length_split": null,
+    "leaf": "B1",
+    "family": "B"
+  },
+  {
+    "benchmark": "longmemeval_s",
+    "qa_id": "e01b8e2f",
+    "source_unit_id": "e01b8e2f",
+    "cluster_id": "e01b8e2f",
+    "native_type": "single-session-user",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "longmemeval_s",
+    "qa_id": "gpt4_b5700ca9",
+    "source_unit_id": "gpt4_b5700ca9",
+    "cluster_id": "gpt4_b5700ca9",
+    "native_type": "temporal-reasoning",
+    "length_split": null,
+    "leaf": "C1",
+    "family": "C"
+  },
+  {
+    "benchmark": "longmemeval_s",
+    "qa_id": "gpt4_fa19884d",
+    "source_unit_id": "gpt4_fa19884d",
+    "cluster_id": "gpt4_fa19884d",
+    "native_type": "temporal-reasoning",
+    "length_split": null,
+    "leaf": "C1",
+    "family": "C"
+  },
+  {
+    "benchmark": "personamem_v1",
+    "qa_id": "personamem_v1:07873ceb-93a3-45fe-9f72-b0c57fd95802",
+    "source_unit_id": "1:5c8fb86fe80da5b203e7926407dc3a35f763d32e5891082aaae632210734b5a5:prefix:169",
+    "cluster_id": "1",
+    "native_type": "suggest_new_ideas",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v1",
+    "qa_id": "personamem_v1:08430f6d-ada1-46a7-8f15-ddc466ba8a5b",
+    "source_unit_id": "1:5c8fb86fe80da5b203e7926407dc3a35f763d32e5891082aaae632210734b5a5:prefix:169",
+    "cluster_id": "1",
+    "native_type": "suggest_new_ideas",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v1",
+    "qa_id": "personamem_v1:1cd2d37b-de1b-4775-a063-d4543d602d3d",
+    "source_unit_id": "4:ea6147f6dc11130b410e00146e314d9370b7fff04f994639c4a3d46ce1255e64:prefix:110",
+    "cluster_id": "4",
+    "native_type": "track_full_preference_evolution",
+    "length_split": null,
+    "leaf": "C3",
+    "family": "C"
+  },
+  {
+    "benchmark": "personamem_v1",
+    "qa_id": "personamem_v1:1fd70246-21b9-4386-adfc-f570216130bf",
+    "source_unit_id": "4:ea6147f6dc11130b410e00146e314d9370b7fff04f994639c4a3d46ce1255e64:prefix:110",
+    "cluster_id": "4",
+    "native_type": "track_full_preference_evolution",
+    "length_split": null,
+    "leaf": "C3",
+    "family": "C"
+  },
+  {
+    "benchmark": "personamem_v1",
+    "qa_id": "personamem_v1:394bc68d-a4b3-415c-a7d9-6b367fe44e25",
+    "source_unit_id": "1:5c8fb86fe80da5b203e7926407dc3a35f763d32e5891082aaae632210734b5a5:prefix:169",
+    "cluster_id": "1",
+    "native_type": "recall_user_shared_facts",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "personamem_v1",
+    "qa_id": "personamem_v1:833601fa-de95-4fed-91d6-c9f45d778c84",
+    "source_unit_id": "1:5c8fb86fe80da5b203e7926407dc3a35f763d32e5891082aaae632210734b5a5:prefix:169",
+    "cluster_id": "1",
+    "native_type": "generalizing_to_new_scenarios",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v1",
+    "qa_id": "personamem_v1:856b5927-8865-4bb5-b1ac-38f965024508",
+    "source_unit_id": "1:5c8fb86fe80da5b203e7926407dc3a35f763d32e5891082aaae632210734b5a5:prefix:169",
+    "cluster_id": "1",
+    "native_type": "provide_preference_aligned_recommendations",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v1",
+    "qa_id": "personamem_v1:aa2c7800-7f7d-401b-acfa-9af67910f9f7",
+    "source_unit_id": "1:5c8fb86fe80da5b203e7926407dc3a35f763d32e5891082aaae632210734b5a5:prefix:169",
+    "cluster_id": "1",
+    "native_type": "recalling_the_reasons_behind_previous_updates",
+    "length_split": null,
+    "leaf": "C3",
+    "family": "C"
+  },
+  {
+    "benchmark": "personamem_v1",
+    "qa_id": "personamem_v1:c35b2768-b368-46d8-98d8-e1b3425918ba",
+    "source_unit_id": "17:1ee4be06b43a991eeb7c78772fdf2a1b795f46f336b5fc46a5c711d07cc1c052:prefix:113",
+    "cluster_id": "17",
+    "native_type": "track_full_preference_evolution",
+    "length_split": null,
+    "leaf": "C3",
+    "family": "C"
+  },
+  {
+    "benchmark": "personamem_v1",
+    "qa_id": "personamem_v1:cffc32b7-fa14-457f-ac4f-9c060bf2aee1",
+    "source_unit_id": "1:5c8fb86fe80da5b203e7926407dc3a35f763d32e5891082aaae632210734b5a5:prefix:169",
+    "cluster_id": "1",
+    "native_type": "recall_user_shared_facts",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "personamem_v1",
+    "qa_id": "personamem_v1:d90cadc8-e635-462b-8251-7f8a10734376",
+    "source_unit_id": "1:5c8fb86fe80da5b203e7926407dc3a35f763d32e5891082aaae632210734b5a5:prefix:169",
+    "cluster_id": "1",
+    "native_type": "recall_user_shared_facts",
+    "length_split": null,
+    "leaf": "A1",
+    "family": "A"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1837",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "sensitive_info",
+    "length_split": null,
+    "leaf": "H2",
+    "family": "H"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1841",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1842",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1843",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1845",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1846",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1847",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "sensitive_info",
+    "length_split": null,
+    "leaf": "H2",
+    "family": "H"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1849",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1850",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1851",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1852",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "sensitive_info",
+    "length_split": null,
+    "leaf": "H2",
+    "family": "H"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1853",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1854",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1855",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "therapy_background",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1856",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "health_and_medical_conditions",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1857",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "therapy_background",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1859",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1860",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "health_and_medical_conditions",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:1861",
+    "source_unit_id": "741:data/chat_history_32k/chat_history_250913_163134_persona741.json",
+    "cluster_id": "741",
+    "native_type": "health_and_medical_conditions",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2013",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2014",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2016",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "therapy_background",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2019",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "sensitive_info",
+    "length_split": null,
+    "leaf": "H2",
+    "family": "H"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2020",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2021",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2023",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2024",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "health_and_medical_conditions",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2025",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2026",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2027",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "health_and_medical_conditions",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2028",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "sensitive_info",
+    "length_split": null,
+    "leaf": "H2",
+    "family": "H"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2030",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2031",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2032",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2033",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "therapy_background",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2034",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2035",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:2036",
+    "source_unit_id": "679:data/chat_history_32k/chat_history_250913_163134_persona679.json",
+    "cluster_id": "679",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3822",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3823",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "therapy_background",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3824",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3825",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3826",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "health_and_medical_conditions",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3830",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3831",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3832",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "therapy_background",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3834",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3836",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3837",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3840",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "therapy_background",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3841",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "health_and_medical_conditions",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3842",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "sensitive_info",
+    "length_split": null,
+    "leaf": "H2",
+    "family": "H"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3843",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3844",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:3845",
+    "source_unit_id": "158:data/chat_history_32k/chat_history_250913_163134_persona158.json",
+    "cluster_id": "158",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:406",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "therapy_background",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:408",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "sensitive_info",
+    "length_split": null,
+    "leaf": "H2",
+    "family": "H"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:410",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:411",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "sensitive_info",
+    "length_split": null,
+    "leaf": "H2",
+    "family": "H"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:412",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:413",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "therapy_background",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:414",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "therapy_background",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:415",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "health_and_medical_conditions",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:416",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "sensitive_info",
+    "length_split": null,
+    "leaf": "H2",
+    "family": "H"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:417",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:418",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:419",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:420",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:421",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:422",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:423",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:426",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:427",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:429",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:431",
+    "source_unit_id": "899:data/chat_history_32k/chat_history_250913_163134_persona899.json",
+    "cluster_id": "899",
+    "native_type": "health_and_medical_conditions",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:924",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:925",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:927",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "sensitive_info",
+    "length_split": null,
+    "leaf": "H2",
+    "family": "H"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:928",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:929",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:930",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:931",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "health_and_medical_conditions",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:932",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "therapy_background",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:933",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:934",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "health_and_medical_conditions",
+    "length_split": null,
+    "leaf": "E3",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:935",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:936",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:937",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "ask_to_forget",
+    "length_split": null,
+    "leaf": "D3",
+    "family": "D"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:938",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:940",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:941",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "anti_stereotypical_pref",
+    "length_split": null,
+    "leaf": "E2",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:942",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:944",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  },
+  {
+    "benchmark": "personamem_v2",
+    "qa_id": "personamem_v2:945",
+    "source_unit_id": "687:data/chat_history_32k/chat_history_250913_163134_persona687.json",
+    "cluster_id": "687",
+    "native_type": "neutral_preferences",
+    "length_split": null,
+    "leaf": "E1",
+    "family": "E"
+  }
+]

@@ -1,76 +1,85 @@
 # Agent Memory Benchmark
 
-六个公开数据版本的统一评测框架：LoCoMo-Refined、LongMemEval-S、CLBench、PersonaMem v1/v2、BEAM。支持 **AMI、Mem0、InvMem、ReFind**，各方法原生构建记忆与检索，共用作答、评分和汇总流程。
+六个公开文本数据版本的统一评测：LoCoMo-Refined、LongMemEval-S、CLBench、PersonaMem v1/v2、BEAM。支持 **AMI、Mem0、InvMem、ReFind**，保留各方法原生记忆与检索，共用 Reader、评分及报告。
 
-本轮新增统一并发、记忆写入分段与长文本处理、评分与请求诊断、四方法接入整理、公开数据选题与运行配置。详见 [同步说明](docs/sync_20261021.md)。
+当前数据版本为 `proportional-200-v1`：seed 17–21，每个 200 题，共 **1,000 道不同题目、286 个历史任务**。当前目录只分发新抽样、新五 seed 和新并发脚本，不含 derived、旧数据样例、旧队列入口或历史多轮合并工具。
 
-2026-10-24 发布记忆 worker 隔离、原生配置冻结和 AML HTTP 重试；Reader 预算及模型直连一并核对。更新说明见 [发布说明](docs/request_retry_deployment.md#2026-10-24reader-与审查第-136-项更新说明)。
+## 运行新五 seed
 
-2026-10-22 发布请求重试与预算修复，保留已有错误诊断，并支持已有实验在下一次记忆 worker 启动时接入。重试配置与 Add 断点恢复行为见 [上线说明](docs/request_retry_deployment.md)。
-
-2026-10-23 Reader 对齐 AML 公开预算与排名前缀规则，升级方式见[简短说明](docs/reader_aml_update.md)。
-
-## 配置与数据
-
-在 Benchmark 根目录使用 Python 3.11 安装公共依赖；四方法原生源码与环境按 [交接文档](docs/model_handoff_99.md) 单独准备。
+需要 Linux、Python 3.11、bubblewrap；公共依赖及四方法安装见 [部署说明](docs/deployment.md)。复制 `.env.example` 为本地 `.env` 并填写模型接口凭据，然后执行：
 
 ```bash
-python3.11 -m venv .venv
-.venv/bin/python -m pip install -e '.[api,data]' 'numpy==2.2.6'
+python scripts/configure_release.py --output configs/local
+python scripts/run_parallel.py prepare --config configs/local/parallel.json
+python scripts/run_parallel.py check --config configs/local/parallel.json
+python scripts/run_parallel.py start --config configs/local/parallel.json
+python scripts/run_parallel.py status --config configs/local/parallel.json
 ```
 
-复制 `.env.example` 为 `.env` 并填写凭据，按 [数据说明](datasets/README.md) 准备来源。生成本机配置、调整 `configs/local/suite.json` 后重建固定五轮输入：
+prepare/check 不调用模型；start 启动真实付费请求。完整所选历史、查询及独立评分目标包含在 `samples/proportional-200-v1/prepared/`，运行固定输入不依赖旧 runs 或全量原始数据下载。
+
+**默认不设金额、历史任务、每方法任务、题目请求并发或接口 RPM/TPM 上限。** JSON 中这些限制均为 `null`，表示所有符合阶段依赖的任务都可同时启动，不再默认限制为 20/5。每份历史仍需完成 Add/Search 才能作答，作答完成后再评分；操作系统资源和供应商自身限额仍生效。费用会继续记账，估算单价由用户配置。
+
+用户可自行填写任意正整数的并发限制，没有代码写死的最大值。例如下面是一份**用户主动限制**的配置，并非默认值：
 
 ```bash
-.venv/bin/python scripts/configure_release.py --output configs/local
-.venv/bin/python scripts/prepare_five_seeds.py --output runs/prepared-five-seeds-new
+python scripts/configure_release.py --output configs/local-limited \
+  --history-workers 20 --per-method-workers 5 --query-workers 1 --budget-cny 50
 ```
 
-默认按 `configs/reproduction/` 的固定清单恢复 seed 17–21，五轮分别 202 / 199 / 196 / 201 / 205 题，共 1,003 题次、791 道不同题目。四方法共用冻结输入，每轮独立建库。[seed 17 样例](samples/README.md) 包含完整的 22 份历史和 202 组 QA pairs。
+接口限制在生成的 `parallel.json` 的 `providers.llm`、`providers.embedding` 中设置：`inflight`、`rpm`、`tpm` 接受正整数或 null。`memory_workers`、`reader_history_workers` 可分别限制阶段并发。自动降低接口并发默认关闭，可在设置有限接口并发后显式开启。配置在 prepare 时冻结，变更配置应另建运行目录。
 
-重新抽样使用 `scripts/sample_small_benchmark.py`、`scripts/prepare_sampled_seeds.py` 及 `configs/small_benchmark_v1.json`。Reader 默认按 AML 公开规则运行：top_k=100，完整输入最多 117,760 tokens，输出最多 8,192 tokens，安全余量 2,048 tokens；超预算时按检索排名保留证据前缀，问题、选项、指令和归档检索结果保持完整。历史运行参数保存在 `configs/reproduction/runtime.json`，详见 [配置说明](configs/README.md)。
+## 抽样与报告
 
-## 四方法五轮并发
+按 10,649 题母库的数据集及原生题型比例分配题数，通过五 seed 联合取整减小误差。复用完整历史以减少 Add，BEAM 每 seed 选两份 100K split 历史，不覆盖 500K/1M；100K 是分档名，不是精确 tokenizer 长度。六数据集五 seed 合计题数为 **81 / 47 / 178 / 55 / 470 / 169**。
 
-```bash
-.venv/bin/python scripts/run_five_seed_experiments.py \
-  --prepared runs/prepared-five-seeds-new \
-  --config configs/local \
-  --output runs/four-methods-new \
-  --parallel 8 --parallel-per-method 2
-```
+能力类型沿用本地映射并另做比例验收：合并后大类、小类占比最大误差分别为 **0.0877、0.0664 个百分点**。母库未覆盖 A2/B2/B3，个别 seed 稀有小类也可无题。完整表格见 [数据集比例](configs/proportional-200-v1/dataset_distribution.csv)、[能力比例](configs/proportional-200-v1/capability_proportion_audit.csv)。
 
-每个“方法 × seed”为独立队列，共 20 个。`--parallel` 控制总活动队列数，`--parallel-per-method` 控制单方法活动队列数；全部同时启动使用 `--parallel 20 --parallel-per-method 5`。队列并发数与实时 API 请求数不同，运行会调用真实模型 API。
+报告以七能力大类等权均分为主，同时提供六数据集等权均分、各数据集、能力大类与小类得分、五 seed 均值和样本标准差（ddof=1）。缺失成绩不填零，未覆盖小类记 NA，并给出有效 seed 数。输出包括 `report.md` 和 `summaries/{benchmarks,capabilities,capability_leaves}.csv`。
 
-同一组参数追加 `--resume` 可续跑，复用已保存的答案和有效评分。调度器依赖 Linux；接管活动队列、调整并发及输出说明见 [交接文档](docs/model_handoff_99.md)。
+从全母库重新抽样使用 `scripts/sample_proportional.py`；重建固定 ID 使用 `scripts/prepare_five_seeds.py`。数据与运行命令见 [数据说明](datasets/README.md) 和 [运行说明](docs/proportional_parallel_release.md)。
 
-同份历史内的 Add 分块恢复可通过 runtime 的 `memory_checkpoint_policy: "add_chunks_sqlite_snapshot_v1"` 启用，支持四方法。每块成功后保存数据库快照，失败时从最近的完整分块继续；建库完成后的检索失败也会复用建库状态。配置、恢复边界与已有实验接入见 [分块恢复说明](docs/memory_checkpoint_recovery.md)。
+## ReFind 默认去重与超限处理
 
-### 单方法五并发
+默认 `refind_context_policy=deduplicate_observations_v1`，对 **全部 ReFind 题目**统一启用。规划过程中，同一原文块重复出现在观察中时保留首次原文，后续用引用表示，保留结果编号和 MATCH 标记。如果去重后仍超限，仅对观察正文取头尾片段，使完整规划提示词不超过 117,760 tokens；问题、系统指令、动作和结果头部不截断。记忆数据库及最终交给 Reader 的检索证据不改写。设为 null 可关闭。
 
-用 `--method` 选择一个方法，并将两个并发上限都设为 5，即可同时运行该方法的 seed 17–21。以 InvMem 为例：
+这会改变 ReFind 的规划输入，可能改变后续检索与回答。此前实验仅最后 5 道失败题补跑采用去重，不能把那轮分数标为当前默认设置的完整实验结果。
 
-```bash
-.venv/bin/python scripts/run_five_seed_experiments.py \
-  --prepared runs/prepared-five-seeds-new \
-  --config configs/local \
-  --output runs/invmem-five-seeds-new \
-  --method invmem \
-  --parallel 5 --parallel-per-method 5
-```
+## BEAM 评分 JSON 转义修复
 
-`--method` 可选 `activememoryindex`（AMI）、`mem0`、`invmem`、`refind`；省略时运行全部四方法，也可重复指定以选择多个方法。输出和汇总只包含所选方法，每个 seed 使用独立记忆库。
+BEAM Judge 有时在评分解释中写出 LaTeX，例如 `\geq`，却没有按 JSON 规则转义反斜杠，导致整份评分解析失败。现在只有原生解析器明确报告 `Invalid \\escape` 时，才将字符串中的非法反斜杠改成合法的字面量转义，再交给**同一个原生评分校验器**。
 
-续跑时保留相同的 `--method`、输入、输出和运行参数，追加 `--resume`；更换所选方法时使用新的输出目录。
+这项修复不改 rubric、分数或合法 JSON 转义，也不替模型补评分；其他语法错误继续报错。保存原始评分响应，并用 `judge_json_normalization` 记录是否修复及修复次数。
 
-## 代码与说明
+## 本轮集成与修复
 
-- `src/memory_benchmark/methods/`：四方法适配器与公共工厂。
-- `src/memory_benchmark/runtime/native_bridge/`：InvMem/ReFind 原生执行桥接。
-- `src/memory_benchmark/pipeline/`：数据冻结、Add 分段、Reader 与评测流程。
-- `scripts/`、`configs/`：调度、抽样、配置生成与发布导出。
-- [功能流程](docs/benchmark_guide.md)、[评测契约](docs/evaluation_contract.md)、[发布范围](docs/publication_scope.md)。
+- 新并发入口统一为 `scripts/run_parallel.py`，实现分阶段运行、停止、恢复、共享用量账本及细分报告；发布包移除旧入口和旧样例。
+- 修复 Python 虚拟环境链接被解析成系统解释器的问题；启动从本次冻结源码加载，避免另一 editable checkout 提前污染导入。
+- JSONL 按文件物理行解析，保留正文中的 Unicode 行分隔符，避免误拆记录。
+- 用户配置的总并发和每方法并发跨记忆、Reader 两池合计执行；null 默认不限，显式填写时才限制。
+- Add 分块、检索、答案、评分分别持久化；续跑保留成功结果；冻结并校验源码、环境、输入和参数，拒绝静默篡改。
+- 记忆 worker 使用 bubblewrap 文件隔离，不挂载评分目标；修复进程超时处理及私有 provider 临时文件清理。
+- 模型 HTTP 请求直接连接接口，不读取环境代理；SDK 不叠加重试。即使供应商用 429 包装上下文超限，也识别为永久错误，不进行无效请求重试。
+- 默认 ReFind 观察去重及超限处理、BEAM JSON 非法转义修复，行为如上节所述。
+
+新并发脚本仍保留独立的故障重试：默认每请求最多 8 次尝试、每历史任务最多 3 次尝试，均可配置。这是故障恢复次数，与“金额和并发默认不限”不同。
+
+“旧队列重试增强”原本给旧运行器补上 Reader/评分请求的传输重试，并支持显式最多 100 次重试。例如已有答案保存成功、评分请求连接失败时，只重试评分请求，保留已有答案。它不改变 Reader token 预算，也不按分数高低重跑。旧队列升级脚本本轮随旧入口移除；新脚本自身的重试保留。
+
+Reader 协议保持 top100、完整输入 117,760、输出 8,192、安全余量 2,048；金额和并发默认不限不改变这些模型上下文约束。评测与隔离边界见 [评测契约](docs/evaluation_contract.md)。
+
+## 下载旧版本
+
+旧数据、旧抽样及旧队列脚本从当前发布目录移除，仍可在固定历史提交中查看和下载：
+
+- [旧版 benchmark 目录](https://github.com/Nonlotus-eater/ami-reproduction/tree/6ab98adeacd50dc934772a3c64f630b3709f9a24/benchmark)
+- [下载旧版本 ZIP](https://github.com/Nonlotus-eater/ami-reproduction/archive/6ab98adeacd50dc934772a3c64f630b3709f9a24.zip)，解压后进入 `benchmark/`
+- 固定提交：`6ab98adeacd50dc934772a3c64f630b3709f9a24`
+
+旧版包包含当时的五 seed ID/配置、seed 17 阅读样例和脚本；完整母库仍按旧版数据说明下载。不要把旧脚本、旧 Reader 参数与当前数据混合使用。详见 [旧版本位置](docs/legacy_versions.md)。
+
+本次更新的完整范围见 [发布范围](docs/publication_scope.md)。
 
 ## AML HTTP 记忆接口
 
-安装 `.[api,data,http_memory]` 后，可使用 `aml_sdk.client.MemoryClient` 或 `aml_http` adapter 连接兼容 Add/Search 的记忆服务。客户端提供有界重试及响应校验；请求重试规则见 [上线说明](docs/request_retry_deployment.md)。
+安装 `.[api,data,http_memory]` 后，可使用 `aml_sdk.client.MemoryClient` 或 `aml_http` adapter 连接兼容 Add/Search 的记忆服务。客户端提供有界重试及响应校验；实验请求及恢复规则见 [运行说明](docs/proportional_parallel_release.md)。

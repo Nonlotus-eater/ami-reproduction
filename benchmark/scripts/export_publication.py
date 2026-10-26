@@ -1,4 +1,4 @@
-"""Build allowlisted benchmark sources and seed-17 samples for the fork."""
+"""Export the current proportional benchmark; legacy releases remain in Git history."""
 import argparse
 import ast
 import hashlib
@@ -14,6 +14,42 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 EXCLUDED_SOURCE = {'lightmem.py', 'lightmem_api.py', 'lightmem_memma.py', 'pilot.py'}
+LEGACY_COMMIT = '6ab98adeacd50dc934772a3c64f630b3709f9a24'
+LEGACY_FILES = {
+    'scripts/run_five_seed_experiments.py', 'scripts/sample_small_benchmark.py',
+    'scripts/enable_memory_checkpoints.py', 'scripts/resume_with_memory_checkpoints.py',
+    'scripts/enable_request_retries.py', 'scripts/disable_model_proxy.py',
+    'scripts/release_smoke.py', 'scripts/merge_experiment_repeats.py',
+    'configs/small_benchmark_v1.json', 'tests/test_sampling.py',
+    'tests/test_repeat_merge.py', 'tests/test_checkpoint_rollout.py', 'tests/test_retry_rollout.py',
+    'tests/fixtures/scheduler_bootstrap.py', 'tests/fixtures/scheduler_queue.py',
+}
+CURRENT_DOCS = {
+    'docs/deployment.md', 'docs/legacy_versions.md', 'docs/evaluation_contract.md',
+    'docs/capability_label_mapping.md', 'docs/publication_scope.md',
+    'docs/benchmark_guide.md', 'docs/proportional_parallel_release.md',
+}
+
+
+def trim_legacy_tests(output):
+    """Keep shared-core tests while removing tests of unpublished legacy CLIs."""
+    rules = {
+        'test_reusability.py': ({'SchedulerProcessTests'}, {'test_sampling_replays_and_freezing_rejects_modified_source_or_selected_list'}, set()),
+        'test_queue.py': ({'FiveSeedExperimentTests'}, set(), {'scripts.run_five_seed_experiments'}),
+        'test_direct_network.py': (set(), {'test_resume_environment_removes_all_proxy_variants', 'test_handoff_requires_every_persisted_output_to_match_its_checkpoint'}, {'scripts.disable_model_proxy'}),
+    }
+    for name, (classes, functions, imports) in rules.items():
+        path = output / 'tests' / name
+        tree = ast.parse(path.read_text())
+        tree.body = [n for n in tree.body if not (
+            isinstance(n, ast.ClassDef) and n.name in classes or
+            isinstance(n, ast.ImportFrom) and n.module in imports)]
+        for node in tree.body:
+            if isinstance(node, ast.ClassDef):
+                node.body = [n for n in node.body if not isinstance(n, ast.FunctionDef) or n.name not in functions]
+        if name == 'test_direct_network.py' and not any(isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'PROXY_KEYS' for t in n.targets) for n in tree.body):
+            tree.body.insert(0, ast.parse("PROXY_KEYS = ('HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','http_proxy','https_proxy','all_proxy')").body[0])
+        path.write_text(ast.unparse(tree) + '\n')
 
 
 def digest(path):
@@ -21,8 +57,7 @@ def digest(path):
 
 
 def export(output, profile=None):
-    profile = profile or ('full' if (ROOT / 'methods/my_method').is_dir() else
-                          'benchmark' if (ROOT / 'src/aml_sdk/client.py').is_file() else 'core')
+    profile = profile or 'benchmark'
     if profile not in {'core', 'benchmark', 'full'}:
         raise ValueError('Unknown publication profile')
     output = Path(output).resolve()
@@ -31,7 +66,7 @@ def export(output, profile=None):
     files = {Path(p) for p in ('.env.example', '.dockerignore', '.githooks/pre-commit', 'scripts/check_credentials.py',
         'docs/aml_security_fixes_20261023.md', 'pyproject.toml', 'README.md',
         'configs/README.md', 'configs/runtime.json', 'configs/suites/smoke.json',
-        'configs/datasets/public_sources.json', 'configs/small_benchmark_v1.json', 'datasets/README.md',
+        'configs/datasets/public_sources.json', 'configs/datasets/text_suite.json', 'configs/small_benchmark_v1.json', 'datasets/README.md',
         'docs/model_handoff_99.md', 'docs/evaluation_contract.md',
         'docs/capability_label_mapping.md', 'docs/publication_scope.md',
         'docs/memory_checkpoint_recovery.md', 'docs/request_retry_deployment.md', 'docs/reader_aml_update.md',
@@ -47,8 +82,13 @@ def export(output, profile=None):
         'scripts/enable_request_retries.py', 'scripts/disable_model_proxy.py',
         'scripts/release_smoke.py',
         'scripts/download_public_datasets.py', 'scripts/export_publication.py')}
-    if (ROOT / 'scripts/merge_experiment_repeats.py').is_file():
-        files.add(Path('scripts/merge_experiment_repeats.py'))
+    for relative in ['scripts/run_parallel.py', 'scripts/sample_proportional.py', 'docs/proportional_parallel_release.md']:
+        files.add(Path(relative))
+    files.update(Path(p) for p in CURRENT_DOCS)
+    for folder in ['scripts/parallel_runner', 'configs/parallel', 'configs/proportional-200-v1', 'samples/proportional-200-v1', 'samples/tokenizer-cache']:
+        for path in (ROOT / folder).rglob('*'):
+            if path.is_file() and '__pycache__' not in path.parts and path.suffix not in {'.pyc', '.log'}:
+                files.add(path.relative_to(ROOT))
     for folder in ('src', 'sources', 'examples', 'samples', 'methods/my_method', 'configs/reproduction', 'tests', 'patches/tests'):
         for path in (ROOT / folder).rglob('*'):
             if path.is_file() and path.suffix in {'.py', '.json', '.jsonl'} and '__pycache__' not in path.parts:
@@ -63,6 +103,15 @@ def export(output, profile=None):
         for relative in ('docs/references/AMI_Benchmark_99_reference.docx', 'docs/references/README.md'):
             if (ROOT / relative).is_file():
                 files.add(Path(relative))
+    if profile in {'core', 'benchmark'}:
+        files = {path for path in files if not (
+            path.name.startswith(('test_derived', 'test_probe', 'test_invmem_derived'))
+            or any('derived' in part for part in path.parts))}
+        files = {path for path in files if str(path) not in LEGACY_FILES
+            and not str(path).startswith(('configs/reproduction/', 'samples/seed-17/'))
+            and (not str(path).startswith('samples/') or str(path) == 'samples/README.md'
+                 or str(path).startswith(('samples/proportional-200-v1/', 'samples/tokenizer-cache/')))
+            and (not str(path).startswith('docs/') or str(path) in CURRENT_DOCS)}
     # Do not overwrite an existing candidate or the target fork.
     output.mkdir(parents=True, exist_ok=False)
     for relative in sorted(files):
@@ -109,7 +158,7 @@ def export(output, profile=None):
         text = '\n'.join(line for line in text.splitlines()
                          if not line.startswith(('src/aml_sdk/', 'examples/sdk/', 'methods/my_method/')))
         readme.write_text(text.rstrip() + '\n')
-        for name in ('README.md', 'docs/model_handoff_99.md'):
+        for name in ('README.md', 'docs/deployment.md'):
             path = output / name
             path.write_text(path.read_text().replace('[api,data,sdk]', '[api,data]').replace('[api,sdk]', '[api]'))
         guide = output / 'docs/benchmark_guide.md'
@@ -138,7 +187,8 @@ def export(output, profile=None):
             readme.write_text(readme.read_text().rstrip() + '\n\n## AML HTTP 记忆接口\n\n'
                 '安装 `.[api,data,http_memory]` 后，可使用 `aml_sdk.client.MemoryClient` 或 '
                 '`aml_http` adapter 连接兼容 Add/Search 的记忆服务。客户端提供有界重试及响应校验；'
-                '请求重试规则见 [上线说明](docs/request_retry_deployment.md)。\n')
+                '实验请求及恢复规则见 [运行说明](docs/proportional_parallel_release.md)。\n')
+        trim_legacy_tests(output)
     (output / '.gitignore').write_text(
         '.env\n.env.*\n!.env.example\n.venv/\n**/.venv/\n**/.benchmark-env/\n'
         '__pycache__/\n*.pyc\n*.egg-info/\nbaselines/\nmodels/\nruns/\n'
@@ -172,12 +222,18 @@ def export(output, profile=None):
                       'research_starting_point': 'InvMem / vanilla-rag-memory 0.6.0', 'track': 'textual'} if profile == 'full' else
                      {'mode': 'http_client', 'extra': 'http_memory', 'client': 'aml_sdk.client.MemoryClient',
                       'adapter': 'aml_http', 'storage': 'method_owned'} if profile == 'benchmark' else None,
-              'public_source_sampling': {'entrypoint': 'scripts/sample_small_benchmark.py',
-                                         'config': 'configs/small_benchmark_v1.json',
-                                         'strategy': 'v1-history30-leaf2',
+              'public_source_sampling': {'entrypoint': 'scripts/sample_proportional.py',
+                                         'config': 'configs/proportional-200-v1/sampling.json',
+                                         'strategy': 'proportional-cluster-200-v1',
                                          'historical_inputs_required': False},
-              'sample_data': {'seed': 17, 'history_instances': 22, 'qa_pairs': 202},
+              'sample_data': {'seeds': [17,18,19,20,21], 'history_instances': 286, 'qa_pairs': 1000, 'bundle': 'samples/proportional-200-v1', 'legacy_seed17_sample_retained': profile == 'full'},
+              'legacy_version': {'commit': LEGACY_COMMIT,
+                  'archive': 'https://github.com/Nonlotus-eater/ami-reproduction/archive/' + LEGACY_COMMIT + '.zip'},
+              'parallel_defaults': {'budget_cny': None, 'history_concurrency': None,
+                  'provider_limits': None, 'user_configurable': True,
+                  'refind_context_policy': 'deduplicate_observations_v1'},
               'raw_dataset_snapshots_included': False, 'results_included': False,
+              'parallel_entrypoint': 'scripts/run_parallel.py', 'derived_included': profile == 'full',
               'credential_value_scan': 'passed',
               'transformations': ['remove optional LightMem registrations/tests and local-only historical v2 regression test',
                                   'portable AMI/Mem0 template paths', 'four-method baseline lock'] + (

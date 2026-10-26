@@ -21,8 +21,8 @@ class RetryPolicy:
 
     @classmethod
     def from_profile(cls, profile, max_retries=0):
-        if type(max_retries) is not int or not 0 <= max_retries <= 10:
-            raise ValueError('max_retries must be an integer from 0 to 10')
+        if type(max_retries) is not int or not 0 <= max_retries <= 100:
+            raise ValueError('max_retries must be an integer from 0 to 100')
         flag = profile.get('AMI_ALLOW_RETRIES', '0')
         if flag not in {'0', '1'}:
             raise ValueError('AMI_ALLOW_RETRIES must be 0 or 1')

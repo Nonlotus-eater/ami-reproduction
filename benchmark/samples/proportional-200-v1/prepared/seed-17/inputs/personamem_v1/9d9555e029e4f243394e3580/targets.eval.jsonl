@@ -1,0 +1,8 @@
+{"qa_id": "personamem_v1:d90cadc8-e635-462b-8251-7f8a10734376", "gold": "(d)", "capability_leaves": ["A1"], "evidence_source_ids": [], "question_type": "recall_user_shared_facts", "scoring_data": {}}
+{"qa_id": "personamem_v1:07873ceb-93a3-45fe-9f72-b0c57fd95802", "gold": "(a)", "capability_leaves": ["E1"], "evidence_source_ids": [], "question_type": "suggest_new_ideas", "scoring_data": {}}
+{"qa_id": "personamem_v1:833601fa-de95-4fed-91d6-c9f45d778c84", "gold": "(c)", "capability_leaves": ["E1"], "evidence_source_ids": [], "question_type": "generalizing_to_new_scenarios", "scoring_data": {}}
+{"qa_id": "personamem_v1:aa2c7800-7f7d-401b-acfa-9af67910f9f7", "gold": "(d)", "capability_leaves": ["C3"], "evidence_source_ids": [], "question_type": "recalling_the_reasons_behind_previous_updates", "scoring_data": {}}
+{"qa_id": "personamem_v1:cffc32b7-fa14-457f-ac4f-9c060bf2aee1", "gold": "(b)", "capability_leaves": ["A1"], "evidence_source_ids": [], "question_type": "recall_user_shared_facts", "scoring_data": {}}
+{"qa_id": "personamem_v1:856b5927-8865-4bb5-b1ac-38f965024508", "gold": "(a)", "capability_leaves": ["E1"], "evidence_source_ids": [], "question_type": "provide_preference_aligned_recommendations", "scoring_data": {}}
+{"qa_id": "personamem_v1:08430f6d-ada1-46a7-8f15-ddc466ba8a5b", "gold": "(b)", "capability_leaves": ["E1"], "evidence_source_ids": [], "question_type": "suggest_new_ideas", "scoring_data": {}}
+{"qa_id": "personamem_v1:394bc68d-a4b3-415c-a7d9-6b367fe44e25", "gold": "(c)", "capability_leaves": ["A1"], "evidence_source_ids": [], "question_type": "recall_user_shared_facts", "scoring_data": {}}

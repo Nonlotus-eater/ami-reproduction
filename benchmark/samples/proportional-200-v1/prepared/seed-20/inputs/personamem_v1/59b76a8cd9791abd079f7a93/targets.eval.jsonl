@@ -1,0 +1,4 @@
+{"qa_id": "personamem_v1:d6d4a4e8-96c4-4b72-bdd3-204b44ec1826", "gold": "(b)", "capability_leaves": ["A1"], "evidence_source_ids": [], "question_type": "recalling_facts_mentioned_by_the_user", "scoring_data": {}}
+{"qa_id": "personamem_v1:7fa150c3-c80b-446f-9c1e-8d786fda2d35", "gold": "(a)", "capability_leaves": ["A1"], "evidence_source_ids": [], "question_type": "recall_user_shared_facts", "scoring_data": {}}
+{"qa_id": "personamem_v1:c1d23911-03b0-4cf0-be14-c433057f42ba", "gold": "(a)", "capability_leaves": ["A1"], "evidence_source_ids": [], "question_type": "recall_user_shared_facts", "scoring_data": {}}
+{"qa_id": "personamem_v1:fcfde00b-be10-4c52-922d-85cf7ae9f556", "gold": "(b)", "capability_leaves": ["C3"], "evidence_source_ids": [], "question_type": "recalling_the_reasons_behind_previous_updates", "scoring_data": {}}

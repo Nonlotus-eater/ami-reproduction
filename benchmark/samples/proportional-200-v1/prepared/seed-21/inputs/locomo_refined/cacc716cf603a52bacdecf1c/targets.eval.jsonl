@@ -1,0 +1,7 @@
+{"qa_id": "conv-44#q0001", "gold": ["The week before March 27, 2023", "From March 20, 2023 to March 26, 2023"], "capability_leaves": ["C1"], "evidence_source_ids": ["D1:2"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-44#q0009", "gold": ["June 11, 2023"], "capability_leaves": ["C1"], "evidence_source_ids": ["D8:1"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-44#q0055", "gold": ["smaller dog"], "capability_leaves": ["A1"], "evidence_source_ids": ["D5:3"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-44#q0063", "gold": ["Discouraged but determined"], "capability_leaves": ["A1"], "evidence_source_ids": ["D7:8"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-44#q0065", "gold": ["about an hour"], "capability_leaves": ["A1"], "evidence_source_ids": ["D8:14"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-44#q0066", "gold": ["a doggy play area with agility stuff and toys"], "capability_leaves": ["A1"], "evidence_source_ids": ["D9:5"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-44#q0106", "gold": ["Once a week"], "capability_leaves": ["A1"], "evidence_source_ids": ["D27:4"], "question_type": "4", "scoring_data": {}}

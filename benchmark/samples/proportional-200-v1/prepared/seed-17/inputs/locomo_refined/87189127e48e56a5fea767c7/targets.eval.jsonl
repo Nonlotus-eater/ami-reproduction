@@ -1,0 +1,8 @@
+{"qa_id": "conv-50#q0037", "gold": ["yes"], "capability_leaves": ["B4"], "evidence_source_ids": [], "question_type": "3", "scoring_data": {}}
+{"qa_id": "conv-50#q0038", "gold": ["Boston"], "capability_leaves": ["C1"], "evidence_source_ids": ["D21:1"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-50#q0045", "gold": ["watch music videos, concerts, and documentaries about artists and their creative process"], "capability_leaves": ["B1"], "evidence_source_ids": ["D25:8", "D28:31"], "question_type": "1", "scoring_data": {}}
+{"qa_id": "conv-50#q0064", "gold": ["immerse himself in something he loves"], "capability_leaves": ["A1"], "evidence_source_ids": ["D5:11"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-50#q0096", "gold": ["satisfying and worth the hard work"], "capability_leaves": ["A1"], "evidence_source_ids": ["D19:9"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-50#q0098", "gold": ["\"California Love\""], "capability_leaves": ["A1"], "evidence_source_ids": ["D20:6", "D20:8"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-50#q0105", "gold": ["Reminds himself of his passion for goals, gets help from others, and takes a break to recharge"], "capability_leaves": ["A1"], "evidence_source_ids": ["D23:4"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-50#q0120", "gold": ["how much music means to him, it's like his passion and purpose"], "capability_leaves": ["A1"], "evidence_source_ids": ["D26:9"], "question_type": "4", "scoring_data": {}}

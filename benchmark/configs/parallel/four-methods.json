@@ -1,0 +1,133 @@
+{
+  "output": "../../runs/proportional-five-seeds",
+  "prepared_root": "../../samples/proportional-200-v1/prepared",
+  "env_file": "../../.env",
+  "ledger_dir": "~/.local/state/aml-parallel/proportional-five-seeds",
+  "seeds": [
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "methods": [
+    {
+      "name": "AMI",
+      "adapter": "activememoryindex",
+      "config": {
+        "python": "../../baselines/ami-reproduction/.venv/bin/python",
+        "source_root": "../../baselines/ami-reproduction",
+        "variant": "local reproduction release profile; system-role compatibility patch; shared v4 API embedding",
+        "feature_flags": {
+          "AMI_LLM_RETRIES": "0",
+          "AMI_LLM_MODEL": "gpt-4o-mini",
+          "AMI_LLM_CONCURRENCY": "8",
+          "AMI_EMBED_TIMEOUT": "20",
+          "AMI_EMBED_RETRIES": "0",
+          "AMI_EMBED_CONCURRENCY": "4",
+          "AMI_IMAGE": "activememoryindex:academic-v4-20261005-rc3",
+          "AMI_EXTRACT": "1",
+          "AMI_RECALL_QUERY": "1",
+          "AMI_RECALL_WEIGHT": "0.5",
+          "AMI_RETURN_LIMIT": "100",
+          "AMI_RETURN_CHAR_BUDGET": "400000",
+          "AMI_RAW_FIRST": "1",
+          "AMI_WINDOW_RADIUS": "1",
+          "AMI_UPDATE_DETECT": "1",
+          "AMI_UPDATE_RENDER": "1",
+          "AMI_UPDATE_WITHHOLD": "1",
+          "AMI_UPDATE_VERSION": "7",
+          "AMI_ADD_MAX_INFLIGHT": "16",
+          "AMI_SEARCH_MAX_INFLIGHT": "0",
+          "AMI_ADMISSION_WAIT": "45",
+          "AMI_RETRY_AFTER": "10",
+          "AMI_EXTRACT_REQUIRED": "0",
+          "AMI_DCI_SEARCH": "0",
+          "AMI_DCI_FILL": "0",
+          "AMI_AGENTIC_SEARCH": "0",
+          "AMI_HOP2_SLOTS": "0",
+          "AMI_FACT_EVIDENCE": "0",
+          "AMI_FACT_SELECT": "0",
+          "AMI_CHUNK_MEMORY": "0",
+          "AMI_EVENT_DATES": "0",
+          "AMI_EVENT_DATES_AT_ADD": "0",
+          "AMI_EVENT_DATES_STORED": "0",
+          "AMI_EVENT_DATES_ADD_CALL": "0",
+          "AMI_FACT_KEYS": "0",
+          "AMI_SUPERSEDE_MARK": "0",
+          "AMI_CHRONO_ORDER": "0",
+          "AMI_NEWEST_FIRST": "0",
+          "AMI_RERANK_MODEL": ""
+        },
+        "embedding_backend": "shared_api"
+      }
+    },
+    {
+      "name": "Mem0",
+      "adapter": "mem0",
+      "config": {
+        "python": "../../baselines/mem0/.venv/bin/python",
+        "source_root": "../../baselines/mem0",
+        "fastembed_cache": "../../models/fastembed",
+        "extraction_max_tokens": 8192,
+        "variant": "native OSS hybrid, graph off; recording time in content and supported prompt",
+        "embedding_backend": "shared_api"
+      }
+    },
+    {
+      "name": "InvMem",
+      "adapter": "invmem",
+      "config": {
+        "python": "../../baselines/InvMem/.benchmark-env/bin/python",
+        "source_root": "../../baselines/InvMem",
+        "embedding_backend": "shared_api"
+      }
+    },
+    {
+      "name": "ReFind",
+      "adapter": "refind",
+      "config": {
+        "python": "../../baselines/ReFind/.benchmark-env/bin/python",
+        "source_root": "../../baselines/ReFind",
+        "embedding_backend": "not_used_by_native_bm25_agent"
+      }
+    }
+  ],
+  "memory_workers": null,
+  "reader_history_workers": null,
+  "query_workers": null,
+  "providers": {
+    "llm": {
+      "inflight": null,
+      "rpm": null,
+      "tpm": null
+    },
+    "embedding": {
+      "inflight": null,
+      "rpm": null,
+      "tpm": null
+    }
+  },
+  "adaptive_concurrency": false,
+  "request_timeout_seconds": 180,
+  "worker_timeout_seconds": 86400,
+  "request_max_attempts": 8,
+  "task_max_attempts": 3,
+  "retry_base_seconds": 2,
+  "retry_max_seconds": 60,
+  "task_retry_seconds": 5,
+  "stop_drain_seconds": 240,
+  "report_seconds": 30,
+  "budget_cny": null,
+  "rates_cny_per_million": {
+    "input": 0.15,
+    "output": 0.6,
+    "embedding": 0.5
+  },
+  "tokenizer_cache": "../../samples/tokenizer-cache",
+  "offline": false,
+  "total_history_workers": null,
+  "per_method_history_workers": null,
+  "refind_context_policy": "deduplicate_observations_v1",
+  "runtime_file": "../runtime.json"
+}

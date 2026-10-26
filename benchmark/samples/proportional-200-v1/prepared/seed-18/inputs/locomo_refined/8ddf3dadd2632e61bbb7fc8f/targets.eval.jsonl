@@ -1,0 +1,9 @@
+{"qa_id": "conv-41#q0004", "gold": ["The week before 1 January 2023", "From December 19, 2022 to December 25, 2022"], "capability_leaves": ["C1"], "evidence_source_ids": ["D3:1"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-41#q0011", "gold": ["Yes"], "capability_leaves": ["B4"], "evidence_source_ids": ["D8:18", "D8:20"], "question_type": "3", "scoring_data": {}}
+{"qa_id": "conv-41#q0034", "gold": ["West County"], "capability_leaves": ["B1"], "evidence_source_ids": ["D14:21", "D23:1"], "question_type": "1", "scoring_data": {}}
+{"qa_id": "conv-41#q0070", "gold": ["politics and the government"], "capability_leaves": ["A1"], "evidence_source_ids": ["D12:1"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-41#q0080", "gold": ["a small party to share their stories"], "capability_leaves": ["A1"], "evidence_source_ids": ["D15:13"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-41#q0082", "gold": ["heartwarming"], "capability_leaves": ["A1"], "evidence_source_ids": ["D15:13"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-41#q0087", "gold": ["Responsibility and compassion"], "capability_leaves": ["A1"], "evidence_source_ids": ["D17:11"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-41#q0095", "gold": ["having support at home and his own grit"], "capability_leaves": ["A1"], "evidence_source_ids": ["D19:12"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-41#q0127", "gold": ["Shadow"], "capability_leaves": ["A1"], "evidence_source_ids": ["D31:4"], "question_type": "4", "scoring_data": {}}

@@ -1,0 +1,2308 @@
+{
+  "suite_id": "public-text-full-source-five-seeds-v3",
+  "scope": "expanded",
+  "purpose": "fixed_five_seed_text_benchmark_without_question_type_preselection",
+  "aggregation": "macro_benchmark",
+  "official_aml_comparable": false,
+  "runtime": {
+    "model": "gpt-4o-mini",
+    "env_file": ".env",
+    "seed": 20,
+    "top_k": 100,
+    "reader_token_budget": null,
+    "reader_tokenizer": "o200k_base",
+    "answer_input_token_limit": 117760,
+    "answer_temperature": 0,
+    "judge_temperature": 0,
+    "answer_max_tokens": 8192,
+    "judge_max_tokens": 16384,
+    "memory_default_max_tokens": 2048,
+    "request_timeout_seconds": 45,
+    "worker_timeout_seconds": 1800,
+    "rates_cny_per_million": {
+      "input": 0.15,
+      "output": 0.6,
+      "embedding": 0.5
+    },
+    "price_source": "user-provided historical rates; estimates, not provider billing",
+    "context_policy": "AML ranked evidence prefix; complete prompt <=117760 tokens; output 8192; safety 2048",
+    "lifecycle": "offline-history-QA: chronological sessions, native finalize, queries",
+    "naive_timestamp_timezone": "UTC",
+    "answer_output_policy": "fixed_aml_budget",
+    "judge_output_policy": "model_maximum",
+    "answer_context_policy": "aml_ranked_prefix_v1",
+    "answer_part_truncation_policy": null,
+    "clbench_judge_protocol": "clbench-indexed-status-v2",
+    "judge_protocol_max_attempts": 3,
+    "persist_answer_responses": true,
+    "provider_error_diagnostics": true,
+    "add_chunk_policy": "aml_20_messages_2000_words_v1",
+    "max_retries": 10,
+    "answer_safety_margin_tokens": 2048
+  },
+  "selection": {
+    "benchmarks": null,
+    "question_ids": [
+      "beam:100K:13:abstention:1",
+      "beam:100K:13:contradiction_resolution:0",
+      "beam:100K:13:contradiction_resolution:1",
+      "beam:100K:13:event_ordering:0",
+      "beam:100K:13:event_ordering:1",
+      "beam:100K:13:information_extraction:0",
+      "beam:100K:13:instruction_following:0",
+      "beam:100K:13:instruction_following:1",
+      "beam:100K:13:knowledge_update:0",
+      "beam:100K:13:knowledge_update:1",
+      "beam:100K:13:multi_session_reasoning:0",
+      "beam:100K:13:multi_session_reasoning:1",
+      "beam:100K:13:preference_following:0",
+      "beam:100K:13:preference_following:1",
+      "beam:100K:13:summarization:0",
+      "beam:100K:13:temporal_reasoning:0",
+      "beam:100K:13:temporal_reasoning:1",
+      "beam:100K:1:abstention:0",
+      "beam:100K:1:abstention:1",
+      "beam:100K:1:contradiction_resolution:0",
+      "beam:100K:1:contradiction_resolution:1",
+      "beam:100K:1:event_ordering:0",
+      "beam:100K:1:event_ordering:1",
+      "beam:100K:1:information_extraction:0",
+      "beam:100K:1:information_extraction:1",
+      "beam:100K:1:instruction_following:0",
+      "beam:100K:1:instruction_following:1",
+      "beam:100K:1:knowledge_update:0",
+      "beam:100K:1:multi_session_reasoning:1",
+      "beam:100K:1:preference_following:0",
+      "beam:100K:1:preference_following:1",
+      "beam:100K:1:summarization:0",
+      "beam:100K:1:summarization:1",
+      "beam:100K:1:temporal_reasoning:1",
+      "clbench:0dce42f4-4bfe-44db-9849-2a0d8dab6318",
+      "clbench:11770492-d2d9-4b80-b227-8f8f49ba46d9",
+      "clbench:1a60194e-1efb-47d5-9249-8a7110daeaee",
+      "clbench:1b48e13c-4fcd-4924-995b-8e5129568f2a",
+      "clbench:226a767c-f595-41cb-a648-9f0eebe44c2a",
+      "clbench:23b434fc-7948-4b99-8fa6-49da6c6f334f",
+      "clbench:26aa4ce9-4864-4c63-afbe-d2208f49bee5",
+      "clbench:2b61fac7-6c8e-4312-b35d-1196d709237c",
+      "clbench:31efe3ab-c5b0-40ad-bd0c-b4b6d70e2a72",
+      "clbench:3646c63c-6f9f-4ed7-a7a9-3e192dcade89",
+      "clbench:37bc3693-0b37-437d-a231-45087f6a1483",
+      "clbench:415da3b4-793b-459e-96ab-15d7c29299db",
+      "clbench:498e5fd1-6a7a-47b6-82d8-7eb7f928840f",
+      "clbench:4f3189d1-4072-48c2-a789-d696f6737e6c",
+      "clbench:4fc6dd7b-c800-4879-85de-858f5256b911",
+      "clbench:61d13374-beee-4ab5-a51c-884fc14a88e5",
+      "clbench:7343c5e3-eaa9-4c2b-b275-32c95008bd08",
+      "clbench:7b439794-b6fa-42ad-acf5-19434903c210",
+      "clbench:7f549150-56c6-403a-addf-020004e38e2a",
+      "clbench:8176a42d-5eb4-4949-b620-bb00d6214af7",
+      "clbench:87b9e505-c99a-409e-a2b7-4910cd3ddb70",
+      "clbench:8be63e71-c388-4d88-bbca-ae7a0c293046",
+      "clbench:94df82e1-dddf-4594-81f0-9b3b90d41caa",
+      "clbench:95249d20-2487-458c-b478-ea7fb5eae16c",
+      "clbench:9cec2fbf-d172-4e57-9fa3-318389e888a9",
+      "clbench:aa21eb97-2e4b-48b3-9117-d148bc835461",
+      "clbench:bc684e05-9287-410d-af5a-a019d3e1f314",
+      "clbench:bcdc9c72-ee1a-4ef7-a2cf-d9955764cc27",
+      "clbench:c5bd3dc1-a3c5-4951-896e-ff1705d3c3f2",
+      "clbench:d8a6d532-0c7b-4a27-a4f1-caa0431a2a25",
+      "clbench:da8054bc-9eec-452d-ae66-98666c923b10",
+      "clbench:dea7150c-37cb-4500-8efb-f7605250b72c",
+      "clbench:ea14c8af-d695-444f-9cca-a5e539c69261",
+      "clbench:f052b12a-1293-4963-aa3a-8e06264f196e",
+      "clbench:f9e21f21-4769-4dc0-869c-e820fb8f4fbe",
+      "clbench:fcaae12c-7827-4ba2-8eb0-4b1c42f08e64",
+      "conv-26#q0031",
+      "conv-26#q0046",
+      "conv-26#q0050",
+      "conv-26#q0066",
+      "conv-26#q0070",
+      "conv-26#q0078",
+      "conv-26#q0111",
+      "conv-26#q0113",
+      "conv-48#q0015",
+      "conv-48#q0072",
+      "conv-48#q0079",
+      "conv-48#q0094",
+      "conv-48#q0107",
+      "conv-48#q0108",
+      "conv-48#q0126",
+      "conv-48#q0138",
+      "2698e78f_abs",
+      "42ec0761",
+      "46a3abf7",
+      "58470ed2",
+      "86f00804",
+      "8e91e7d9",
+      "9aaed6a3",
+      "f0853d11",
+      "gpt4_1d80365e",
+      "personamem_v1:273ed74c-6547-40f1-9e82-459826e00b6b",
+      "personamem_v1:35a9d1f8-05e5-4a1d-aa1e-1c9615b02f80",
+      "personamem_v1:4584bcf9-fc47-4873-b0ae-5b5f804b20b8",
+      "personamem_v1:5b303337-33a7-45c1-99a0-83ce1b37172c",
+      "personamem_v1:6cacb235-3562-4414-a34d-a8ec14ee1811",
+      "personamem_v1:7fa150c3-c80b-446f-9c1e-8d786fda2d35",
+      "personamem_v1:9ebf5bf6-1632-410b-974a-20995654077c",
+      "personamem_v1:c1d23911-03b0-4cf0-be14-c433057f42ba",
+      "personamem_v1:d6d4a4e8-96c4-4b72-bdd3-204b44ec1826",
+      "personamem_v1:fcfde00b-be10-4c52-922d-85cf7ae9f556",
+      "personamem_v1:ff9ba1de-07d6-4240-aa4f-dd0989951808",
+      "personamem_v2:1515",
+      "personamem_v2:1516",
+      "personamem_v2:1517",
+      "personamem_v2:1518",
+      "personamem_v2:1519",
+      "personamem_v2:1520",
+      "personamem_v2:1521",
+      "personamem_v2:1522",
+      "personamem_v2:1523",
+      "personamem_v2:1524",
+      "personamem_v2:375",
+      "personamem_v2:376",
+      "personamem_v2:378",
+      "personamem_v2:379",
+      "personamem_v2:380",
+      "personamem_v2:381",
+      "personamem_v2:382",
+      "personamem_v2:384",
+      "personamem_v2:385",
+      "personamem_v2:388",
+      "personamem_v2:389",
+      "personamem_v2:390",
+      "personamem_v2:391",
+      "personamem_v2:392",
+      "personamem_v2:393",
+      "personamem_v2:394",
+      "personamem_v2:396",
+      "personamem_v2:399",
+      "personamem_v2:400",
+      "personamem_v2:401",
+      "personamem_v2:402",
+      "personamem_v2:4032",
+      "personamem_v2:4033",
+      "personamem_v2:4034",
+      "personamem_v2:4035",
+      "personamem_v2:4036",
+      "personamem_v2:4038",
+      "personamem_v2:4042",
+      "personamem_v2:4043",
+      "personamem_v2:4044",
+      "personamem_v2:4045",
+      "personamem_v2:4046",
+      "personamem_v2:4049",
+      "personamem_v2:4050",
+      "personamem_v2:4051",
+      "personamem_v2:4052",
+      "personamem_v2:4053",
+      "personamem_v2:4054",
+      "personamem_v2:4055",
+      "personamem_v2:4057",
+      "personamem_v2:4058",
+      "personamem_v2:4060",
+      "personamem_v2:4061",
+      "personamem_v2:4062",
+      "personamem_v2:434",
+      "personamem_v2:435",
+      "personamem_v2:436",
+      "personamem_v2:437",
+      "personamem_v2:438",
+      "personamem_v2:439",
+      "personamem_v2:440",
+      "personamem_v2:441",
+      "personamem_v2:442",
+      "personamem_v2:443",
+      "personamem_v2:444",
+      "personamem_v2:445",
+      "personamem_v2:446",
+      "personamem_v2:447",
+      "personamem_v2:448",
+      "personamem_v2:777",
+      "personamem_v2:778",
+      "personamem_v2:779",
+      "personamem_v2:780",
+      "personamem_v2:781",
+      "personamem_v2:782",
+      "personamem_v2:783",
+      "personamem_v2:784",
+      "personamem_v2:785",
+      "personamem_v2:786",
+      "personamem_v2:787",
+      "personamem_v2:788",
+      "personamem_v2:789",
+      "personamem_v2:790",
+      "personamem_v2:791",
+      "personamem_v2:792",
+      "personamem_v2:793",
+      "personamem_v2:794",
+      "personamem_v2:795",
+      "personamem_v2:796",
+      "personamem_v2:797",
+      "personamem_v2:798",
+      "personamem_v2:799",
+      "personamem_v2:800",
+      "personamem_v2:801"
+    ]
+  },
+  "capability_mapping_source": "local-coarse-dataset-category-v1",
+  "benchmarks": {
+    "locomo_refined": {
+      "primary_metric": "judged_accuracy",
+      "items": {
+        "conv-26#q0031": {
+          "source_unit_id": "conv-26",
+          "cluster_id": "conv-26",
+          "stratum": "2",
+          "length_split": null,
+          "capability_leaves": [
+            "C1"
+          ]
+        },
+        "conv-26#q0046": {
+          "source_unit_id": "conv-26",
+          "cluster_id": "conv-26",
+          "stratum": "1",
+          "length_split": null,
+          "capability_leaves": [
+            "B1"
+          ]
+        },
+        "conv-26#q0050": {
+          "source_unit_id": "conv-26",
+          "cluster_id": "conv-26",
+          "stratum": "1",
+          "length_split": null,
+          "capability_leaves": [
+            "B1"
+          ]
+        },
+        "conv-26#q0066": {
+          "source_unit_id": "conv-26",
+          "cluster_id": "conv-26",
+          "stratum": "4",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "conv-26#q0070": {
+          "source_unit_id": "conv-26",
+          "cluster_id": "conv-26",
+          "stratum": "4",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "conv-26#q0078": {
+          "source_unit_id": "conv-26",
+          "cluster_id": "conv-26",
+          "stratum": "4",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "conv-26#q0111": {
+          "source_unit_id": "conv-26",
+          "cluster_id": "conv-26",
+          "stratum": "4",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "conv-26#q0113": {
+          "source_unit_id": "conv-26",
+          "cluster_id": "conv-26",
+          "stratum": "4",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "conv-48#q0015": {
+          "source_unit_id": "conv-48",
+          "cluster_id": "conv-48",
+          "stratum": "2",
+          "length_split": null,
+          "capability_leaves": [
+            "C1"
+          ]
+        },
+        "conv-48#q0072": {
+          "source_unit_id": "conv-48",
+          "cluster_id": "conv-48",
+          "stratum": "2",
+          "length_split": null,
+          "capability_leaves": [
+            "C1"
+          ]
+        },
+        "conv-48#q0079": {
+          "source_unit_id": "conv-48",
+          "cluster_id": "conv-48",
+          "stratum": "4",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "conv-48#q0094": {
+          "source_unit_id": "conv-48",
+          "cluster_id": "conv-48",
+          "stratum": "4",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "conv-48#q0107": {
+          "source_unit_id": "conv-48",
+          "cluster_id": "conv-48",
+          "stratum": "4",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "conv-48#q0108": {
+          "source_unit_id": "conv-48",
+          "cluster_id": "conv-48",
+          "stratum": "4",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "conv-48#q0126": {
+          "source_unit_id": "conv-48",
+          "cluster_id": "conv-48",
+          "stratum": "4",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "conv-48#q0138": {
+          "source_unit_id": "conv-48",
+          "cluster_id": "conv-48",
+          "stratum": "4",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        }
+      },
+      "loader_config": {
+        "data_dir": "datasets/raw/LoCoMo-Refined",
+        "media_policy": "text_only"
+      },
+      "source_sha256": {},
+      "native_scorer_sha256": "31a49fc09e381bc117b59063c7a4cea543a672b23e1264aedb03290239671c1a"
+    },
+    "longmemeval_s": {
+      "primary_metric": "judged_accuracy",
+      "items": {
+        "86f00804": {
+          "source_unit_id": "86f00804",
+          "cluster_id": "86f00804",
+          "stratum": "single-session-user",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "46a3abf7": {
+          "source_unit_id": "46a3abf7",
+          "cluster_id": "46a3abf7",
+          "stratum": "multi-session",
+          "length_split": null,
+          "capability_leaves": [
+            "B1"
+          ]
+        },
+        "9aaed6a3": {
+          "source_unit_id": "9aaed6a3",
+          "cluster_id": "9aaed6a3",
+          "stratum": "multi-session",
+          "length_split": null,
+          "capability_leaves": [
+            "B1"
+          ]
+        },
+        "8e91e7d9": {
+          "source_unit_id": "8e91e7d9",
+          "cluster_id": "8e91e7d9",
+          "stratum": "multi-session",
+          "length_split": null,
+          "capability_leaves": [
+            "B1"
+          ]
+        },
+        "gpt4_1d80365e": {
+          "source_unit_id": "gpt4_1d80365e",
+          "cluster_id": "gpt4_1d80365e",
+          "stratum": "temporal-reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "C1"
+          ]
+        },
+        "f0853d11": {
+          "source_unit_id": "f0853d11",
+          "cluster_id": "f0853d11",
+          "stratum": "temporal-reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "C1"
+          ]
+        },
+        "42ec0761": {
+          "source_unit_id": "42ec0761",
+          "cluster_id": "42ec0761",
+          "stratum": "knowledge-update",
+          "length_split": null,
+          "capability_leaves": [
+            "D1"
+          ]
+        },
+        "2698e78f_abs": {
+          "source_unit_id": "2698e78f_abs",
+          "cluster_id": "2698e78f_abs",
+          "stratum": "abstention",
+          "length_split": null,
+          "capability_leaves": [
+            "H1"
+          ]
+        },
+        "58470ed2": {
+          "source_unit_id": "58470ed2",
+          "cluster_id": "58470ed2",
+          "stratum": "single-session-assistant",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        }
+      },
+      "loader_config": {
+        "data_file": "datasets/raw/LongMemEval/longmemeval_s_cleaned.json"
+      },
+      "source_sha256": {},
+      "native_scorer_sha256": "c7f17c363bd0803cfeedd2b793a0cb0a74ab119a70eeced2c7a835b2b2aecb46"
+    },
+    "clbench": {
+      "primary_metric": "strict_accuracy",
+      "items": {
+        "clbench:1a60194e-1efb-47d5-9249-8a7110daeaee": {
+          "source_unit_id": "1a60194e-1efb-47d5-9249-8a7110daeaee",
+          "cluster_id": "7badc7f8-ef69-4c47-86a7-7c971e0f3412",
+          "stratum": "Empirical Discovery & Simulation",
+          "length_split": null,
+          "capability_leaves": [
+            "G4"
+          ]
+        },
+        "clbench:4fc6dd7b-c800-4879-85de-858f5256b911": {
+          "source_unit_id": "4fc6dd7b-c800-4879-85de-858f5256b911",
+          "cluster_id": "82f31433-ce7b-4b74-94d4-22b8d53264db",
+          "stratum": "Rule System Application",
+          "length_split": null,
+          "capability_leaves": [
+            "G2"
+          ]
+        },
+        "clbench:dea7150c-37cb-4500-8efb-f7605250b72c": {
+          "source_unit_id": "dea7150c-37cb-4500-8efb-f7605250b72c",
+          "cluster_id": "f9893dd6-3571-4f73-b13f-b65652f297b9",
+          "stratum": "Rule System Application",
+          "length_split": null,
+          "capability_leaves": [
+            "G2"
+          ]
+        },
+        "clbench:aa21eb97-2e4b-48b3-9117-d148bc835461": {
+          "source_unit_id": "aa21eb97-2e4b-48b3-9117-d148bc835461",
+          "cluster_id": "009bd479-c2ce-40c1-813d-3ca567e61b77",
+          "stratum": "Rule System Application",
+          "length_split": null,
+          "capability_leaves": [
+            "G2"
+          ]
+        },
+        "clbench:bc684e05-9287-410d-af5a-a019d3e1f314": {
+          "source_unit_id": "bc684e05-9287-410d-af5a-a019d3e1f314",
+          "cluster_id": "84f0dacf-2ae8-4ff3-97fd-171cfd16a327",
+          "stratum": "Rule System Application",
+          "length_split": null,
+          "capability_leaves": [
+            "G2"
+          ]
+        },
+        "clbench:26aa4ce9-4864-4c63-afbe-d2208f49bee5": {
+          "source_unit_id": "26aa4ce9-4864-4c63-afbe-d2208f49bee5",
+          "cluster_id": "16938908-443f-463d-b610-ca15e9c8a957",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:2b61fac7-6c8e-4312-b35d-1196d709237c": {
+          "source_unit_id": "2b61fac7-6c8e-4312-b35d-1196d709237c",
+          "cluster_id": "47eaf382-7ba3-4a7f-8a42-94cca9ad52d4",
+          "stratum": "Empirical Discovery & Simulation",
+          "length_split": null,
+          "capability_leaves": [
+            "G4"
+          ]
+        },
+        "clbench:d8a6d532-0c7b-4a27-a4f1-caa0431a2a25": {
+          "source_unit_id": "d8a6d532-0c7b-4a27-a4f1-caa0431a2a25",
+          "cluster_id": "1be744b8-089e-4413-bcb9-f9c2be25cca1",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:11770492-d2d9-4b80-b227-8f8f49ba46d9": {
+          "source_unit_id": "11770492-d2d9-4b80-b227-8f8f49ba46d9",
+          "cluster_id": "dc894f59-3c7a-490a-a747-47f5f5009f10",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:61d13374-beee-4ab5-a51c-884fc14a88e5": {
+          "source_unit_id": "61d13374-beee-4ab5-a51c-884fc14a88e5",
+          "cluster_id": "49cd2888-4ff3-40b6-99ec-6f25ef3fa14d",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:226a767c-f595-41cb-a648-9f0eebe44c2a": {
+          "source_unit_id": "226a767c-f595-41cb-a648-9f0eebe44c2a",
+          "cluster_id": "865c8abc-f01a-476c-b7cb-1c3fd5d904ed",
+          "stratum": "Procedural Task Execution",
+          "length_split": null,
+          "capability_leaves": [
+            "G3"
+          ]
+        },
+        "clbench:7b439794-b6fa-42ad-acf5-19434903c210": {
+          "source_unit_id": "7b439794-b6fa-42ad-acf5-19434903c210",
+          "cluster_id": "b78c2e14-cc9d-41dd-bf1f-65d4f4164bce",
+          "stratum": "Procedural Task Execution",
+          "length_split": null,
+          "capability_leaves": [
+            "G3"
+          ]
+        },
+        "clbench:23b434fc-7948-4b99-8fa6-49da6c6f334f": {
+          "source_unit_id": "23b434fc-7948-4b99-8fa6-49da6c6f334f",
+          "cluster_id": "7833ca0b-0540-40ce-a7c1-b3e471b06f1a",
+          "stratum": "Procedural Task Execution",
+          "length_split": null,
+          "capability_leaves": [
+            "G3"
+          ]
+        },
+        "clbench:498e5fd1-6a7a-47b6-82d8-7eb7f928840f": {
+          "source_unit_id": "498e5fd1-6a7a-47b6-82d8-7eb7f928840f",
+          "cluster_id": "71d67b06-5b12-4a77-84c2-73ced6926c97",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:f9e21f21-4769-4dc0-869c-e820fb8f4fbe": {
+          "source_unit_id": "f9e21f21-4769-4dc0-869c-e820fb8f4fbe",
+          "cluster_id": "a49502eb-7d4a-4c94-994e-f835eb819fe2",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:f052b12a-1293-4963-aa3a-8e06264f196e": {
+          "source_unit_id": "f052b12a-1293-4963-aa3a-8e06264f196e",
+          "cluster_id": "53578bfe-d073-47ae-b08f-b8b027ece168",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:7f549150-56c6-403a-addf-020004e38e2a": {
+          "source_unit_id": "7f549150-56c6-403a-addf-020004e38e2a",
+          "cluster_id": "c11ce21e-4821-44e3-ab70-72767fdaec60",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:31efe3ab-c5b0-40ad-bd0c-b4b6d70e2a72": {
+          "source_unit_id": "31efe3ab-c5b0-40ad-bd0c-b4b6d70e2a72",
+          "cluster_id": "519ee132-bcb1-4697-b8f9-160bc0ecc0bd",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:3646c63c-6f9f-4ed7-a7a9-3e192dcade89": {
+          "source_unit_id": "3646c63c-6f9f-4ed7-a7a9-3e192dcade89",
+          "cluster_id": "f6721b64-4562-4861-be99-80565a89c3a3",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:8be63e71-c388-4d88-bbca-ae7a0c293046": {
+          "source_unit_id": "8be63e71-c388-4d88-bbca-ae7a0c293046",
+          "cluster_id": "4fdd716c-32ed-4a87-aec7-445b3e48da60",
+          "stratum": "Rule System Application",
+          "length_split": null,
+          "capability_leaves": [
+            "G2"
+          ]
+        },
+        "clbench:1b48e13c-4fcd-4924-995b-8e5129568f2a": {
+          "source_unit_id": "1b48e13c-4fcd-4924-995b-8e5129568f2a",
+          "cluster_id": "1ae25596-346e-4eb9-b2a5-5995cc984a9b",
+          "stratum": "Rule System Application",
+          "length_split": null,
+          "capability_leaves": [
+            "G2"
+          ]
+        },
+        "clbench:da8054bc-9eec-452d-ae66-98666c923b10": {
+          "source_unit_id": "da8054bc-9eec-452d-ae66-98666c923b10",
+          "cluster_id": "e60cbee8-0153-4d19-83b3-07b203f1e364",
+          "stratum": "Rule System Application",
+          "length_split": null,
+          "capability_leaves": [
+            "G2"
+          ]
+        },
+        "clbench:9cec2fbf-d172-4e57-9fa3-318389e888a9": {
+          "source_unit_id": "9cec2fbf-d172-4e57-9fa3-318389e888a9",
+          "cluster_id": "20504455-fdc6-4cda-bf7c-25cfc5508fdc",
+          "stratum": "Rule System Application",
+          "length_split": null,
+          "capability_leaves": [
+            "G2"
+          ]
+        },
+        "clbench:ea14c8af-d695-444f-9cca-a5e539c69261": {
+          "source_unit_id": "ea14c8af-d695-444f-9cca-a5e539c69261",
+          "cluster_id": "05488a19-3e76-4505-8433-4bd9d62eb34c",
+          "stratum": "Rule System Application",
+          "length_split": null,
+          "capability_leaves": [
+            "G2"
+          ]
+        },
+        "clbench:0dce42f4-4bfe-44db-9849-2a0d8dab6318": {
+          "source_unit_id": "0dce42f4-4bfe-44db-9849-2a0d8dab6318",
+          "cluster_id": "bdd9acd0-e9fc-443e-9c7e-fe29541ca8d6",
+          "stratum": "Procedural Task Execution",
+          "length_split": null,
+          "capability_leaves": [
+            "G3"
+          ]
+        },
+        "clbench:bcdc9c72-ee1a-4ef7-a2cf-d9955764cc27": {
+          "source_unit_id": "bcdc9c72-ee1a-4ef7-a2cf-d9955764cc27",
+          "cluster_id": "e1766f31-dd66-492c-a654-b8eacbfcbd20",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:4f3189d1-4072-48c2-a789-d696f6737e6c": {
+          "source_unit_id": "4f3189d1-4072-48c2-a789-d696f6737e6c",
+          "cluster_id": "b9f991ed-ca63-4458-8b8f-1ce4c1169b8e",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:8176a42d-5eb4-4949-b620-bb00d6214af7": {
+          "source_unit_id": "8176a42d-5eb4-4949-b620-bb00d6214af7",
+          "cluster_id": "d94afb0b-4ab1-43c0-ac5d-187db5171789",
+          "stratum": "Domain Knowledge Reasoning",
+          "length_split": null,
+          "capability_leaves": [
+            "G1"
+          ]
+        },
+        "clbench:94df82e1-dddf-4594-81f0-9b3b90d41caa": {
+          "source_unit_id": "94df82e1-dddf-4594-81f0-9b3b90d41caa",
+          "cluster_id": "12dd9739-3850-4f38-af79-ad3018990697",
+          "stratum": "Rule System Application",
+          "length_split": null,
+          "capability_leaves": [
+            "G2"
+          ]
+        },
+        "clbench:7343c5e3-eaa9-4c2b-b275-32c95008bd08": {
+          "source_unit_id": "7343c5e3-eaa9-4c2b-b275-32c95008bd08",
+          "cluster_id": "1d56e2bb-08bd-4779-85f9-1a63cb838944",
+          "stratum": "Procedural Task Execution",
+          "length_split": null,
+          "capability_leaves": [
+            "G3"
+          ]
+        },
+        "clbench:c5bd3dc1-a3c5-4951-896e-ff1705d3c3f2": {
+          "source_unit_id": "c5bd3dc1-a3c5-4951-896e-ff1705d3c3f2",
+          "cluster_id": "fec05f2c-19d0-41ce-af78-dabe858f634f",
+          "stratum": "Procedural Task Execution",
+          "length_split": null,
+          "capability_leaves": [
+            "G3"
+          ]
+        },
+        "clbench:415da3b4-793b-459e-96ab-15d7c29299db": {
+          "source_unit_id": "415da3b4-793b-459e-96ab-15d7c29299db",
+          "cluster_id": "dd0bed25-a8f0-4a93-8b4e-04bd0a3152e9",
+          "stratum": "Procedural Task Execution",
+          "length_split": null,
+          "capability_leaves": [
+            "G3"
+          ]
+        },
+        "clbench:37bc3693-0b37-437d-a231-45087f6a1483": {
+          "source_unit_id": "37bc3693-0b37-437d-a231-45087f6a1483",
+          "cluster_id": "20f69a53-6f2e-4373-b2ed-e0dc4551fc3f",
+          "stratum": "Procedural Task Execution",
+          "length_split": null,
+          "capability_leaves": [
+            "G3"
+          ]
+        },
+        "clbench:87b9e505-c99a-409e-a2b7-4910cd3ddb70": {
+          "source_unit_id": "87b9e505-c99a-409e-a2b7-4910cd3ddb70",
+          "cluster_id": "e1b32898-9269-4f7b-8fad-ab3a318f56c5",
+          "stratum": "Empirical Discovery & Simulation",
+          "length_split": null,
+          "capability_leaves": [
+            "G4"
+          ]
+        },
+        "clbench:fcaae12c-7827-4ba2-8eb0-4b1c42f08e64": {
+          "source_unit_id": "fcaae12c-7827-4ba2-8eb0-4b1c42f08e64",
+          "cluster_id": "4a9329b8-6332-41c6-9900-65d5989e41a0",
+          "stratum": "Empirical Discovery & Simulation",
+          "length_split": null,
+          "capability_leaves": [
+            "G4"
+          ]
+        },
+        "clbench:95249d20-2487-458c-b478-ea7fb5eae16c": {
+          "source_unit_id": "95249d20-2487-458c-b478-ea7fb5eae16c",
+          "cluster_id": "ba1308f6-faa2-45cb-a1ce-751914fcb864",
+          "stratum": "Rule System Application",
+          "length_split": null,
+          "capability_leaves": [
+            "G2"
+          ]
+        }
+      },
+      "loader_config": {
+        "data_file": "datasets/raw/CL-bench/snapshot/CL-bench.jsonl",
+        "source_manifest": "datasets/raw/CL-bench/download_manifest.json",
+        "source_snapshot": "datasets/raw/CL-bench/snapshot"
+      },
+      "source_sha256": {},
+      "native_scorer_sha256": "65b9719dc22e055aad808f68d757c145b9f9115cb2275b1ee373610c6a8116c7"
+    },
+    "personamem_v1": {
+      "primary_metric": "mcq_accuracy",
+      "items": {
+        "personamem_v1:6cacb235-3562-4414-a34d-a8ec14ee1811": {
+          "source_unit_id": "8:3cc19ddf369632cd2b14888f59d787245be29268ed480ccb6b2bd5df8ef8f95b:prefix:163",
+          "cluster_id": "8",
+          "stratum": "provide_preference_aligned_recommendations",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v1:4584bcf9-fc47-4873-b0ae-5b5f804b20b8": {
+          "source_unit_id": "8:3cc19ddf369632cd2b14888f59d787245be29268ed480ccb6b2bd5df8ef8f95b:prefix:163",
+          "cluster_id": "8",
+          "stratum": "suggest_new_ideas",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v1:9ebf5bf6-1632-410b-974a-20995654077c": {
+          "source_unit_id": "8:3cc19ddf369632cd2b14888f59d787245be29268ed480ccb6b2bd5df8ef8f95b:prefix:163",
+          "cluster_id": "8",
+          "stratum": "recalling_the_reasons_behind_previous_updates",
+          "length_split": null,
+          "capability_leaves": [
+            "C3"
+          ]
+        },
+        "personamem_v1:ff9ba1de-07d6-4240-aa4f-dd0989951808": {
+          "source_unit_id": "8:3cc19ddf369632cd2b14888f59d787245be29268ed480ccb6b2bd5df8ef8f95b:prefix:163",
+          "cluster_id": "8",
+          "stratum": "generalizing_to_new_scenarios",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v1:273ed74c-6547-40f1-9e82-459826e00b6b": {
+          "source_unit_id": "10:7797915581c01170c2a46616041687c09d59240b417898659034cd31cdc8cebf:prefix:184",
+          "cluster_id": "10",
+          "stratum": "track_full_preference_evolution",
+          "length_split": null,
+          "capability_leaves": [
+            "C3"
+          ]
+        },
+        "personamem_v1:d6d4a4e8-96c4-4b72-bdd3-204b44ec1826": {
+          "source_unit_id": "19:947ec42fcf5d327ccb9640332b5fabe4b7a25acc46be08b925861fa0c6e8eaf0:prefix:152",
+          "cluster_id": "19",
+          "stratum": "recalling_facts_mentioned_by_the_user",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "personamem_v1:7fa150c3-c80b-446f-9c1e-8d786fda2d35": {
+          "source_unit_id": "19:947ec42fcf5d327ccb9640332b5fabe4b7a25acc46be08b925861fa0c6e8eaf0:prefix:152",
+          "cluster_id": "19",
+          "stratum": "recall_user_shared_facts",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "personamem_v1:c1d23911-03b0-4cf0-be14-c433057f42ba": {
+          "source_unit_id": "19:947ec42fcf5d327ccb9640332b5fabe4b7a25acc46be08b925861fa0c6e8eaf0:prefix:152",
+          "cluster_id": "19",
+          "stratum": "recall_user_shared_facts",
+          "length_split": null,
+          "capability_leaves": [
+            "A1"
+          ]
+        },
+        "personamem_v1:fcfde00b-be10-4c52-922d-85cf7ae9f556": {
+          "source_unit_id": "19:947ec42fcf5d327ccb9640332b5fabe4b7a25acc46be08b925861fa0c6e8eaf0:prefix:152",
+          "cluster_id": "19",
+          "stratum": "recalling_the_reasons_behind_previous_updates",
+          "length_split": null,
+          "capability_leaves": [
+            "C3"
+          ]
+        },
+        "personamem_v1:5b303337-33a7-45c1-99a0-83ce1b37172c": {
+          "source_unit_id": "2:1621543a17bd464feaf4ba73d83d579d0160987536bde8725ac29131ecf235c3:prefix:123",
+          "cluster_id": "2",
+          "stratum": "track_full_preference_evolution",
+          "length_split": null,
+          "capability_leaves": [
+            "C3"
+          ]
+        },
+        "personamem_v1:35a9d1f8-05e5-4a1d-aa1e-1c9615b02f80": {
+          "source_unit_id": "2:1621543a17bd464feaf4ba73d83d579d0160987536bde8725ac29131ecf235c3:prefix:123",
+          "cluster_id": "2",
+          "stratum": "track_full_preference_evolution",
+          "length_split": null,
+          "capability_leaves": [
+            "C3"
+          ]
+        }
+      },
+      "loader_config": {
+        "data_dir": "datasets/raw/PersonaMem-v1/snapshot",
+        "source_manifest": "datasets/raw/PersonaMem-v1/download_manifest.json",
+        "source_snapshot": "datasets/raw/PersonaMem-v1/snapshot"
+      },
+      "source_sha256": {},
+      "native_scorer_sha256": "a697a9c80214731037bc9cde6e57833423ff65a90393ead6e19b0b7d3ba90ccd"
+    },
+    "personamem_v2": {
+      "primary_metric": "preference_adherence",
+      "items": {
+        "personamem_v2:375": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:376": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:378": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:379": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:380": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:381": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "sensitive_info",
+          "length_split": null,
+          "capability_leaves": [
+            "H2"
+          ]
+        },
+        "personamem_v2:382": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "sensitive_info",
+          "length_split": null,
+          "capability_leaves": [
+            "H2"
+          ]
+        },
+        "personamem_v2:384": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:385": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "health_and_medical_conditions",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:388": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "sensitive_info",
+          "length_split": null,
+          "capability_leaves": [
+            "H2"
+          ]
+        },
+        "personamem_v2:389": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "sensitive_info",
+          "length_split": null,
+          "capability_leaves": [
+            "H2"
+          ]
+        },
+        "personamem_v2:390": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:391": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:392": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:393": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:394": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:396": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:399": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "health_and_medical_conditions",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:400": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:401": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:402": {
+          "source_unit_id": "938:data/chat_history_32k/chat_history_250913_163134_persona938.json",
+          "cluster_id": "938",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:434": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:435": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:436": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:437": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:438": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:439": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "health_and_medical_conditions",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:440": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:441": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "sensitive_info",
+          "length_split": null,
+          "capability_leaves": [
+            "H2"
+          ]
+        },
+        "personamem_v2:442": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:443": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:444": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:445": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:446": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "health_and_medical_conditions",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:447": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "health_and_medical_conditions",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:448": {
+          "source_unit_id": "280:data/chat_history_32k/chat_history_250913_163134_persona280.json",
+          "cluster_id": "280",
+          "stratum": "health_and_medical_conditions",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:777": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "health_and_medical_conditions",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:778": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:779": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:780": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:781": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:782": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:783": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:784": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:785": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:786": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:787": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:788": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:789": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:790": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:791": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:792": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:793": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:794": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:795": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "health_and_medical_conditions",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:796": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:797": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:798": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:799": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:800": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:801": {
+          "source_unit_id": "346:data/chat_history_32k/chat_history_250913_163134_persona346.json",
+          "cluster_id": "346",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:1515": {
+          "source_unit_id": "296:data/chat_history_32k/chat_history_250913_163134_persona296.json",
+          "cluster_id": "296",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:1516": {
+          "source_unit_id": "296:data/chat_history_32k/chat_history_250913_163134_persona296.json",
+          "cluster_id": "296",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:1517": {
+          "source_unit_id": "296:data/chat_history_32k/chat_history_250913_163134_persona296.json",
+          "cluster_id": "296",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:1518": {
+          "source_unit_id": "296:data/chat_history_32k/chat_history_250913_163134_persona296.json",
+          "cluster_id": "296",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:1519": {
+          "source_unit_id": "296:data/chat_history_32k/chat_history_250913_163134_persona296.json",
+          "cluster_id": "296",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:1520": {
+          "source_unit_id": "296:data/chat_history_32k/chat_history_250913_163134_persona296.json",
+          "cluster_id": "296",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:1521": {
+          "source_unit_id": "296:data/chat_history_32k/chat_history_250913_163134_persona296.json",
+          "cluster_id": "296",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:1522": {
+          "source_unit_id": "296:data/chat_history_32k/chat_history_250913_163134_persona296.json",
+          "cluster_id": "296",
+          "stratum": "health_and_medical_conditions",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:1523": {
+          "source_unit_id": "296:data/chat_history_32k/chat_history_250913_163134_persona296.json",
+          "cluster_id": "296",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:1524": {
+          "source_unit_id": "296:data/chat_history_32k/chat_history_250913_163134_persona296.json",
+          "cluster_id": "296",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:4032": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:4033": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:4034": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:4035": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "sensitive_info",
+          "length_split": null,
+          "capability_leaves": [
+            "H2"
+          ]
+        },
+        "personamem_v2:4036": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:4038": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "anti_stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:4042": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:4043": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:4044": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:4045": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "sensitive_info",
+          "length_split": null,
+          "capability_leaves": [
+            "H2"
+          ]
+        },
+        "personamem_v2:4046": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "sensitive_info",
+          "length_split": null,
+          "capability_leaves": [
+            "H2"
+          ]
+        },
+        "personamem_v2:4049": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:4050": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "therapy_background",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:4051": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "health_and_medical_conditions",
+          "length_split": null,
+          "capability_leaves": [
+            "E3"
+          ]
+        },
+        "personamem_v2:4052": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "sensitive_info",
+          "length_split": null,
+          "capability_leaves": [
+            "H2"
+          ]
+        },
+        "personamem_v2:4053": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:4054": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "ask_to_forget",
+          "length_split": null,
+          "capability_leaves": [
+            "D3"
+          ]
+        },
+        "personamem_v2:4055": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:4057": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "sensitive_info",
+          "length_split": null,
+          "capability_leaves": [
+            "H2"
+          ]
+        },
+        "personamem_v2:4058": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "stereotypical_pref",
+          "length_split": null,
+          "capability_leaves": [
+            "E2"
+          ]
+        },
+        "personamem_v2:4060": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:4061": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "personamem_v2:4062": {
+          "source_unit_id": "884:data/chat_history_32k/chat_history_250913_163134_persona884.json",
+          "cluster_id": "884",
+          "stratum": "neutral_preferences",
+          "length_split": null,
+          "capability_leaves": [
+            "E1"
+          ]
+        }
+      },
+      "loader_config": {
+        "data_dir": "datasets/raw/PersonaMem-v2/snapshot",
+        "mode": "generative",
+        "source_manifest": "datasets/raw/PersonaMem-v2/download_manifest.json",
+        "source_snapshot": "datasets/raw/PersonaMem-v2/snapshot"
+      },
+      "source_sha256": {},
+      "native_scorer_sha256": "c044b1ad10a87a94cfe0b007ec006a4146f7c191ca66b12cb4089ed70363a296"
+    },
+    "beam": {
+      "primary_metric": "rubric_mean",
+      "items": {
+        "beam:100K:1:abstention:0": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "abstention",
+          "length_split": "100K",
+          "capability_leaves": [
+            "H1"
+          ]
+        },
+        "beam:100K:1:abstention:1": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "abstention",
+          "length_split": "100K",
+          "capability_leaves": [
+            "H1"
+          ]
+        },
+        "beam:100K:1:contradiction_resolution:0": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "contradiction_resolution",
+          "length_split": "100K",
+          "capability_leaves": [
+            "D2"
+          ]
+        },
+        "beam:100K:1:contradiction_resolution:1": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "contradiction_resolution",
+          "length_split": "100K",
+          "capability_leaves": [
+            "D2"
+          ]
+        },
+        "beam:100K:1:event_ordering:0": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "event_ordering",
+          "length_split": "100K",
+          "capability_leaves": [
+            "C2"
+          ]
+        },
+        "beam:100K:1:event_ordering:1": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "event_ordering",
+          "length_split": "100K",
+          "capability_leaves": [
+            "C2"
+          ]
+        },
+        "beam:100K:1:information_extraction:0": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "information_extraction",
+          "length_split": "100K",
+          "capability_leaves": [
+            "A3"
+          ]
+        },
+        "beam:100K:1:information_extraction:1": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "information_extraction",
+          "length_split": "100K",
+          "capability_leaves": [
+            "A3"
+          ]
+        },
+        "beam:100K:1:instruction_following:0": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "instruction_following",
+          "length_split": "100K",
+          "capability_leaves": [
+            "G5"
+          ]
+        },
+        "beam:100K:1:instruction_following:1": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "instruction_following",
+          "length_split": "100K",
+          "capability_leaves": [
+            "G5"
+          ]
+        },
+        "beam:100K:1:knowledge_update:0": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "knowledge_update",
+          "length_split": "100K",
+          "capability_leaves": [
+            "D1"
+          ]
+        },
+        "beam:100K:1:multi_session_reasoning:1": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "multi_session_reasoning",
+          "length_split": "100K",
+          "capability_leaves": [
+            "B1"
+          ]
+        },
+        "beam:100K:1:preference_following:0": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "preference_following",
+          "length_split": "100K",
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "beam:100K:1:preference_following:1": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "preference_following",
+          "length_split": "100K",
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "beam:100K:1:summarization:0": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "summarization",
+          "length_split": "100K",
+          "capability_leaves": [
+            "F1"
+          ]
+        },
+        "beam:100K:1:summarization:1": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "summarization",
+          "length_split": "100K",
+          "capability_leaves": [
+            "F1"
+          ]
+        },
+        "beam:100K:1:temporal_reasoning:1": {
+          "source_unit_id": "100K:1",
+          "cluster_id": "1",
+          "stratum": "temporal_reasoning",
+          "length_split": "100K",
+          "capability_leaves": [
+            "C1"
+          ]
+        },
+        "beam:100K:13:abstention:1": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "abstention",
+          "length_split": "100K",
+          "capability_leaves": [
+            "H1"
+          ]
+        },
+        "beam:100K:13:contradiction_resolution:0": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "contradiction_resolution",
+          "length_split": "100K",
+          "capability_leaves": [
+            "D2"
+          ]
+        },
+        "beam:100K:13:contradiction_resolution:1": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "contradiction_resolution",
+          "length_split": "100K",
+          "capability_leaves": [
+            "D2"
+          ]
+        },
+        "beam:100K:13:event_ordering:0": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "event_ordering",
+          "length_split": "100K",
+          "capability_leaves": [
+            "C2"
+          ]
+        },
+        "beam:100K:13:event_ordering:1": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "event_ordering",
+          "length_split": "100K",
+          "capability_leaves": [
+            "C2"
+          ]
+        },
+        "beam:100K:13:information_extraction:0": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "information_extraction",
+          "length_split": "100K",
+          "capability_leaves": [
+            "A3"
+          ]
+        },
+        "beam:100K:13:instruction_following:0": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "instruction_following",
+          "length_split": "100K",
+          "capability_leaves": [
+            "G5"
+          ]
+        },
+        "beam:100K:13:instruction_following:1": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "instruction_following",
+          "length_split": "100K",
+          "capability_leaves": [
+            "G5"
+          ]
+        },
+        "beam:100K:13:knowledge_update:0": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "knowledge_update",
+          "length_split": "100K",
+          "capability_leaves": [
+            "D1"
+          ]
+        },
+        "beam:100K:13:knowledge_update:1": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "knowledge_update",
+          "length_split": "100K",
+          "capability_leaves": [
+            "D1"
+          ]
+        },
+        "beam:100K:13:multi_session_reasoning:0": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "multi_session_reasoning",
+          "length_split": "100K",
+          "capability_leaves": [
+            "B1"
+          ]
+        },
+        "beam:100K:13:multi_session_reasoning:1": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "multi_session_reasoning",
+          "length_split": "100K",
+          "capability_leaves": [
+            "B1"
+          ]
+        },
+        "beam:100K:13:preference_following:0": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "preference_following",
+          "length_split": "100K",
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "beam:100K:13:preference_following:1": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "preference_following",
+          "length_split": "100K",
+          "capability_leaves": [
+            "E1"
+          ]
+        },
+        "beam:100K:13:summarization:0": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "summarization",
+          "length_split": "100K",
+          "capability_leaves": [
+            "F1"
+          ]
+        },
+        "beam:100K:13:temporal_reasoning:0": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "temporal_reasoning",
+          "length_split": "100K",
+          "capability_leaves": [
+            "C1"
+          ]
+        },
+        "beam:100K:13:temporal_reasoning:1": {
+          "source_unit_id": "100K:13",
+          "cluster_id": "13",
+          "stratum": "temporal_reasoning",
+          "length_split": "100K",
+          "capability_leaves": [
+            "C1"
+          ]
+        }
+      },
+      "loader_config": {
+        "data_dir": "datasets/raw/BEAM/snapshot/data",
+        "source_manifest": "datasets/raw/BEAM/download_manifest.json",
+        "source_snapshot": "datasets/raw/BEAM/snapshot"
+      },
+      "source_sha256": {},
+      "native_scorer_sha256": "3889e26ae696abc67711daab0ebf24e3082ed50d5f85df9d9f95540a0a9b8763"
+    }
+  },
+  "framework": {
+    "sha256": null,
+    "files": {},
+    "binding": "portable_input_bundle; bind installed framework on import"
+  },
+  "inputs": {
+    "inputs/locomo_refined/133a53853e29ddc1c3d6f39e/history.json": "a63c73159923b02753d428cca8e9d23230a65c6128c95e12d4561d03f8918a3d",
+    "inputs/locomo_refined/133a53853e29ddc1c3d6f39e/queries.jsonl": "6245127e924cfe95a2c741ac155a3352a05cccfc191d91973cd8172eb157077a",
+    "inputs/locomo_refined/133a53853e29ddc1c3d6f39e/targets.eval.jsonl": "faa882cad7e028ba7d62505f80582ec7557f383144ba64c113c622bb42738a59",
+    "inputs/locomo_refined/c53d0b5b71fd7d2fc7d48433/history.json": "8dd65bc671f477a44db0e4ede4fa68f2f9d2c2fcb10928ac9749fc1bfc531a81",
+    "inputs/locomo_refined/c53d0b5b71fd7d2fc7d48433/queries.jsonl": "637cedf4554d0ab6cb630c7b2d6390c2d03c25f25f3710dbabb7b702cc2d3b45",
+    "inputs/locomo_refined/c53d0b5b71fd7d2fc7d48433/targets.eval.jsonl": "05364016c964f490fe573f9bcc4c181f047e5205f4e2a1086713d22998658acd",
+    "inputs/longmemeval_s/f3b5be3166a89ccdfe82d0ef/history.json": "3df190a17d42a151bc8944ace2be2fe4e3f71c703addf84df5e8e3404aa85181",
+    "inputs/longmemeval_s/f3b5be3166a89ccdfe82d0ef/queries.jsonl": "111d874ebbdf4d3a259d580645999ed2c88816981b6b35ac372f3fbbba170ecf",
+    "inputs/longmemeval_s/f3b5be3166a89ccdfe82d0ef/targets.eval.jsonl": "2e7871a1f934e606c06dfe3d877edaccf166a8238b7da0983e8eafa16b0e8a9b",
+    "inputs/longmemeval_s/06f9d7c89a9aa0a3f3a59e4f/history.json": "57223d61a3e5daa50135278c4f177db5fdad60d171cfb92690f7c50806aff447",
+    "inputs/longmemeval_s/06f9d7c89a9aa0a3f3a59e4f/queries.jsonl": "326ffb9cc14cf9b0e8b0afcf925d7513add16d55bf7931084d7a7583f0dc87a1",
+    "inputs/longmemeval_s/06f9d7c89a9aa0a3f3a59e4f/targets.eval.jsonl": "9c84d787f79e1da78a1eaa6d11f5c22171b95cd648e0a2a3963573b8f777005d",
+    "inputs/longmemeval_s/c8828c8feab5623a08b5f599/history.json": "a6ff786824663b175256d040d922c9d6438895e8e292cbb0191d1dd0499a9285",
+    "inputs/longmemeval_s/c8828c8feab5623a08b5f599/queries.jsonl": "dcb3a49e8fb549f9e2a7ae5d79bd9151c165aed956d7054468490b1fcc965e8b",
+    "inputs/longmemeval_s/c8828c8feab5623a08b5f599/targets.eval.jsonl": "d19e9db739c07a9ef046ee6a805d6614928b8208fea13b39ec7b7a7f1d04447d",
+    "inputs/longmemeval_s/f8722a281d4e77691c2b1404/history.json": "308bb5d030d348f3ae204937704dc20ecdf1728cb57d6a42c2f39f5616a6b0b8",
+    "inputs/longmemeval_s/f8722a281d4e77691c2b1404/queries.jsonl": "58717a03eb213a25a89a046b0d41173cdbdc35ea111ed587d09452405a82e65f",
+    "inputs/longmemeval_s/f8722a281d4e77691c2b1404/targets.eval.jsonl": "9058ee0bd9c365c5a6669cca4a1a627f17121d011471c391cdd94297fd7f3929",
+    "inputs/longmemeval_s/d321c72ca48c63f56f06bf2b/history.json": "7b945ef8bd434cd3802070dc6638a938637209688860a925512223dcfa8f8893",
+    "inputs/longmemeval_s/d321c72ca48c63f56f06bf2b/queries.jsonl": "2072529cdbfa5c25df3e385710605fb4c761e29e89ff38ebc3fefbbab55a5580",
+    "inputs/longmemeval_s/d321c72ca48c63f56f06bf2b/targets.eval.jsonl": "c903174a7c2d5c2399a9e02efc8277b1cc1cee34464cdb23ffdacb86896e8339",
+    "inputs/longmemeval_s/2aaf7f6a029d0e4ec8ed597d/history.json": "5cf95cfdbf2287eb79555d41ffa1a6a89a7c0250931bef279612cd65c7fba8ce",
+    "inputs/longmemeval_s/2aaf7f6a029d0e4ec8ed597d/queries.jsonl": "d444448e256a9f2aa0e341a09573c02a7f249d8340f0fca89c4b610ca9e53f6f",
+    "inputs/longmemeval_s/2aaf7f6a029d0e4ec8ed597d/targets.eval.jsonl": "63428f11dcd66f9b342995c802ab7a4b77edf4322d62a0fe5954f116a3a2763b",
+    "inputs/longmemeval_s/e55e2c4a31b7f7cf121adf69/history.json": "c1ac0ac9b523718c66cd5666bbc0f69f97d417b5cf3eae1e2aeb3b150c67aec4",
+    "inputs/longmemeval_s/e55e2c4a31b7f7cf121adf69/queries.jsonl": "7dd7ff110ed410b97106a29c263c39becf3feb87730e33c2cc76db9792ddc0a8",
+    "inputs/longmemeval_s/e55e2c4a31b7f7cf121adf69/targets.eval.jsonl": "3dd687889d4948bcb2c83ce6bb6ea620a92899f032a86a4e1e87836b84605b5c",
+    "inputs/longmemeval_s/2f20e513d00837ab5193153a/history.json": "8026a2ba3a831a751d882e41b5aa33eed3cb22ff3212d70df7f50d73db39a126",
+    "inputs/longmemeval_s/2f20e513d00837ab5193153a/queries.jsonl": "d82f365f6d240f163d35214a047c2c4d6aa3fa43c7c15d5205aeab77e309ce0f",
+    "inputs/longmemeval_s/2f20e513d00837ab5193153a/targets.eval.jsonl": "338d984a09a37c1a23a1d06ee12019cb1a733f21358e4ba28b3a350c54bdb50c",
+    "inputs/longmemeval_s/1b402729b1108c59ee339b2f/history.json": "131a94c937f11e5c50594e23d880261b2c5d8e9d3d462476e980743c34477f2e",
+    "inputs/longmemeval_s/1b402729b1108c59ee339b2f/queries.jsonl": "27dbb2be05efeb36c3daecea35a126fbf0ef32aa2b42f4be2bc334c69a8a359a",
+    "inputs/longmemeval_s/1b402729b1108c59ee339b2f/targets.eval.jsonl": "b639325038f690e8519b8f671687ff1cf04a5f305f3dc2e86519e29f5c15de16",
+    "inputs/clbench/e090eda517a85ce2d8dc5a83/history.json": "04b0d59c14c7f0667ba38e2c4b362cfa4d429fc4acc052e63906f9d331094ae7",
+    "inputs/clbench/e090eda517a85ce2d8dc5a83/queries.jsonl": "2ac04c87c96dfd66c1a9f5478d72ba1898b0431d980fb1edc741d65512b141ce",
+    "inputs/clbench/e090eda517a85ce2d8dc5a83/targets.eval.jsonl": "0d2a1079c021090c5253478f092a39d9a6e7aa209308aa4173c5d41f374d9503",
+    "inputs/clbench/6f7915c78709284ff96071a5/history.json": "ecd54db2738e9293df989a838df98ec4ca6d48023451af6e7fe853009e27f6a2",
+    "inputs/clbench/6f7915c78709284ff96071a5/queries.jsonl": "af6614b2a1f35be8302771326736045d247bef326505353ff748a709e533fa0c",
+    "inputs/clbench/6f7915c78709284ff96071a5/targets.eval.jsonl": "af05b8e2856b73e465809f16b921f38906709abf0b2ab24d922b13d45d103b67",
+    "inputs/clbench/e5fbe1aa19cba02cc4e0f6aa/history.json": "fc3840dfc8710ebe0409ee75256f181a74baff2d30daf80bdddc272d1ca67ec9",
+    "inputs/clbench/e5fbe1aa19cba02cc4e0f6aa/queries.jsonl": "90faef34cbb7f67db99d53249490a692246131835219f61346bc19cd9a07eb8d",
+    "inputs/clbench/e5fbe1aa19cba02cc4e0f6aa/targets.eval.jsonl": "08f0ddc53695b8c2424ed4674e92c0e20c3c90f4ee2f7c813c6ece7dbf6ae671",
+    "inputs/clbench/6472bda333be1d03b84e481c/history.json": "67eae262ea060ac41cea3c056beb31d80fc6e99e134e5dd471b35d8c8893a8b7",
+    "inputs/clbench/6472bda333be1d03b84e481c/queries.jsonl": "1fd1af274b11e5f46d1d7cdd2201af36a85ea5d838764e58244829161fcb92a9",
+    "inputs/clbench/6472bda333be1d03b84e481c/targets.eval.jsonl": "d69e858e51962de887fa92436603f1c567dd985e4242b54a0f4aadeef1bbd926",
+    "inputs/clbench/86ea4ee562d486966684c636/history.json": "52307e42d8ae311f85770f6e6444d68f7c6b421ecda1696b2d04878332aa8b4d",
+    "inputs/clbench/86ea4ee562d486966684c636/queries.jsonl": "cb5995737212b0f3e0e39c9133e6768d4ff67509d3141eff9516d57389bbca7d",
+    "inputs/clbench/86ea4ee562d486966684c636/targets.eval.jsonl": "1ae474ef37568f5e951fdc1f5618ff0c1e29df40397ce46c6864733eb06abd7a",
+    "inputs/clbench/f79b0b9efca6df9328aac845/history.json": "9c9adcff72831ba50ad18bf841b8e3e7ab8f7ad604b7d51a8b89829d11b08f21",
+    "inputs/clbench/f79b0b9efca6df9328aac845/queries.jsonl": "8cf4ec7c8ea5ab4e20bc30eae808fa7b192992e9fc7340686d1dfc00d67b6810",
+    "inputs/clbench/f79b0b9efca6df9328aac845/targets.eval.jsonl": "87a46f540c568a34b42f8b036dbd90f39400a646692190baa42414c89b993332",
+    "inputs/clbench/361ad75e1d246d2d1cecdf6e/history.json": "57aef07e13a56704e04d03e6e33aba284be4192f88cf4128017eaf00c6d7e80c",
+    "inputs/clbench/361ad75e1d246d2d1cecdf6e/queries.jsonl": "4737e599cf83dbe47e55fded12a2a7d5def7a126ac227d654d4f94c872e74d36",
+    "inputs/clbench/361ad75e1d246d2d1cecdf6e/targets.eval.jsonl": "b046c05dc14fcda51cccdc2b4a6264683ff25ad4a4931c3a1038e8679de8fdd0",
+    "inputs/clbench/78c1f72ad383084c3b14f38f/history.json": "e650fae988f9d0dee44b38838801152258626167d5ed89924ec5a119384e889f",
+    "inputs/clbench/78c1f72ad383084c3b14f38f/queries.jsonl": "74e2b29572b6fb0acc21eb86088c1dac836f5994471a6cba3f7dfb0ef3dfaf61",
+    "inputs/clbench/78c1f72ad383084c3b14f38f/targets.eval.jsonl": "5098052fef07df78723ca5b13b83d1ec64106274117c1c9c741f65ca33d50208",
+    "inputs/clbench/c4e05e800f03a517473e28f6/history.json": "190853768562abc8adb59976710e9aeba7a2dfea8b7d045b804930b344fcb4f6",
+    "inputs/clbench/c4e05e800f03a517473e28f6/queries.jsonl": "aedb74a8ee10b250a6f63ef81689c6550f005f78bbb1d949bbd20318ca082d3d",
+    "inputs/clbench/c4e05e800f03a517473e28f6/targets.eval.jsonl": "6ae9cf0620490070f84576dbc2c38a5fbc0c33d26b654ee64c2868f024243d61",
+    "inputs/clbench/2db5aac59b026569c4ff6d99/history.json": "ae26265459d615429e3a156415bbd5ff1df09d2c68c4193590c5907f35048d92",
+    "inputs/clbench/2db5aac59b026569c4ff6d99/queries.jsonl": "254fe84e66754ed45e2a25178c508cae7d6fad6fd8a7a837c60f0f871c26ff34",
+    "inputs/clbench/2db5aac59b026569c4ff6d99/targets.eval.jsonl": "18c2d509f6207e32d68778652507d45cb5583b7c2072fde2b6dc004ce37a1f16",
+    "inputs/clbench/7dd84e493908a1f8cd3a055f/history.json": "1f2e9abe871d6a79794b49db3aeafe4a102fb3eeea285e05e44f61325bcbd2a2",
+    "inputs/clbench/7dd84e493908a1f8cd3a055f/queries.jsonl": "a54afb59d187f63c91fae8770fdcb601a7d0e38ccba24f70326b443d640a85a3",
+    "inputs/clbench/7dd84e493908a1f8cd3a055f/targets.eval.jsonl": "3fb15428c35ac848f1ed0fd944061d566265104eca99932f2e2a086b8ad01b7f",
+    "inputs/clbench/fd769b9928af3f2cd6a58827/history.json": "6d99e26c629a08b3be713ec96535bb7202c3e9386cf2091ef74506c804efef20",
+    "inputs/clbench/fd769b9928af3f2cd6a58827/queries.jsonl": "69bc55db89ed6aa5aa7514e6e1bebd85bf92b137b7cab431a1c0f24e2a9c1021",
+    "inputs/clbench/fd769b9928af3f2cd6a58827/targets.eval.jsonl": "55659d05c4d1200c656ea4ce13312c330d92b6132209f82e4487d202f7f9cd36",
+    "inputs/clbench/a553565169ec660262c3182b/history.json": "f105713d81e0f04a6dfc1045f1ccc295aff64686865c03c3082764ca04d4cb99",
+    "inputs/clbench/a553565169ec660262c3182b/queries.jsonl": "3b2d62d578d77b0096bb441395fdc1f36fc3286499dddd3b1a6b8528e9c38c2e",
+    "inputs/clbench/a553565169ec660262c3182b/targets.eval.jsonl": "11808f978a247c75a474cd8d260673955894ce37038106588de53467e8385380",
+    "inputs/clbench/cdd81eb7108fb0ae716bd639/history.json": "2d1971f60c527fb7ef36d567b75be9d143276b80feeb60de8af3b13e5c15545c",
+    "inputs/clbench/cdd81eb7108fb0ae716bd639/queries.jsonl": "ca318e03c7150cee753ccce9c19ce7ec5bcf65c22a57ee7fdd00253a00cc86d4",
+    "inputs/clbench/cdd81eb7108fb0ae716bd639/targets.eval.jsonl": "576c41db50192eb56c2a4a4c760ae477777b27ce24b87eeffd131242812d2ab7",
+    "inputs/clbench/5659149f0b3788915fb730aa/history.json": "d005158dd158034b2c0e8806214662e28ae4ce5d42caeb4efcc04f8b871c3c69",
+    "inputs/clbench/5659149f0b3788915fb730aa/queries.jsonl": "ede2b697e124c663be46e147a1bad3fb90e4c386048acdcd916a1eeaa2f82f31",
+    "inputs/clbench/5659149f0b3788915fb730aa/targets.eval.jsonl": "6012be843b91571efbb45bd951ed7a5e7e78f8e39d2f3a3519bfc30f5e0af637",
+    "inputs/clbench/c91b457698202ab885dbb030/history.json": "3c27764f67a86ef172b26dfd6f882f05d0c598112a6f482e4dcc605d534ff2ca",
+    "inputs/clbench/c91b457698202ab885dbb030/queries.jsonl": "7615c7e7c237242a8dcba696442fbde013aa5164a4c55f4ae12e78a7b8fc2415",
+    "inputs/clbench/c91b457698202ab885dbb030/targets.eval.jsonl": "881da9e6ea059b648ca752ec335d65810d523e4cf471597e968f3f194cb8df99",
+    "inputs/clbench/5ca0b8c74255b6cba60c841a/history.json": "5a9127079e043c7edbe724b1be4394e67eb536b2c645cc79b61889519c2db750",
+    "inputs/clbench/5ca0b8c74255b6cba60c841a/queries.jsonl": "f86b8fb83de986cc10c99a13944ebb51f5b9462b2675a10ef1e2cc4aa858f281",
+    "inputs/clbench/5ca0b8c74255b6cba60c841a/targets.eval.jsonl": "3de0177bcf93d21ce8bd83c5ef80c311acec43a42f81784cb976c8c2a1d70679",
+    "inputs/clbench/a81ee419b93bfaa050dd0c20/history.json": "d3ab63b84b7945441a3280a648e21acd8cc88df6f3bca4255321357adddf40d0",
+    "inputs/clbench/a81ee419b93bfaa050dd0c20/queries.jsonl": "7b9be8e1ff46698775fd7e698da8b43a3d32c20a8707925cea82babccfee1dd1",
+    "inputs/clbench/a81ee419b93bfaa050dd0c20/targets.eval.jsonl": "b29a0e81fb7d7b3134ac97472b2eec1b72889ed7576cf261657bfe5edf7d47df",
+    "inputs/clbench/81bd90f43e3e32284aa13323/history.json": "bd1d400399d54fa0ac4d4821bdbbd291d9cc4313c6bb9415f24b8c70f5d063ea",
+    "inputs/clbench/81bd90f43e3e32284aa13323/queries.jsonl": "d87beb21c58e8001eb807835d668921cf25433f9ed2cb7e4adfa798890c5fc9c",
+    "inputs/clbench/81bd90f43e3e32284aa13323/targets.eval.jsonl": "c2b68d56faac9d05bb68cf78757a76769d9fcb7dac46b37a70755ba5ff4a45be",
+    "inputs/clbench/e8cbe36a97799496623e6120/history.json": "36813b6938538edb0ea3cca3a45f86a38b8badf1e4ff07bb10fdfffdaf91bf74",
+    "inputs/clbench/e8cbe36a97799496623e6120/queries.jsonl": "d07a3f23d09ccb5088d0a34d192b04c8dddfb85937f62dd47ded0c07a7b8f277",
+    "inputs/clbench/e8cbe36a97799496623e6120/targets.eval.jsonl": "605643ce3f0b9098d3181b2d6d71150699c8869c75b4f86cc80d5b61cb26cba3",
+    "inputs/clbench/d08a91cc25ea3e8766e33df5/history.json": "8f444f22e76ebebdca3721569632f53d518a2705e87da5c1852cd71587d1ed44",
+    "inputs/clbench/d08a91cc25ea3e8766e33df5/queries.jsonl": "0b7da35937f2f4e5db28eaa6c54e659b0dc3ca8b703005b86a974ded4023aea5",
+    "inputs/clbench/d08a91cc25ea3e8766e33df5/targets.eval.jsonl": "97ec0aad9639349118973f542e86dd3a4e4660ecdb672b2723f696e8f6ae6ba4",
+    "inputs/clbench/1052370d116c61586addc2b4/history.json": "3f37e1ba2f7659c162b9a0b8fa248cdb8492fbaaa892f3fd8e7b0a623b2fa272",
+    "inputs/clbench/1052370d116c61586addc2b4/queries.jsonl": "f14b0b36d4b22ef6938da8298950eb80aa36f8eaa03288ca2c3008b700bf5a12",
+    "inputs/clbench/1052370d116c61586addc2b4/targets.eval.jsonl": "5ec8d570ce6471cfeebfeafd7203da28bab737c4620920d59009690fa0cbc821",
+    "inputs/clbench/c08ad3b81a6bd5022a13d19a/history.json": "83af845e96a83f949b1523305402784608cb987ad738be89435a04375c7b5f70",
+    "inputs/clbench/c08ad3b81a6bd5022a13d19a/queries.jsonl": "6e8cc2de889cb88d60595af85d723883736d6ca40e549da8b5b086d40c66b8eb",
+    "inputs/clbench/c08ad3b81a6bd5022a13d19a/targets.eval.jsonl": "4e9a9dc501238baa1b1cdec3dd863314d4b575a5f814dd0273ff97d36a628cec",
+    "inputs/clbench/d48d01f27d344cb2515353be/history.json": "ca0577280d9229e2a078642b7eb2f4ba0dc2e4e1e5807e1d2e5dbdbeee4a5bb6",
+    "inputs/clbench/d48d01f27d344cb2515353be/queries.jsonl": "8c1592efa8ac328b99ba06150138caee350f03733e4fec95a0e9c8d906c492f7",
+    "inputs/clbench/d48d01f27d344cb2515353be/targets.eval.jsonl": "69f03926b562701eb6e228ca33fa8d43901c467a33afcb0e5f64b65fc2331657",
+    "inputs/clbench/b6f174b236264b7ff2287733/history.json": "1926d1430c1cc30259aeeca170e197477f34300efdfe6cd0a849057b1c694a38",
+    "inputs/clbench/b6f174b236264b7ff2287733/queries.jsonl": "1f7cc30e9e69a1e8d7e304b06ac1f5a02d78ff29f13eb610ab44c918dd077374",
+    "inputs/clbench/b6f174b236264b7ff2287733/targets.eval.jsonl": "91fd7f70530547b1e5e4ad8cece07a51254c8e4bbe57ed136072c9efef2a4f18",
+    "inputs/clbench/39ac27d9c177659bbf4765f9/history.json": "81920f3448f372a68a3e73140e2eff92f33b27f566e4aa5086ea4bf72683abf6",
+    "inputs/clbench/39ac27d9c177659bbf4765f9/queries.jsonl": "0b23e4605b192b69c9e4a6cc7c87cbc067c53654c1f8324caa8f482947bcab1d",
+    "inputs/clbench/39ac27d9c177659bbf4765f9/targets.eval.jsonl": "ea30d6223e52426dd389f1fd9d39b54f2534af0295bb2f5af4e3ef1e7bb49284",
+    "inputs/clbench/f9db43be0e8ee1615b3d8338/history.json": "654b8fe3d44137401d7bed455315c2c56b9845ef8d8dee3efcc191755b4ec9d3",
+    "inputs/clbench/f9db43be0e8ee1615b3d8338/queries.jsonl": "2435063db33af85941ca3ea5f66cbd926ea26518d96cb49ded0d332e1c47437b",
+    "inputs/clbench/f9db43be0e8ee1615b3d8338/targets.eval.jsonl": "6e8423570fb6faf1fe7587751d90b91f174effe147d5ec6416e210e12fc63857",
+    "inputs/clbench/023d9c34a72da3fe37e2192e/history.json": "73c7a8fe771d75d410bb5b2f6b44595cdad0252ea4de304b18389992b487e9b4",
+    "inputs/clbench/023d9c34a72da3fe37e2192e/queries.jsonl": "6add44e6b6b1cde2fe53aead09f979c12a0194243d85b4976b3ebf0e704000f5",
+    "inputs/clbench/023d9c34a72da3fe37e2192e/targets.eval.jsonl": "a91e6b25cdf0b32ac63c6cd5f8f6c4b872e706122e878ac201613dd4e131ef08",
+    "inputs/clbench/c42b0be00399843a7c9fc6d4/history.json": "8fc0444c83222acdaadc38e9f33f4a11b47b27ac3c567d5e1eae4f684741c9a9",
+    "inputs/clbench/c42b0be00399843a7c9fc6d4/queries.jsonl": "1b2659a44ecf05c7253408242c0d914b7b13900410ef7c33746de5a1df26b12f",
+    "inputs/clbench/c42b0be00399843a7c9fc6d4/targets.eval.jsonl": "14966a9e273f23fac6ef2c6144e433ba8af4691c8562580d57c3277792ccf994",
+    "inputs/clbench/dde4d7d1b234cb1a12f29811/history.json": "6ed7d59554fdb2e25b958acfd06d80fbd359aa71aa599e7112084cc273efdd0c",
+    "inputs/clbench/dde4d7d1b234cb1a12f29811/queries.jsonl": "78673feb80bdb98768797b626ba99babc085deaf90ea0e4e034932ef8924a174",
+    "inputs/clbench/dde4d7d1b234cb1a12f29811/targets.eval.jsonl": "17bdfbc4a949db5f4e21b532129f04a607804bc80b5aa1ffcfbb14e6e0282753",
+    "inputs/clbench/febd60063b6cbb4ac738bc7e/history.json": "38bdbc5708b607b67d1ee0d55debbc31aa9a1e010b5a674e2786346b2069cb19",
+    "inputs/clbench/febd60063b6cbb4ac738bc7e/queries.jsonl": "8b2474991644c7eaa04e783377bb984302b20e2fa86ddf1d4f349b03126adfb9",
+    "inputs/clbench/febd60063b6cbb4ac738bc7e/targets.eval.jsonl": "d3c28d182aff14a5632cee55fa039510deb52ca9faf2a84d743e9bac579ff86d",
+    "inputs/clbench/d3b96522cc88812908d7d6e6/history.json": "331776686934e2f4e8aaffbf1043f78d586f113d9abdc1058e564c5c09ed16b4",
+    "inputs/clbench/d3b96522cc88812908d7d6e6/queries.jsonl": "e198aa474dc27ac5337833ba6cacac6aedde19681cf646ab53a4d4c82d161fe0",
+    "inputs/clbench/d3b96522cc88812908d7d6e6/targets.eval.jsonl": "7b0f2d5006f7e4eb386ca53c356877821480c38ee7680d90f5c22b2814277a24",
+    "inputs/clbench/49c8b8a760389b427725ea63/history.json": "9abf33cc38c28340c74e92db32a74b778b0ac9e83b42f12f82820cb24b0e5b6e",
+    "inputs/clbench/49c8b8a760389b427725ea63/queries.jsonl": "3d37ceedfc3450633b72ee358fa17ffb8bd2c03e14be4f06f42ac3778d7db684",
+    "inputs/clbench/49c8b8a760389b427725ea63/targets.eval.jsonl": "d9fb736a50efeaf9789f3af9c010ef9b56867baff8c03dcd7324e85fc0c66df8",
+    "inputs/clbench/d3f65eeae473b65c9d9acdfc/history.json": "d7c99283df8f6e5641fa3a0dc57b2c27a701e7aa1ff48ac1bb38e9121a106c6f",
+    "inputs/clbench/d3f65eeae473b65c9d9acdfc/queries.jsonl": "69d05e6408d69580022dbbe3d573dd519fb4d22080f0a0cde81dbaa8d6bdd27b",
+    "inputs/clbench/d3f65eeae473b65c9d9acdfc/targets.eval.jsonl": "4b4f5cd7197eec8a435a98f3aa000c76b3f480a8d978c1c990d6ca13fd04551c",
+    "inputs/clbench/a85b2e2330fe89f8576bb1f6/history.json": "ca285983b7e134f85a1e5b5dd3dd891ed1712df6402a6f6ab2d98807ceeeda40",
+    "inputs/clbench/a85b2e2330fe89f8576bb1f6/queries.jsonl": "60ba084eefee77a9413cbd48a441edd43dffb48f48dceb86d0099b6486f0d0c3",
+    "inputs/clbench/a85b2e2330fe89f8576bb1f6/targets.eval.jsonl": "2625b14c1becb2273a8ed05b7aa91fb13b0fe984b1a3cffe945fe6d677017ac2",
+    "inputs/clbench/357fc6ef605f7bc5a438a1f4/history.json": "e6fa73c8ecbc72e3e3dd145c1f4d087c35ef11ffabef77c82d13be41180ecf81",
+    "inputs/clbench/357fc6ef605f7bc5a438a1f4/queries.jsonl": "bd530567122445166b3cf25ae9d6ddfe1fe61d778b795bb1a27137fba87d7902",
+    "inputs/clbench/357fc6ef605f7bc5a438a1f4/targets.eval.jsonl": "b5f4aa4fdead75d4167650e3c5c0c5b2bd900b81c58c3efde3b43a29933005a7",
+    "inputs/personamem_v1/5ded3dc75611a2cda51fb73f/history.json": "9dc33cea111f8aa0aa993529996bdf079b2d34d0bd0d481a6d13bdb71d6c51d0",
+    "inputs/personamem_v1/5ded3dc75611a2cda51fb73f/queries.jsonl": "f6c2e67890e6e32db1e15b5c4e768b658ebf59039e15f26cb6f0319f24039daf",
+    "inputs/personamem_v1/5ded3dc75611a2cda51fb73f/targets.eval.jsonl": "d1226228dc4c8c752e1381a9ccc7aabb7368b845305900707e85fd0e0eded29f",
+    "inputs/personamem_v1/783952190580b34f44674c08/history.json": "6839dbdedf7a9052d7e349393795362ec855dded01b213103e622d343144c9e1",
+    "inputs/personamem_v1/783952190580b34f44674c08/queries.jsonl": "dad9dfb2faa0c493cc227e87bf4309280b02957444092d653398fd8174c64df6",
+    "inputs/personamem_v1/783952190580b34f44674c08/targets.eval.jsonl": "ac72480df31d753251d102118adcce12e010ebcdad5bcc6943cc6d7f0b475c0c",
+    "inputs/personamem_v1/59b76a8cd9791abd079f7a93/history.json": "0e9090b2ec0c87a77db44309a1dd044e851cbe1aea0d318ec93c006a6aa6ca7e",
+    "inputs/personamem_v1/59b76a8cd9791abd079f7a93/queries.jsonl": "bf92dcec8ebcad3d22028972274a01398efbb85ac4e237bba797d940a5cfa396",
+    "inputs/personamem_v1/59b76a8cd9791abd079f7a93/targets.eval.jsonl": "2e0a311771f879985452ab5e6b32dc5868593a5be65c243141458cb4ab5bf898",
+    "inputs/personamem_v1/6158e6f299f5a2e0d16ed16f/history.json": "aadb17f642998d7a3555c4c229ba862600424cdb04c924abd8d36f7318042657",
+    "inputs/personamem_v1/6158e6f299f5a2e0d16ed16f/queries.jsonl": "8662d79ad57eb2721aed73cdc3a521080c2ffa72e9d240107349e177f521b4e8",
+    "inputs/personamem_v1/6158e6f299f5a2e0d16ed16f/targets.eval.jsonl": "94e60ca3838fc0171b99534788874247d2b092300adc9f3f69df3efc5460f634",
+    "inputs/personamem_v2/886078ab239faa0b1c640287/history.json": "197e22e3e8888277c86b9e02e52949b2566026775690a1ac77bb57c8177ce9ea",
+    "inputs/personamem_v2/886078ab239faa0b1c640287/queries.jsonl": "a24e3134c9f8269289b67ce219f8cc2dd17cc53dcdda5057f8271d0b97548ea3",
+    "inputs/personamem_v2/886078ab239faa0b1c640287/targets.eval.jsonl": "f33aed39566c63fb01a9627c22c7db1e164ba0106fe9b9945ab4e60463db26fb",
+    "inputs/personamem_v2/cc83fe29a94b1b41a4847138/history.json": "ea493699ddd88228d26b5b2f3dc602a79688c05def922a9fd1daca30c6d787e4",
+    "inputs/personamem_v2/cc83fe29a94b1b41a4847138/queries.jsonl": "602efdda544762899c9cc55aa76d8155ca48c05daf060eafaae2b6f738483afa",
+    "inputs/personamem_v2/cc83fe29a94b1b41a4847138/targets.eval.jsonl": "0198b5b8aef3b338e5af27fbbc7fcb173d1286bf432e13253a3b785eab99da8c",
+    "inputs/personamem_v2/c3aa1ba6d7a4d8bba17e16b0/history.json": "edb47f0e1e0ef982bb7f829ff2e8e69de68096ebc7e4c3e373710db6123c04ab",
+    "inputs/personamem_v2/c3aa1ba6d7a4d8bba17e16b0/queries.jsonl": "c5ac9d878c85d1747f72ace3ba520e96e242b90c7a118a6c807b01805a079ad9",
+    "inputs/personamem_v2/c3aa1ba6d7a4d8bba17e16b0/targets.eval.jsonl": "3b0f1ea118c720ab0e6ecaee1029eef52e8a7f7502e1fd2964aac62a4b1d9263",
+    "inputs/personamem_v2/baba564aed36b069a3f0516d/history.json": "572a0e2c77ef4cf6c5173cea9acb419ac6dfdfa710608eb140e0a74b45397ef5",
+    "inputs/personamem_v2/baba564aed36b069a3f0516d/queries.jsonl": "3bce5891cb2a8a3dc33aaae1ec034e04ff9f8b7864968ca63e677c2027623606",
+    "inputs/personamem_v2/baba564aed36b069a3f0516d/targets.eval.jsonl": "3bcd61de14010bf224cfb0bd0812d1ddf396bca69967114719eb130b8c16f616",
+    "inputs/personamem_v2/85aaaaf0914e41082233b6d4/history.json": "f1bd4d87c7593f8eba4c6f00da2442e5b2e7a11036676b936b870560211e5de0",
+    "inputs/personamem_v2/85aaaaf0914e41082233b6d4/queries.jsonl": "91e25f7e2a687eb9e86128ef53568cb1adaab8c2bb86ffc50e866bcce3852f10",
+    "inputs/personamem_v2/85aaaaf0914e41082233b6d4/targets.eval.jsonl": "de53e6d9fc827874a69162df382004521375052398a2e2fc1000b4e4972491c0",
+    "inputs/beam/97850a802d73429f308cd359/history.json": "81f11ec5d4ae9cd7cdaa9b5c7f9c61b2fb754dd2f5c0d3fb2d545a32d8c72e30",
+    "inputs/beam/97850a802d73429f308cd359/queries.jsonl": "ac56db73d2d21d7e6c0439014faef3dd1a8672d0ad12ca646b4de4406f629779",
+    "inputs/beam/97850a802d73429f308cd359/targets.eval.jsonl": "0b5ae3811abb36d0a250383a9a1660d0da58f4331fd3a75e09b46aea9932106d",
+    "inputs/beam/48173a8beaf888d383bc404e/history.json": "9c53bb54ac2e90912af33a8e83d75a3803bcada52f54254145a70e21808e566a",
+    "inputs/beam/48173a8beaf888d383bc404e/queries.jsonl": "0240bcaaf0f72cc4469990b792300142ee4757ad839dd642ed20a40b8a88ebdb",
+    "inputs/beam/48173a8beaf888d383bc404e/targets.eval.jsonl": "fa8c361db9d17dcde755c5ff4542d5487f00e13a615e38463eba8b6e601caaa2",
+    "cases.jsonl": "8ff99bc67f5b1b9c483850466e60fd3ce38c07603c759f63830b78ad385accfb"
+  },
+  "portable_bundle": {
+    "policy": "proportional-cluster-200-v1",
+    "raw_source_hashes": "configs/proportional-200-v1/frozen_samples.json",
+    "original_inputs_unchanged": true
+  }
+}

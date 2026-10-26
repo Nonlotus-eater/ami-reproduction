@@ -1,0 +1,8 @@
+{"qa_id": "conv-48#q0015", "gold": ["in 2022"], "capability_leaves": ["C1"], "evidence_source_ids": ["D2:24"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-48#q0072", "gold": ["Phuket"], "capability_leaves": ["C1"], "evidence_source_ids": ["D2:1"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-48#q0079", "gold": ["an electrical engineering project"], "capability_leaves": ["A1"], "evidence_source_ids": ["D1:2"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-48#q0094", "gold": ["connected to her body"], "capability_leaves": ["A1"], "evidence_source_ids": ["D7:20"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-48#q0107", "gold": ["It makes her feel like she's still experiencing it with her mom"], "capability_leaves": ["A1"], "evidence_source_ids": ["D12:3"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-48#q0108", "gold": ["Valuable and relaxing"], "capability_leaves": ["A1"], "evidence_source_ids": ["D12:6"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-48#q0126", "gold": ["Zelda BOTW"], "capability_leaves": ["A1"], "evidence_source_ids": ["D19:8"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-48#q0138", "gold": ["From the shelter"], "capability_leaves": ["A1"], "evidence_source_ids": ["D22:25"], "question_type": "4", "scoring_data": {}}

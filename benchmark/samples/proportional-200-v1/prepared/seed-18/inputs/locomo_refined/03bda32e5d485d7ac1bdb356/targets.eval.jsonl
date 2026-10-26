@@ -1,0 +1,8 @@
+{"qa_id": "conv-42#q0009", "gold": ["23 March, 2022."], "capability_leaves": ["C1"], "evidence_source_ids": ["D6:2"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-42#q0030", "gold": ["21 August, 2022"], "capability_leaves": ["C1"], "evidence_source_ids": ["D19:1"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-42#q0085", "gold": ["Not tough, kinda fun; keep their area clean, feed them properly, give them enough light.", "Not tough, kinda fun."], "capability_leaves": ["A1"], "evidence_source_ids": ["D5:8"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-42#q0089", "gold": ["\"Finding Home\""], "capability_leaves": ["A1"], "evidence_source_ids": ["D9:3"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-42#q0092", "gold": ["Dramas and emotionally-driven films"], "capability_leaves": ["A1"], "evidence_source_ids": ["D9:9"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-42#q0108", "gold": ["7"], "capability_leaves": ["A1"], "evidence_source_ids": ["D16:6"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-42#q0154", "gold": ["coconut milk"], "capability_leaves": ["A1"], "evidence_source_ids": ["D26:18"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-42#q0164", "gold": ["Watch other people's videos to understand what the audience likes"], "capability_leaves": ["A1"], "evidence_source_ids": ["D28:18"], "question_type": "4", "scoring_data": {}}

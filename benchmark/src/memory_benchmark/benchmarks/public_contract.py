@@ -22,6 +22,56 @@ def render(query, context, model):
     return native.official_generative_messages({"user_query": query.text, "chat_history": history})
 
 
+def _escape_invalid_json_backslashes(text):
+    """Preserve literal backslashes that JSON cannot represent as escapes.
+
+    Valid JSON escapes (including Unicode escapes) are left byte-for-byte
+    unchanged. Other JSON syntax errors remain errors; this never edits scores.
+    """
+    output, inside, changes, index = [], False, 0, 0
+    while index < len(text):
+        char = text[index]
+        if char == '"':
+            inside = not inside
+        elif char == '\\' and inside and index + 1 < len(text):
+            following = text[index + 1]
+            if following in '"\\/bfnrtu':
+                output.extend((char, following))
+                index += 2
+                continue
+            output.append('\\\\')
+            changes += 1
+            index += 1
+            continue
+        output.append(char)
+        index += 1
+    return ''.join(output), changes
+
+
+def parse_beam_rubric_scores(response, count):
+    r"""Use the native validator, tolerating only illegal string backslashes.
+
+    Judges sometimes put unescaped LaTeX such as ``\\(x \\geq 1\\)`` in a
+    reason. Escape those literal slashes only after the native JSON parser
+    identifies that exact error, then run the unchanged native score validator.
+    """
+    native = contract('beam')
+    try:
+        return native.parse_rubric_scores(response, count), 0
+    except json.JSONDecodeError as error:
+        if error.msg != 'Invalid \\escape':
+            raise
+        # Match the native parser's object extraction, keeping prose/fences
+        # outside the JSON out of the string-state scanner.
+        match = re.search(r'\{.*\}', response, re.DOTALL)
+        if match is None:
+            raise
+        normalized, changes = _escape_invalid_json_backslashes(match.group(0))
+        if not changes:
+            raise
+        return native.parse_rubric_scores(normalized, count), changes
+
+
 def evaluate(query, target, prediction, client, runtime):
     native = contract(query.benchmark)
     def judge(prompt, max_tokens=None, response_format=None):
@@ -78,10 +128,13 @@ def evaluate(query, target, prediction, client, runtime):
                 "judge_model": reply.model}
     rubrics = native.rubric_items(target.scoring_data)
     reply = judge(native.render_batch_judge_prompt(query.text, prediction, rubrics))
-    scores = native.parse_rubric_scores(reply.text, len(rubrics))
+    scores, escaped_backslashes = parse_beam_rubric_scores(reply.text, len(rubrics))
     result.update(question_type=target.question_type, judge_model=reply.model, judge_response=reply.text,
                   rubric_scores=[{"rubric": r, **s} for r, s in zip(rubrics, scores)],
                   llm_judge_score=sum(s["score"] for s in scores) / len(scores))
+    if escaped_backslashes:
+        result['judge_json_normalization'] = {'policy': 'escape_invalid_json_backslashes_v1',
+            'escaped_backslashes': escaped_backslashes}
     if target.question_type == "event_ordering":
         used, aligned = set(), []
         for candidate in prediction.split("\n"):

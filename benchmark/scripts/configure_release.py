@@ -12,6 +12,10 @@ def main():
     parser.add_argument('--ami-root', type=Path, help='Existing ami-reproduction source (e.g. .. in the fork)')
     parser.add_argument('--env-file', type=Path, default=Path('.env'))
     parser.add_argument('--output', type=Path, default=Path('configs/local'))
+    parser.add_argument('--history-workers', type=int, help='Optional total history concurrency; default unlimited')
+    parser.add_argument('--per-method-workers', type=int, help='Optional per-method history concurrency')
+    parser.add_argument('--query-workers', type=int, help='Optional per-history Answer/Judge concurrency')
+    parser.add_argument('--budget-cny', type=float, help='Optional estimated spend cap; default unlimited')
     args = parser.parse_args()
     base = args.baseline_root.resolve()
     methods = json.loads((ROOT / 'configs/methods.json').read_text())
@@ -43,17 +47,9 @@ def main():
         methods[name] = {'source_root': str(source), 'python': str(source / '.benchmark-env/bin/python'),
                          'adapter_file': str(ROOT / f'src/memory_benchmark/methods/{name}.py'),
                          'embedding_backend': 'shared_api' if name == 'invmem' else 'not_used_by_native_bm25_agent'}
-    runtime = json.loads((ROOT / 'configs/reproduction/runtime.json').read_text())
-    defaults = json.loads((ROOT / 'configs/runtime.json').read_text())
-    # Keep native timeouts, but inherit every current AML Reader setting.
-    for key in ('top_k', 'reader_token_budget', 'answer_input_token_limit', 'answer_max_tokens',
-                'answer_context_policy', 'answer_output_policy', 'answer_safety_margin_tokens',
-                'answer_part_truncation_policy', 'clbench_judge_protocol', 'judge_protocol_max_attempts',
-                'persist_answer_responses', 'provider_error_diagnostics', 'add_chunk_policy'):
-        runtime[key] = defaults[key]
-    runtime['context_policy'] = defaults['context_policy']
+    runtime = json.loads((ROOT / 'configs/runtime.json').read_text())
     runtime['env_file'] = str(args.env_file.resolve())
-    suite = json.loads((ROOT / 'configs/reproduction/suite.example.json').read_text())
+    suite = json.loads((ROOT / 'configs/datasets/text_suite.json').read_text())
     for config in suite['benchmarks'].values():
         for key in ('data_dir', 'data_file', 'source_manifest', 'source_snapshot'):
             if key in config:
@@ -64,6 +60,20 @@ def main():
               'embedding_policy.json': {}}
     for method, config in methods.items():
         values[f'methods.{method}.json'] = {method: config}
+    parallel = json.loads((ROOT / 'configs/parallel/four-methods.json').read_text())
+    for method in parallel['methods']:
+        method['config'] = methods[method['adapter']]
+    parallel.update(env_file=str(args.env_file.resolve()), runtime_file='runtime.json',
+                    prepared_root=str(ROOT / 'samples/proportional-200-v1/prepared'),
+                    output=str(ROOT / 'runs/proportional-five-seeds'),
+                    tokenizer_cache=str(ROOT / 'samples/tokenizer-cache'))
+    parallel.update(total_history_workers=args.history_workers,
+                    per_method_history_workers=args.per_method_workers,
+                    query_workers=args.query_workers, budget_cny=args.budget_cny)
+    from parallel_runner.common import validate_config
+    validate_config(parallel)
+    values['parallel.json'] = parallel
+
     for name, value in values.items():
         (output / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
     print(f'Wrote four-method configuration to {output}; no credentials read; no API calls.')

@@ -20,6 +20,7 @@ from memory_benchmark.runtime.artifacts import read_json
 from memory_benchmark.runtime.budget import make_transport
 from memory_benchmark.runtime.pacing import paced_transport
 from memory_benchmark.runtime.profile import public_identity
+from memory_benchmark.runtime.memory_retry import gateway_for_reader
 
 
 def success(payload):
@@ -125,6 +126,42 @@ class RetryTests(unittest.TestCase):
             self.assertTrue(g.budget.rows[-1]['retry_exhausted'])
             self.assert_accounting(g)
 
+    def test_hundred_retries_means_101_sends_without_sdk_multiplication(self):
+        self.steps = [503]
+        with self.gateway(max_retries=100) as g:
+            with self.assertRaises(openai.InternalServerError): complete(g)
+            self.assertEqual(len(self.requests), 101)
+            self.assertEqual(len(self.sleeps), 100)
+            self.assertTrue(all(0 <= delay <= 60 for delay in self.sleeps))
+            self.assertTrue(g.budget.rows[-1]['retry_exhausted'])
+            self.assertEqual(g.client.max_retries, 0)
+            self.assert_accounting(g)
+
+    def test_reader_overlay_recovers_answer_and_judge_after_100_transient_errors(self):
+        receipt = {'version': 1, 'activation': 'new_memory_workers',
+                   'baseline_framework_sha256': 'fixture', 'changes': {},
+                   'reader_request_retry_policy': {'version': 1, 'owner': 'transport',
+                       'scope': 'new_reader_clients', 'max_retries': 100, 'activated_at': 'fixture'}}
+        (Path(self.temp.name) / 'execution_overlay.json').write_text(json.dumps(receipt))
+        for stage in ('answer', 'judge'):
+            with self.subTest(stage=stage):
+                self.requests.clear(); self.sleeps.clear(); self.steps = [503] * 100 + [200]
+                with self.gateway(max_retries=0) as g:
+                    identity = json.loads(json.dumps(g.identity))
+                    runtime = json.loads(json.dumps(g.runtime))
+                    current = gateway_for_reader(g.runtime, g.output, lambda *a, **kw: g,
+                                                 expected_identity=g.identity)
+                    self.assertIs(current, g)
+                    self.assertEqual(complete(g, stage).text, 'recovered')
+                    self.assertEqual(len(self.requests), 101)
+                    self.assertIsNone(g.budget.failed)
+                    self.assertEqual(g.identity, identity)
+                    self.assertEqual(g.runtime, runtime)
+                    usage = read_json(g.output)
+                    self.assertEqual(usage['request_retry_policy']['max_attempts'], 101)
+                    self.assertEqual(usage['reader_retry_activation']['activation'], 'new_reader_clients')
+                    self.assert_accounting(g)
+
     def test_network_errors_recover(self):
         for error in ('timeout', 'connect', 'protocol'):
             with self.subTest(error=error):
@@ -214,7 +251,7 @@ class RetryTests(unittest.TestCase):
             self.assertEqual(len(self.requests), 1)
 
     def test_invalid_configuration_rejected_before_any_send(self):
-        for value in (-1, 11, True, 1.5, '10', None):
+        for value in (-1, 101, True, 1.5, '10', None):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 with self.gateway(max_retries=value): self.fail('invalid configuration accepted')
         self.profile['AMI_ALLOW_RETRIES'] = 'true'

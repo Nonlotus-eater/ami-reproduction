@@ -54,10 +54,14 @@ def main():
         histories = {(b, v['source_unit_id']) for (b, q), v in actual.items()}
         leaf_counts = Counter(q['leaf'] for q in selected)
         family_counts = Counter(q['family'] for q in selected)
-        if not plan['min_history_instances_per_round'] <= len(histories) <= plan['max_history_instances_per_round']:
-            raise ValueError('Prepared history count violates plan')
-        if any(n < plan['min_questions_per_leaf'] for n in leaf_counts.values()) or max(family_counts.values()) > plan['max_questions_per_family']:
-            raise ValueError('Prepared leaf/family quota mismatch')
+        if plan.get('strategy') == 'proportional-cluster-200-v1':
+            if len(actual) != 200 or len(histories) != plan['rounds'][str(seed)]['histories']:
+                raise ValueError('Prepared proportional cohort differs from sampling')
+        else:
+            if not plan['min_history_instances_per_round'] <= len(histories) <= plan['max_history_instances_per_round']:
+                raise ValueError('Prepared history count violates plan')
+            if any(n < plan['min_questions_per_leaf'] for n in leaf_counts.values()) or max(family_counts.values()) > plan['max_questions_per_family']:
+                raise ValueError('Prepared leaf/family quota mismatch')
         results[str(seed)] = {**result, 'histories': len(histories), 'prepared': str(output / f'seed-{seed}'),
                               'manifest_sha256': file_hash(output / f'seed-{seed}/manifest.json')}
         write_json(output / 'progress.json', {'status': 'preparing', 'api_calls': 0, 'rounds': results})

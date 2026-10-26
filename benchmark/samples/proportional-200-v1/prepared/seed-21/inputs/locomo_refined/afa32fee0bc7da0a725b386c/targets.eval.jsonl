@@ -1,0 +1,9 @@
+{"qa_id": "conv-47#q0021", "gold": ["Toronto, Canada"], "capability_leaves": ["C1"], "evidence_source_ids": ["D16:9"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-47#q0026", "gold": ["quit his IT Job, secured his dream job, aspires to become an eSports competition organizer"], "capability_leaves": ["B1"], "evidence_source_ids": ["D13:3", "D18:1", "D18:7"], "question_type": "1", "scoring_data": {}}
+{"qa_id": "conv-47#q0035", "gold": ["September 11, 2022"], "capability_leaves": ["C1"], "evidence_source_ids": ["D23:5", "D23:6"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-47#q0055", "gold": ["help find the perfect pet"], "capability_leaves": ["A1"], "evidence_source_ids": ["D2:19"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-47#q0061", "gold": ["never put your ego above team success"], "capability_leaves": ["A1"], "evidence_source_ids": ["D4:12"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-47#q0102", "gold": ["basic games and stories"], "capability_leaves": ["A1"], "evidence_source_ids": ["D22:12"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-47#q0111", "gold": ["a dream with a medieval castle full of puzzles and traps"], "capability_leaves": ["A1"], "evidence_source_ids": ["D24:8"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-47#q0130", "gold": ["Control with a gamepad and timing"], "capability_leaves": ["A1"], "evidence_source_ids": ["D30:14", "D30:16", "D30:17", "D30:18"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-47#q0133", "gold": ["His fingers are too big."], "capability_leaves": ["B4"], "evidence_source_ids": ["D1:26", "D1:27"], "question_type": "3", "scoring_data": {}}

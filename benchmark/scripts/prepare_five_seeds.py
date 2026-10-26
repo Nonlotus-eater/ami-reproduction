@@ -10,9 +10,9 @@ from memory_benchmark.runtime.artifacts import file_hash, read_json, write_json
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def freeze(suite, runtime, output):
+def freeze(suite, runtime, output, profile=None):
     validate_runtime(runtime)
-    profile = ROOT / 'configs/reproduction'
+    profile = Path(profile) if profile else ROOT / 'configs/proportional-200-v1'
     frozen = read_json(profile / 'frozen_samples.json')
     # Check all source hashes and ID lists before creating any output.
     for source in frozen['source_files']:
@@ -53,13 +53,14 @@ def main():
     parser.add_argument('--suite', type=Path, default=Path('configs/local/suite.json'))
     parser.add_argument('--runtime', type=Path, default=Path('configs/local/runtime.json'))
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--profile', type=Path, default=ROOT / 'configs/proportional-200-v1')
     args = parser.parse_args()
     # This command is an offline data operation even in an environment with keys.
     import socket
     def denied(*args, **kwargs):
         raise RuntimeError('Network forbidden while preparing frozen seed lists')
     socket.socket.connect = socket.socket.connect_ex = socket.create_connection = denied
-    result = freeze(read_json(args.suite), read_json(args.runtime), args.output)
+    result = freeze(read_json(args.suite), read_json(args.runtime), args.output, args.profile)
     print({k: v for k, v in result.items() if k != 'rounds'})
 
 

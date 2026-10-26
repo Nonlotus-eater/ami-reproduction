@@ -1,0 +1,8 @@
+{"qa_id": "conv-26#q0031", "gold": ["The Tuesday before 20 July 2023", "July 18, 2023"], "capability_leaves": ["C1"], "evidence_source_ids": ["D10:3"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-26#q0046", "gold": ["Summer Sounds, Matt Patterson"], "capability_leaves": ["B1"], "evidence_source_ids": ["D15:16", "D11:3"], "question_type": "1", "scoring_data": {}}
+{"qa_id": "conv-26#q0050", "gold": ["Changes to her body", "Changes to her body, losing unsupportive friends"], "capability_leaves": ["B1"], "evidence_source_ids": ["D16:15", "D11:14"], "question_type": "1", "scoring_data": {}}
+{"qa_id": "conv-26#q0066", "gold": ["mental health"], "capability_leaves": ["A1"], "evidence_source_ids": ["D2:2"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-26#q0070", "gold": ["LGBTQ+ individuals"], "capability_leaves": ["A1"], "evidence_source_ids": ["D2:12"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-26#q0078", "gold": ["art and self-expression"], "capability_leaves": ["A1"], "evidence_source_ids": ["D4:5"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-26#q0111", "gold": ["Brave by Sara Bareilles"], "capability_leaves": ["A1"], "evidence_source_ids": ["D15:23"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-26#q0113", "gold": ["Ed Sheeran"], "capability_leaves": ["A1"], "evidence_source_ids": ["D15:28"], "question_type": "4", "scoring_data": {}}

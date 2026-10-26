@@ -1,0 +1,4 @@
+{"qa_id": "personamem_v1:bd19b555-7c4a-401e-8033-36658ee6650a", "gold": "(a)", "capability_leaves": ["A1"], "evidence_source_ids": [], "question_type": "recall_user_shared_facts", "scoring_data": {}}
+{"qa_id": "personamem_v1:f7083e6c-28fe-4c88-83c8-3f9d07bd7ff2", "gold": "(b)", "capability_leaves": ["A1"], "evidence_source_ids": [], "question_type": "recall_user_shared_facts", "scoring_data": {}}
+{"qa_id": "personamem_v1:52ec42c1-8bcf-4759-ac61-df05238ddc3f", "gold": "(c)", "capability_leaves": ["E1"], "evidence_source_ids": [], "question_type": "generalizing_to_new_scenarios", "scoring_data": {}}
+{"qa_id": "personamem_v1:43436dbb-4b3e-4f1d-a2eb-fa61b16935f8", "gold": "(b)", "capability_leaves": ["C3"], "evidence_source_ids": [], "question_type": "recalling_the_reasons_behind_previous_updates", "scoring_data": {}}

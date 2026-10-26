@@ -1,0 +1,8 @@
+{"qa_id": "conv-49#q0049", "gold": ["gastritis"], "capability_leaves": ["B1"], "evidence_source_ids": ["D2:6", "D7:2", "D12:1", "D14:1"], "question_type": "1", "scoring_data": {}}
+{"qa_id": "conv-49#q0052", "gold": ["December, 2023"], "capability_leaves": ["C1"], "evidence_source_ids": ["D16:24"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-49#q0071", "gold": ["consuming soda and candy"], "capability_leaves": ["A1"], "evidence_source_ids": ["D3:2", "D3:4", "D3:5", "D3:6"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-49#q0081", "gold": ["dream interpretation book"], "capability_leaves": ["A1"], "evidence_source_ids": ["D6:15"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-49#q0128", "gold": ["Yoga"], "capability_leaves": ["A1"], "evidence_source_ids": ["D24:19"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-49#q0129", "gold": ["for a drunken night"], "capability_leaves": ["A1"], "evidence_source_ids": ["D25:2"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-49#q0130", "gold": ["peaceful,unforgettable", "peaceful"], "capability_leaves": ["A1"], "evidence_source_ids": ["D25:10"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-49#q0134", "gold": ["As a chance to explore other ways of staying active and traveling"], "capability_leaves": ["A1"], "evidence_source_ids": ["D18:5"], "question_type": "4", "scoring_data": {}}

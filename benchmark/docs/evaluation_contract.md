@@ -1,7 +1,7 @@
 # 评测契约
 
 本次发布的 AMI、Mem0、InvMem、ReFind 共用规范输入、证据格式、Answer、评分与汇总，保留各自原生记忆和存储机制。
-默认恢复报告 v1 策略（仓库历史名称 v3）：seed 17–21，历史最多 30、可用小类至少 2、大类最多 40。`configs/reproduction/` 的固定清单与此前 GitHub 发布一致；重新抽样的同规则配额见 [small_benchmark_v1.json](../configs/small_benchmark_v1.json)，部署见 [当前指导](model_handoff_99.md)。
+当前使用 proportional-200-v1：seed 17–21，每轮 200 题，按数据集及原生题型比例抽样；完整历史复用，BEAM 只选 100K split。配置与验收表见 [新清单](../configs/proportional-200-v1/)，部署见 [当前指导](deployment.md)。
 
 ## 数据与主指标
 
@@ -14,7 +14,7 @@
 | PersonaMem v1 | MCQ accuracy | 原生选项解析与匹配，0/1 |
 | PersonaMem v2 | preference adherence | 固定生成式模式，原生偏好遵循评分 [0,1] |
 
-BEAM 的 event-ordering 另保存排序诊断，不替代 rubric 主分。
+BEAM 的 event-ordering 另保存排序诊断，不替代 rubric 主分。评分解释内非法反斜杠导致原生 JSON 解析失败时，仅对该转义作规范化，再调用同一原生校验器；保存原始响应和修复计数，不修改分数。
 PersonaMem v2 不把同题 MCQ 和生成式重复计入 Overall。
 
 评分模板与解析来自 AML 固定 commit `1b8142bfe0f20f1c5218d6b554aa0012de34e504`，
@@ -25,7 +25,6 @@ PersonaMem v2 不把同题 MCQ 和生成式重复计入 Overall。
 记忆端只收到历史和查询；gold、rubric、正确选项、证据标签和能力标签只留在评测端。
 候选选项属于查询输入，正确选项标签不进入记忆。
 所有问题在历史构建和 finalize 后执行，协议为 offline-history-QA；不声称复现 Streaming。
-MemMA 自检问题来自可见历史，不使用测试题或 gold。
 不同运行、方法、历史实例使用独立 scope。
 
 历史依作者单位归属：LoCoMo/BEAM 是 conversation，LongMemEval 是独立题目 haystack，
@@ -43,8 +42,8 @@ LongMemEval 保留重复会话的 source_session_id，并对出现次数作唯�
 
 检索证据保留方法原生返回顺序，tokenizer 为 o200k_base。2026-10-23 起公共默认使用 `aml_ranked_prefix_v1`：top_k=100，完整输入上限为 117760 tokens，输出额度为 8192 tokens，安全余量为 2048 tokens，合计 128000。`reader_token_budget=null` 表示不另设证据额度，不表示完整输入无限制。
 Reader 对完整渲染的提示词计数，只按返回顺序保留证据文本前缀，末条可部分保留；不跳过超长候选装入低排名记忆，也不执行分段摘要。问题、选项、指令完整保留；其自身超限时明确报错。原始 Search 响应不被改写，Answer 保存原始/实际 token 数、部分保留和省略的 ID 以便审计。
-四方法历史实验配置另存于 `configs/reproduction/runtime.json`，分别为 100、4096、119000；该旧模式跳过放不下的整条证据。配置生成器覆盖为当前 AML Reader 参数，旧成绩仍对应各自冻结的 runtime，不能用于证明新参数已完成评测。
-调用量和费用写入运行账本，没有次数或费用 cap；请求重试按冻结 runtime 和私有 profile 的显式设置执行。
+旧 Reader 参数及旧题集只在 [旧版本下载](legacy_versions.md) 中提供；不能用历史成绩证明当前配置已完成真实评测。
+调用量和费用写入运行账本；默认金额、任务及接口并发、RPM/TPM 不限，用户可显式设置。新调度器默认每请求最多尝试 8 次、每历史任务最多尝试 3 次，SDK 不叠加重试。
 输入预算、模型输出长度和超时是独立约束。
 
 ## Reader 对齐与可靠性策略（2026-10-23）
@@ -63,7 +62,7 @@ AMI 在启动前检查所选源码对实际输入角色的支持，默认选择�
 
 ## 分数与能力
 
-每个 benchmark 分数为冻结题集逐题主分的均值乘 100；本地 Overall 是六个 benchmark 分数的等权均值。
+每个 benchmark 分数为冻结题集逐题主分的均值乘 100。主指标为七能力大类等权均分，同时报告六数据集等权均分；跨 seed 取均值和样本标准差（ddof=1），细分类提供有效 seed 数。
 未完成任一冻结题目的有效评分时，完整 Overall 为 null，另报已评分均值和覆盖率。
 网络、模型身份、解析或 worker 故障产生 unscored，不计为方法答错。
 
@@ -76,6 +75,7 @@ A2/B2/B3 没有验证过的公开代理题；D3/H2 目前仅反映回答中的�
 
 Mem0 使用 OSS Memory、graph off；AMI 使用 reproduction release profile 和 system role 兼容补丁。
 InvMem 保留原生 hybrid Dense+BM25/RRF、窗口检索；ReFind 保留原生四动作 agent、BM25/session RRF，不改成向量 baseline。
+ReFind 默认 deduplicate_observations_v1，对规划观察重复原文去重，必要时截取观察正文头尾以控制提示词长度；不改记忆或最终检索证据。此条件与此前仅补跑 5 题的实验不同。
 这些是固定本地配置，不直接声称为论文默认设置。
 源码与补丁见 [发布版本清单](../sources/publication-baselines.lock.json)；保留各原生仓库作者归属与许可。
 

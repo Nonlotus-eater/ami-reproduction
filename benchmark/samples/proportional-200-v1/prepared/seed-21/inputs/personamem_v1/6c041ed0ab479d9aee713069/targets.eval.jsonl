@@ -1,0 +1,2 @@
+{"qa_id": "personamem_v1:8b7d1285-8b25-40cd-9ca8-e6347bfe746a", "gold": "(a)", "capability_leaves": ["C3"], "evidence_source_ids": [], "question_type": "track_full_preference_evolution", "scoring_data": {}}
+{"qa_id": "personamem_v1:3bf72ac4-729e-49b0-ac4f-944a5ac1a0c1", "gold": "(d)", "capability_leaves": ["C3"], "evidence_source_ids": [], "question_type": "track_full_preference_evolution", "scoring_data": {}}

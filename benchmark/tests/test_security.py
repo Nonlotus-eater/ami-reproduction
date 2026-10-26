@@ -14,7 +14,7 @@ from memory_benchmark.runtime.artifacts import file_hash, read_json, write_json,
 from memory_benchmark.runtime.native_freeze import freeze_methods, native_identity, snapshot_bindings, verify_method
 from memory_benchmark.runtime.worker_launch import run_memory_worker, sandbox_command
 from memory_benchmark.schemas import History, Message, Query, Session
-from scripts.check_credentials import inspect
+from scripts.check_credentials import inspect, PUBLIC_FIXTURE_FILES, TOKEN
 
 
 class NativeConfigurationTests(unittest.TestCase):
@@ -173,6 +173,41 @@ raise SystemExit(0 if worker.execute(job)['status']=='complete' else 1)
 
 
 class CredentialGuardTests(unittest.TestCase):
+    def test_only_exact_public_fixture_paths_and_bytes_are_exempt(self):
+        for prefix in ('', 'benchmark/'):
+            with self.subTest(prefix=prefix), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                subprocess.run(['git', 'init', '-q', str(root)], check=True)
+                relative = next(iter(PUBLIC_FIXTURE_FILES))
+                data = (ROOT / relative).read_bytes()
+                target = root / prefix / relative
+                target.parent.mkdir(parents=True)
+                target.write_bytes(data)
+                subprocess.run(['git', '-C', str(root), 'add', '.'], check=True)
+                self.assertEqual(inspect(root)['status'], 'passed')
+                self.assertEqual(inspect(root)['verified_public_test_fixtures'], [prefix + relative])
+                target.write_bytes(data + b'\n')
+                subprocess.run(['git', '-C', str(root), 'add', '.'], check=True)
+                self.assertEqual(inspect(root)['status'], 'failed')
+                target.write_bytes(data)
+                (root / 'elsewhere.jsonl').write_bytes(data)
+                subprocess.run(['git', '-C', str(root), 'add', '.'], check=True)
+                self.assertEqual(inspect(root)['staged_findings'], [{'path':'elsewhere.jsonl','reason':'credential_value'}])
+
+    def test_known_credentials_never_gain_the_public_fixture_exception(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(['git', 'init', '-q', str(root)], check=True)
+            relative = next(iter(PUBLIC_FIXTURE_FILES))
+            data = (ROOT / relative).read_bytes()
+            target = root / relative
+            target.parent.mkdir(parents=True)
+            target.write_bytes(data)
+            subprocess.run(['git', '-C', str(root), 'add', '.'], check=True)
+            # Untracked runtime credential values still override the exception.
+            (root / '.env').write_bytes(b'OPENAI_API_KEY=' + TOKEN.search(data).group() + b'\n')
+            self.assertEqual(inspect(root)['staged_findings'], [{'path':relative,'reason':'credential_value'}])
+
     def test_real_precommit_hook_blocks_a_private_env_without_echoing_values(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

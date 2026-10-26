@@ -1,0 +1,27 @@
+{
+  "strategy": "proportional-cluster-200-v1",
+  "seeds": [
+    17,
+    18,
+    19,
+    20,
+    21
+  ],
+  "questions_per_seed": 200,
+  "population_questions": 10649,
+  "dataset_counts": {
+    "locomo_refined": 861,
+    "longmemeval_s": 500,
+    "clbench": 1899,
+    "personamem_v1": 589,
+    "personamem_v2": 5000,
+    "beam": 1800
+  },
+  "quota_basis": "full population dataset and native question type counts; joint integer rounding across seeds",
+  "capability_constraint": "post-selection audit against existing local labels",
+  "beam_eligible_length": "100K",
+  "beam_histories_per_seed": 2,
+  "locomo_histories_per_seed": 2,
+  "preserve_full_histories": true,
+  "score_blind": true
+}

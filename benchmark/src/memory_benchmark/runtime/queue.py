@@ -23,6 +23,7 @@ from ..pipeline.context import GPTTokenizer
 from ..schemas import History, Query, Target
 from .artifacts import append_row, contract_hash, file_hash, read_json, rows, write_json, write_rows
 from .model_client import Gateway
+from .memory_retry import gateway_for_reader
 from .profile import public_identity, read_profile, validate_profile
 from .native_freeze import freeze_methods, verify_method
 from .worker_launch import POLICY as ISOLATION_POLICY, run_memory_worker
@@ -179,7 +180,7 @@ def execute_task(prepared, output, manifest, method, case, retry_failed=False):
             raise ValueError("Duplicate persisted question")
         if set(completed_answers) - expected or set(native_scores) - expected:
             raise ValueError("Foreign persisted question")
-        client = Gateway(runtime, folder / f"reader_usage_{time.time_ns()}.json",
+        client = gateway_for_reader(runtime, folder / f"reader_usage_{time.time_ns()}.json", Gateway,
                          expected_identity=manifest["execution"]["provider_identity"])
         history = History.from_wire(read_json(prepared / case["history"]))
         tokenizer = GPTTokenizer(runtime["model"])

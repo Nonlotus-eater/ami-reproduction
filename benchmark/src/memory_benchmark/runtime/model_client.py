@@ -151,6 +151,7 @@ class Gateway:
             "provider_identity": self.identity,
             "request_retry_policy": self.budget.retry_policy.public(),
             "memory_retry_activation": getattr(self, "memory_retry_activation", None),
+            "reader_retry_activation": getattr(self, "reader_retry_activation", None),
             "unknown_usage_attempts": sum(r.get("usage_status") == "unknown" for r in self.budget.rows),
             "unknown_usage_reservation_cny": sum(r["reserved_cny"] for r in self.budget.rows
                                                  if r.get("usage_status") == "unknown")})

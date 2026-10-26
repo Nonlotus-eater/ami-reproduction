@@ -1,0 +1,8 @@
+{"qa_id": "conv-43#q0021", "gold": ["October, 2023"], "capability_leaves": ["C1"], "evidence_source_ids": ["D11:7"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-43#q0030", "gold": ["His heart, determination, skills, and leadership."], "capability_leaves": ["B1"], "evidence_source_ids": ["D12:20", "D16:12"], "question_type": "1", "scoring_data": {}}
+{"qa_id": "conv-43#q0039", "gold": ["August 2023"], "capability_leaves": ["C1"], "evidence_source_ids": ["D21:13"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-43#q0052", "gold": ["fitting into the new team's style of play"], "capability_leaves": ["A1"], "evidence_source_ids": ["D1:11"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-43#q0076", "gold": ["Watching it with his family"], "capability_leaves": ["A1"], "evidence_source_ids": ["D8:16"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-43#q0091", "gold": ["passion for fantasy stuff"], "capability_leaves": ["A1"], "evidence_source_ids": ["D13:1"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-43#q0107", "gold": ["He got stuck on a plot twist"], "capability_leaves": ["A1"], "evidence_source_ids": ["D16:1"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-43#q0114", "gold": ["Story based on experiences in the UK didn't go as planned"], "capability_leaves": ["A1"], "evidence_source_ids": ["D19:3"], "question_type": "4", "scoring_data": {}}

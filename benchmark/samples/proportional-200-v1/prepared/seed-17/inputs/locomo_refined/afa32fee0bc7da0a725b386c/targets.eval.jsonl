@@ -1,0 +1,8 @@
+{"qa_id": "conv-47#q0028", "gold": ["August 9, 2022"], "capability_leaves": ["C1"], "evidence_source_ids": ["D19:12", "D19:14", "D19:15", "D19:16"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-47#q0048", "gold": ["November 4, 2022"], "capability_leaves": ["C1"], "evidence_source_ids": ["D30:1"], "question_type": "2", "scoring_data": {}}
+{"qa_id": "conv-47#q0066", "gold": ["Italy"], "capability_leaves": ["A1"], "evidence_source_ids": ["D6:12"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-47#q0072", "gold": ["A tournament for CS:GO"], "capability_leaves": ["A1"], "evidence_source_ids": ["D10:4"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-47#q0082", "gold": ["providing necessary items to those who are less fortunate"], "capability_leaves": ["A1"], "evidence_source_ids": ["D15:11"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-47#q0089", "gold": ["Chess"], "capability_leaves": ["A1"], "evidence_source_ids": ["D17:1"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-47#q0112", "gold": ["electronic and rock music"], "capability_leaves": ["A1"], "evidence_source_ids": ["D24:13"], "question_type": "4", "scoring_data": {}}
+{"qa_id": "conv-47#q0124", "gold": ["Fortnite, Overwatch, Apex Legends"], "capability_leaves": ["A1"], "evidence_source_ids": ["D29:1", "D29:3"], "question_type": "4", "scoring_data": {}}
