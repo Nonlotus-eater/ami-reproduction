@@ -12,7 +12,7 @@ from pathlib import Path
 import sqlite3
 import time
 import uuid
-from .windows_process import assert_alive
+from .request_lease import POLICY, RequestLease, request_alive
 
 SCALE = 1_000_000_000
 
@@ -41,6 +41,8 @@ class SharedControl:
             value = db.execute("SELECT value FROM settings WHERE key='config'").fetchone()
             if not value: raise ValueError('Shared control is not initialized')
             self.config = json.loads(value[0])
+            if self.config.get('liveness_policy') != POLICY:
+                raise ValueError('Legacy PID-based ledger: prepare a fresh run with the updated launcher')
 
     @classmethod
     def create(cls, path, *, cap_cny, providers, rates, identity):
@@ -51,7 +53,7 @@ class SharedControl:
         if set(providers) != {'llm','embedding'}: raise ValueError('Both provider groups required')
         if set(rates) != {'input','output','embedding'} or any(not math.isfinite(float(x)) or float(x)<=0 for x in rates.values()):
             raise ValueError('Explicit positive rates required')
-        config = {'cap_units':None if cap_cny is None else money(cap_cny),'providers':providers,'rates':rates,'identity':identity,'window_seconds':60}
+        config = {'cap_units':None if cap_cny is None else money(cap_cny),'providers':providers,'rates':rates,'identity':identity,'window_seconds':60,'liveness_policy':POLICY}
         p = Path(path);p.parent.mkdir(parents=True,exist_ok=True)
         with sqlite3.connect(p,timeout=30) as db:
             db.execute('PRAGMA journal_mode=WAL')
@@ -153,6 +155,23 @@ class SharedControl:
             db.execute("UPDATE calls SET state='cancelled_unsent',charged=0,ended=? WHERE id=? AND state='reserved'",(time.time(),ident))
             db.execute("UPDATE tickets SET state='cancelled',ended=? WHERE call_id=? AND state='waiting'",(time.time(),ident))
 
+    def request_alive(self, ident):
+        return request_alive(self.path, ident)
+
+    def reap_abandoned(self, db):
+        """Caller holds the SQLite write transaction; unknown owners stay live."""
+        count = 0
+        for row in db.execute("SELECT call_id,state FROM tickets WHERE state IN ('active','waiting')").fetchall():
+            if self.request_alive(row['call_id']) is not False:
+                continue
+            db.execute("UPDATE tickets SET state='abandoned',ended=? WHERE call_id=?",(time.time(),row['call_id']))
+            if row['state']=='waiting':
+                db.execute("UPDATE calls SET state='cancelled_unsent',charged=0,ended=? WHERE id=? AND state='reserved'",(time.time(),row['call_id']))
+            else:
+                db.execute("UPDATE calls SET state='unknown',ended=? WHERE id=? AND state='reserved'",(time.time(),row['call_id']))
+            count += 1
+        return count
+
     @contextmanager
     def admit(self,ident,provider,tokens,*,timeout=240):
         spec=self.config['providers'][provider]
@@ -160,6 +179,14 @@ class SharedControl:
             self.cancel_unsent(ident)
             self.stop('provider_failure')
             raise ControlStopped('One request exceeds configured TPM; never truncate it')
+        # Ownership exists before publishing a ticket, and lasts through final
+        # ticket accounting. No observer needs to interpret another namespace's PID.
+        with RequestLease(self.path, ident):
+            with self._admit_owned(ident, provider, tokens, timeout=timeout):
+                yield
+
+    @contextmanager
+    def _admit_owned(self,ident,provider,tokens,*,timeout):
         start=time.monotonic();granted=False;last_reap=0
         with self.transaction() as db:
             self._check(db)
@@ -172,7 +199,7 @@ class SharedControl:
                 # Polling does not acquire SQLite's single writer lock. These
                 # observations are optimistic; grant is rechecked atomically.
                 self._check(polling)
-                first=polling.execute("SELECT id,pid FROM tickets WHERE provider=? AND state='waiting' ORDER BY id LIMIT 1",(provider,)).fetchone()
+                first=polling.execute("SELECT id,call_id FROM tickets WHERE provider=? AND state='waiting' ORDER BY id LIMIT 1",(provider,)).fetchone()
                 head=first is not None and ticket==first['id'];dead_head=False
                 available=False
                 if head:
@@ -181,8 +208,7 @@ class SharedControl:
                     rpm,tpm=polling.execute('SELECT COUNT(*),COALESCE(SUM(tokens),0) FROM tickets WHERE provider=? AND granted>?',(provider,time.time()-cfg['window_seconds'])).fetchone()
                     available=slot_available(spec,active,rpm,tpm,tokens)
                 if first is not None:
-                    try:assert_alive(first['pid'])
-                    except ProcessLookupError:dead_head=True
+                    dead_head=self.request_alive(first['call_id']) is False
                 reap=dead_head or (head and time.monotonic()-last_reap>=1)
                 if available or reap:
                     with self.transaction() as db:
@@ -190,12 +216,7 @@ class SharedControl:
                         if reap:
                             # A dead queued head must not starve live waiters.
                             # Unsent work can cancel; possibly billed work stays unknown.
-                            for row in db.execute("SELECT call_id,pid,state FROM tickets WHERE state IN ('active','waiting')").fetchall():
-                                try:assert_alive(row['pid'])
-                                except ProcessLookupError:
-                                    db.execute("UPDATE tickets SET state='abandoned',ended=? WHERE call_id=?",(time.time(),row['call_id']))
-                                    if row['state']=='waiting':db.execute("UPDATE calls SET state='cancelled_unsent',charged=0 WHERE id=? AND state='reserved'",(row['call_id'],))
-                                    else:db.execute("UPDATE calls SET state='unknown' WHERE id=? AND state='reserved'",(row['call_id'],))
+                            self.reap_abandoned(db)
                             last_reap=time.monotonic()
                         cfg=json.loads(db.execute("SELECT value FROM settings WHERE key='config'").fetchone()[0]);spec=cfg['providers'][provider]
                         first_id=db.execute("SELECT MIN(id) FROM tickets WHERE provider=? AND state='waiting'",(provider,)).fetchone()[0]

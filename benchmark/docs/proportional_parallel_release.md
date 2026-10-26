@@ -44,6 +44,12 @@ python scripts/run_parallel.py resume --config configs/local/parallel.json --cle
 
 HTTP 客户端直接连接配置的模型 endpoint，不读取环境代理。记忆 worker 使用 bubblewrap，只挂载当前历史/查询、对应记忆状态、冻结源码、Python 环境、tokenizer 词表和共享账本；评分目标不挂载。缺少隔离能力会拒绝启动。
 
+## 请求存活与升级
+
+当前共享账本使用 `request_file_lock_v1`：每个等待/在途请求持有共享目录下的文件锁，不再跨 PID 命名空间检查数字编号。请求完成后释放，进程异常退出时由内核释放；无法验证锁状态时不直接判断请求已退出。
+
+更新后使用新的 output 和 ledger_dir 重新 prepare/check/start；旧 frozen launcher 的 resume 仍会运行旧代码。旧 PID 账本不能与新版混用，也不自动重写旧答案、评分或 unknown 费用。账本旁的 `.leases` 目录必须与账本一同保留，运行期间不要删除锁文件。
+
 ## 抽样与报告
 
 完整母库为 10,649 题。按数据集及数据集原生题型分配配额，五 seed 联合取整；共享完整历史，LoCoMo 与 BEAM 每 seed 各两份，BEAM 仅 100K split。能力比例按既有映射另行验收，不改变能力定义；A2/B2/B3 母库不覆盖。

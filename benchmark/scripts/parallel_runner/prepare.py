@@ -96,25 +96,23 @@ def verify(run):
   if method['name'] in identity.get('environments',{}) and environment_identity(method['config']['python'])!=identity['environments'][method['name']]:raise ValueError('Native Python environment changed')
  from memory_benchmark.pipeline.prepare import verify_prepared
  for seed in c['seeds']:verify_prepared(run/'prepared'/f'seed-{seed}')
+ from .shared_control import SharedControl
+ SharedControl(Path(c['ledger_dir'])/'ledger.sqlite3')
  return c
 
 def clear_user_stop(run,c):
- from .windows_process import assert_alive
+ from .shared_control import SharedControl
  # Supervisor lock is checked by launch.py before this function.
  dbpath=Path(c['ledger_dir'])/'ledger.sqlite3'
+ control=SharedControl(dbpath)
  with sqlite3.connect(dbpath,timeout=30) as db:
-  live=[]
-  for pid, in db.execute("SELECT DISTINCT pid FROM tickets WHERE state IN ('active','waiting')"):
-   try:assert_alive(pid);live.append(pid)
-   except ProcessLookupError:pass
-  if live:raise ValueError('Provider workers still live; wait for drain')
   stamp=str(time.time_ns());backup=sqlite3.connect(Path(c['ledger_dir'])/('before-resume-'+stamp+'.sqlite3'));db.backup(backup);backup.close()
   db.execute('BEGIN IMMEDIATE');stop=db.execute("SELECT value FROM settings WHERE key='stop'").fetchone()
   if stop and stop[0]!='user_stop':raise ValueError('Not a user stop: '+stop[0]+'; budget/provider stops need review')
-  for call_id,state in db.execute("SELECT call_id,state FROM tickets WHERE state IN ('active','waiting')").fetchall():
-   db.execute("UPDATE tickets SET state='abandoned',ended=? WHERE call_id=?",(time.time(),call_id))
-   if state=='waiting':db.execute("UPDATE calls SET state='cancelled_unsent',charged=0,ended=? WHERE id=? AND state='reserved'",(time.time(),call_id))
-   else:db.execute("UPDATE calls SET state='unknown',ended=? WHERE id=? AND state='reserved'",(time.time(),call_id))
+  live=[call_id for call_id, in db.execute("SELECT call_id FROM tickets WHERE state IN ('active','waiting')") if control.request_alive(call_id) is not False]
+  if live:raise ValueError('Provider requests still live or ownership unknown; wait for drain')
+  db.row_factory=sqlite3.Row
+  control.reap_abandoned(db)
   db.execute("DELETE FROM settings WHERE key='stop'")
  stopfile=Path(run)/'STOP.json'
  if stopfile.exists():stopfile.rename(stopfile.with_name('STOP.resumed-'+stamp+'.json'))
